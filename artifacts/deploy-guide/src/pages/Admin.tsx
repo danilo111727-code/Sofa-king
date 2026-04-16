@@ -354,6 +354,11 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     setForm((f) => ({ ...f, sizes: p.sizes.map((s) => ({ ...s })) }));
     flash("ok", `Metragens copiadas de "${p.name}".`);
   }
+  function fillStandardSizes() {
+    const labels = ["1,60 m","1,80 m","2,00 m","2,20 m","2,40 m","2,60 m","2,80 m","3,00 m","3,20 m","3,40 m","3,60 m","3,80 m","4,00 m"];
+    setForm((f) => ({ ...f, sizes: labels.map((label) => ({ label, basePrice: 0 })) }));
+    flash("ok", "Metragens padrão preenchidas — agora é só colocar o preço de cada uma.");
+  }
 
   return (
     <>
@@ -560,6 +565,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                   ))}
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button type="button" onClick={addSize} className={ghostBtn}>+ Adicionar metragem</button>
+                    <button type="button" onClick={fillStandardSizes} className={ghostBtn}>📐 Preencher metragens padrão (1,60 – 4,00 m)</button>
                     {products.length > 0 && (
                       <select
                         onChange={(e) => { if (e.target.value) { copyFrom(e.target.value); e.target.value = ""; } }}
