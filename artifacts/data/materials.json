@@ -1,34 +1,18 @@
 {
   "materials": [
     {
-      "id": "tec-linho-premium",
-      "type": "tecido",
-      "name": "Linho Premium",
-      "description": "Toque natural, respirável, ótima durabilidade.",
-      "priceAdjustment": 0,
-      "active": true
-    },
-    {
-      "id": "tec-veludo-soft",
-      "type": "tecido",
-      "name": "Veludo Soft",
-      "description": "Elegante e macio, perfeito para ambientes sofisticados.",
-      "priceAdjustment": 15,
-      "active": true
-    },
-    {
-      "id": "tec-courino",
-      "type": "tecido",
-      "name": "Courino Premium",
-      "description": "Resistente e fácil de limpar.",
-      "priceAdjustment": 5,
+      "id": "esp-d20",
+      "type": "espuma",
+      "name": "Espuma D20 (Soft)",
+      "description": "Mais macia, ideal para encostos.",
+      "priceAdjustment": -100,
       "active": true
     },
     {
       "id": "esp-d23",
       "type": "espuma",
       "name": "Espuma D23",
-      "description": "Conforto firme — recomendada para uso diário e maior durabilidade.",
+      "description": "Conforto firme — recomendada para uso diário.",
       "priceAdjustment": 0,
       "active": true
     },
@@ -36,16 +20,8 @@
       "id": "esp-d28",
       "type": "espuma",
       "name": "Espuma D28 (Premium)",
-      "description": "Mais densa e firme, recomendada para sofás de uso intenso.",
-      "priceAdjustment": 12,
-      "active": true
-    },
-    {
-      "id": "esp-d20",
-      "type": "espuma",
-      "name": "Espuma D20 (Soft)",
-      "description": "Mais macia, ideal para encostos.",
-      "priceAdjustment": -5,
+      "description": "Mais densa e firme, recomendada para uso intenso.",
+      "priceAdjustment": 150,
       "active": true
     }
   ]

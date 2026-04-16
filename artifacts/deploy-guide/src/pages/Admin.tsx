@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, Redirect } from "wouter";
-import { useUser, useClerk, Show } from "@clerk/react";
+import { useLocation } from "wouter";
+import { useUser, useClerk } from "@clerk/react";
 import {
   fetchProducts,
   fetchAdminStatus,
@@ -11,47 +11,29 @@ import {
   createMaterial,
   updateMaterial,
   deleteMaterial,
+  fetchAdminAlbums,
+  createAlbum,
+  updateAlbum,
+  deleteAlbum,
   fetchStats,
   fetchWhatsappEvents,
   fetchClients,
   uploadImage,
   type Product,
   type Material,
+  type Album,
+  type FabricSample,
+  type SizeOption,
   type Stats,
   type WhatsappEvent,
   type Client,
 } from "@/lib/api";
 
-const EMPTY_FORM = {
-  name: "", price: "", description: "", longDescription: "", image: "",
-  dimensions: "", colors: "", fabrics: "", disponibilidade: true, prazoEntrega: "",
-};
-
-type FormData = typeof EMPTY_FORM;
-
-function toProduct(f: FormData): Omit<Product, "id"> {
-  return {
-    name: f.name, price: Number(f.price), description: f.description,
-    longDescription: f.longDescription, image: f.image || "/images/placeholder.png",
-    dimensions: f.dimensions,
-    colors: f.colors.split(",").map((s) => s.trim()).filter(Boolean),
-    fabrics: f.fabrics.split(",").map((s) => s.trim()).filter(Boolean),
-    disponibilidade: f.disponibilidade, prazoEntrega: f.prazoEntrega,
-  };
-}
-
-function fromProduct(p: Product): FormData {
-  return {
-    name: p.name, price: String(p.price), description: p.description,
-    longDescription: p.longDescription, image: p.image, dimensions: p.dimensions,
-    colors: p.colors.join(", "), fabrics: p.fabrics.join(", "),
-    disponibilidade: p.disponibilidade, prazoEntrega: p.prazoEntrega,
-  };
-}
-
 const inputCls = "w-full bg-[#1a1208] border border-[#3d2e1e] rounded-lg px-3 py-2.5 text-white text-sm placeholder-[#5a4030] focus:outline-none focus:border-[#c9a96e] transition-colors";
 const cardCls = "bg-[#1a1208] border border-[#2d1f10] rounded-xl p-4";
 const goldBtn = "bg-[#c9a96e] hover:bg-[#b8954f] text-[#1a1208] font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors";
+const ghostBtn = "px-3 py-1.5 bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg text-sm text-[#c9a96e]";
+const dangerBtn = "px-3 py-1.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900/50 rounded-lg text-sm text-red-400";
 
 type Tab = "produtos" | "materiais" | "clientes" | "estatisticas" | "whatsapp";
 
@@ -64,7 +46,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function AdminInner() {
+function brl(v: number): string {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+export default function Admin() {
   const [, navigate] = useLocation();
   const { signOut } = useClerk();
   const { user } = useUser();
@@ -149,7 +135,7 @@ function AdminInner() {
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {msg && (
           <div className={`mb-6 px-4 py-3 rounded-lg text-sm ${msg.type === "ok" ? "bg-green-900/40 border border-green-700/50 text-green-400" : "bg-red-900/40 border border-red-700/50 text-red-400"}`}>
             {msg.text}
@@ -166,13 +152,33 @@ function AdminInner() {
   );
 }
 
-// ---------- PRODUTOS ----------
+// ======================================================================
+// PRODUTOS
+// ======================================================================
+
+interface ProdutoForm {
+  name: string;
+  description: string;
+  longDescription: string;
+  image: string;
+  dimensions: string;
+  prazoEntrega: string;
+  disponibilidade: boolean;
+  sizes: SizeOption[];
+}
+
+const EMPTY_PRODUTO: ProdutoForm = {
+  name: "", description: "", longDescription: "", image: "",
+  dimensions: "", prazoEntrega: "", disponibilidade: true,
+  sizes: [],
+};
+
 function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<FormData>(EMPTY_FORM);
+  const [form, setForm] = useState<ProdutoForm>(EMPTY_PRODUTO);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -184,16 +190,37 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     try { setProducts(await fetchProducts()); } finally { setLoading(false); }
   }
 
-  function openNew() { setEditId(null); setForm(EMPTY_FORM); setShowForm(true); }
-  function openEdit(p: Product) { setEditId(p.id); setForm(fromProduct(p)); setShowForm(true); }
+  function openNew() { setEditId(null); setForm(EMPTY_PRODUTO); setShowForm(true); }
+  function openEdit(p: Product) {
+    setEditId(p.id);
+    setForm({
+      name: p.name, description: p.description, longDescription: p.longDescription,
+      image: p.image, dimensions: p.dimensions, prazoEntrega: p.prazoEntrega,
+      disponibilidade: p.disponibilidade,
+      sizes: p.sizes && p.sizes.length ? p.sizes : [],
+    });
+    setShowForm(true);
+  }
   function closeForm() { setShowForm(false); setEditId(null); }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (form.sizes.length === 0) {
+      flash("err", "Adicione pelo menos uma metragem.");
+      return;
+    }
     setSaving(true);
     try {
-      if (editId) { await updateProduct(editId, toProduct(form)); flash("ok", "Produto atualizado!"); }
-      else { await createProduct(toProduct(form)); flash("ok", "Produto criado!"); }
+      const payload = {
+        ...form,
+        image: form.image || "/images/placeholder.png",
+        prazoEntrega: form.prazoEntrega || "A consultar",
+        colors: [],
+        fabrics: [],
+        price: Math.min(...form.sizes.map((s) => s.basePrice).filter((n) => n > 0)) || 0,
+      };
+      if (editId) { await updateProduct(editId, payload); flash("ok", "Produto atualizado!"); }
+      else { await createProduct(payload); flash("ok", "Produto criado!"); }
       closeForm(); await load();
     } catch (err: any) { flash("err", err.message ?? "Erro ao salvar"); }
     finally { setSaving(false); }
@@ -214,9 +241,29 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
   }
 
+  function updateSize(i: number, patch: Partial<SizeOption>) {
+    setForm((f) => {
+      const sizes = [...f.sizes];
+      sizes[i] = { ...sizes[i], ...patch };
+      return { ...f, sizes };
+    });
+  }
+  function addSize() {
+    setForm((f) => ({ ...f, sizes: [...f.sizes, { label: "", basePrice: 0 }] }));
+  }
+  function removeSize(i: number) {
+    setForm((f) => ({ ...f, sizes: f.sizes.filter((_, idx) => idx !== i) }));
+  }
+  function copyFrom(id: string) {
+    const p = products.find((x) => x.id === id);
+    if (!p) return;
+    setForm((f) => ({ ...f, sizes: p.sizes.map((s) => ({ ...s })) }));
+    flash("ok", `Metragens copiadas de "${p.name}".`);
+  }
+
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-semibold">Produtos</h1>
           <p className="text-[#a08060] text-sm mt-0.5">{products.length} modelo{products.length !== 1 ? "s" : ""} cadastrado{products.length !== 1 ? "s" : ""}</p>
@@ -239,13 +286,14 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                   </span>
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[#a08060] flex-wrap">
-                  <span className="text-[#c9a96e] font-semibold">{p.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
+                  <span className="text-[#c9a96e] font-semibold">A partir de {brl(p.price)}</span>
+                  <span>{p.sizes.length} metragem{p.sizes.length !== 1 ? "s" : ""}</span>
                   {p.prazoEntrega && <span>🚚 {p.prazoEntrega}</span>}
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <button onClick={() => openEdit(p)} className="px-3 py-1.5 bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg text-sm text-[#c9a96e]">Editar</button>
-                <button onClick={() => setDeleteId(p.id)} className="px-3 py-1.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900/50 rounded-lg text-sm text-red-400">Excluir</button>
+                <button onClick={() => openEdit(p)} className={ghostBtn}>Editar</button>
+                <button onClick={() => setDeleteId(p.id)} className={dangerBtn}>Excluir</button>
               </div>
             </div>
           ))}
@@ -259,8 +307,8 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
 
       {showForm && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-lg my-8 shadow-2xl">
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#2d1f10]">
+          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-2xl my-8 shadow-2xl">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#2d1f10] sticky top-0 bg-[#1a1208] z-10">
               <h2 className="font-semibold text-lg">{editId ? "Editar Produto" : "Novo Produto"}</h2>
               <button onClick={closeForm} className="text-[#a08060] hover:text-white text-xl leading-none">✕</button>
             </div>
@@ -268,35 +316,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
               <Field label="Nome do Modelo *">
                 <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
               </Field>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Preço (R$) *">
-                  <input className={inputCls} type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
-                </Field>
-                <Field label="Prazo de Entrega">
-                  <input className={inputCls} value={form.prazoEntrega} onChange={(e) => setForm({ ...form, prazoEntrega: e.target.value })} placeholder="Ex: 15-20 dias" />
-                </Field>
-              </div>
-              <Field label="Disponibilidade">
-                <div className="flex items-center gap-3 mt-1">
-                  <button type="button" onClick={() => setForm({ ...form, disponibilidade: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.disponibilidade ? "bg-green-900/50 border-green-700 text-green-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✓ Disponível</button>
-                  <button type="button" onClick={() => setForm({ ...form, disponibilidade: false })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${!form.disponibilidade ? "bg-red-900/50 border-red-700 text-red-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✗ Indisponível</button>
-                </div>
-              </Field>
-              <Field label="Descrição Curta">
-                <input className={inputCls} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-              </Field>
-              <Field label="Descrição Completa">
-                <textarea className={`${inputCls} resize-none`} rows={3} value={form.longDescription} onChange={(e) => setForm({ ...form, longDescription: e.target.value })} />
-              </Field>
-              <Field label="Dimensões">
-                <input className={inputCls} value={form.dimensions} onChange={(e) => setForm({ ...form, dimensions: e.target.value })} />
-              </Field>
-              <Field label="Cores (separadas por vírgula)">
-                <input className={inputCls} value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} />
-              </Field>
-              <Field label="Tecidos (separados por vírgula)">
-                <input className={inputCls} value={form.fabrics} onChange={(e) => setForm({ ...form, fabrics: e.target.value })} />
-              </Field>
+
               <Field label="Imagem">
                 <div className="flex gap-2">
                   <input className={inputCls} value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="URL ou faça upload" />
@@ -309,6 +329,79 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                   <img src={form.image} alt="preview" className="mt-2 w-full h-32 object-cover rounded-lg bg-[#261a0e]" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 )}
               </Field>
+
+              {/* SIZES TABLE */}
+              <Field label="Tabela de Metragens *">
+                <div className="space-y-2">
+                  {form.sizes.length === 0 && (
+                    <div className="text-center text-[#a08060] text-xs py-4 border border-dashed border-[#3d2e1e] rounded-lg">
+                      Nenhuma metragem adicionada ainda.
+                    </div>
+                  )}
+                  {form.sizes.map((s, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        className={inputCls}
+                        placeholder='Ex: "2,30 m"'
+                        value={s.label}
+                        onChange={(e) => updateSize(i, { label: e.target.value })}
+                      />
+                      <div className="relative flex-shrink-0 w-40">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                        <input
+                          className={`${inputCls} pl-9`}
+                          type="number" min="0" step="0.01"
+                          placeholder="0,00"
+                          value={s.basePrice || ""}
+                          onChange={(e) => updateSize(i, { basePrice: Number(e.target.value) })}
+                        />
+                      </div>
+                      <button type="button" onClick={() => removeSize(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
+                    </div>
+                  ))}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button type="button" onClick={addSize} className={ghostBtn}>+ Adicionar metragem</button>
+                    {products.length > 0 && (
+                      <select
+                        onChange={(e) => { if (e.target.value) { copyFrom(e.target.value); e.target.value = ""; } }}
+                        defaultValue=""
+                        className="bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg px-3 py-1.5 text-sm text-[#c9a96e] cursor-pointer"
+                      >
+                        <option value="">↓ Copiar metragens de outro modelo</option>
+                        {products.filter((p) => p.id !== editId && p.sizes.length > 0).map((p) => (
+                          <option key={p.id} value={p.id}>{p.name} ({p.sizes.length} metragens)</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#7a6040]">
+                    O preço final do sofá = <strong>preço da metragem</strong> + acréscimo do álbum escolhido + acréscimo da espuma escolhida.
+                  </p>
+                </div>
+              </Field>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Prazo de Entrega">
+                  <input className={inputCls} value={form.prazoEntrega} onChange={(e) => setForm({ ...form, prazoEntrega: e.target.value })} placeholder="Ex: 15-20 dias" />
+                </Field>
+                <Field label="Disponibilidade">
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setForm({ ...form, disponibilidade: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.disponibilidade ? "bg-green-900/50 border-green-700 text-green-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✓ Sim</button>
+                    <button type="button" onClick={() => setForm({ ...form, disponibilidade: false })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${!form.disponibilidade ? "bg-red-900/50 border-red-700 text-red-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✗ Não</button>
+                  </div>
+                </Field>
+              </div>
+
+              <Field label="Descrição Curta">
+                <input className={inputCls} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              </Field>
+              <Field label="Descrição Completa">
+                <textarea className={`${inputCls} resize-none`} rows={3} value={form.longDescription} onChange={(e) => setForm({ ...form, longDescription: e.target.value })} />
+              </Field>
+              <Field label="Dimensões (informativo)">
+                <input className={inputCls} value={form.dimensions} onChange={(e) => setForm({ ...form, dimensions: e.target.value })} placeholder="Ex: 2,30 x 0,95 x 0,90 m" />
+              </Field>
+
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={closeForm} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">Cancelar</button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#c9a96e] hover:bg-[#b8954f] disabled:opacity-50 text-[#1a1208] font-semibold rounded-lg text-sm">
@@ -338,116 +431,216 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
   );
 }
 
-// ---------- MATERIAIS ----------
-const EMPTY_MAT = { type: "tecido" as "tecido" | "espuma", name: "", description: "", priceAdjustment: 0, active: true };
+// ======================================================================
+// MATERIAIS (Álbuns + Espumas)
+// ======================================================================
 
 function MateriaisTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
-  const [items, setItems] = useState<Material[]>([]);
+  const [sub, setSub] = useState<"albuns" | "espumas">("albuns");
+  return (
+    <>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl font-semibold">Materiais</h1>
+          <p className="text-[#a08060] text-sm mt-0.5">
+            Organize os tecidos em álbuns (mesmo preço dentro do álbum) e cadastre as espumas.
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-1 mb-6 border-b border-[#2d1f10]">
+        <button
+          onClick={() => setSub("albuns")}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${sub === "albuns" ? "border-[#c9a96e] text-[#c9a96e]" : "border-transparent text-[#a08060] hover:text-white"}`}
+          data-testid="subtab-albuns"
+        >Álbuns de Tecidos</button>
+        <button
+          onClick={() => setSub("espumas")}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${sub === "espumas" ? "border-[#c9a96e] text-[#c9a96e]" : "border-transparent text-[#a08060] hover:text-white"}`}
+          data-testid="subtab-espumas"
+        >Espumas</button>
+      </div>
+      {sub === "albuns" ? <AlbunsSection flash={flash} /> : <EspumasSection flash={flash} />}
+    </>
+  );
+}
+
+// ---------- ÁLBUNS ----------
+interface AlbumForm {
+  name: string;
+  description: string;
+  surcharge: number;
+  fabrics: FabricSample[];
+  active: boolean;
+}
+const EMPTY_ALBUM: AlbumForm = { name: "", description: "", surcharge: 0, fabrics: [], active: true };
+
+function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
+  const [items, setItems] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState(EMPTY_MAT);
+  const [form, setForm] = useState<AlbumForm>(EMPTY_ALBUM);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
+  const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   useEffect(() => { load(); }, []);
   async function load() {
     setLoading(true);
-    try { setItems(await fetchAdminMaterials()); } finally { setLoading(false); }
+    try { setItems(await fetchAdminAlbums()); } finally { setLoading(false); }
   }
 
-  function openNew() { setEditId(null); setForm(EMPTY_MAT); setShowForm(true); }
-  function openEdit(m: Material) { setEditId(m.id); setForm({ type: m.type, name: m.name, description: m.description, priceAdjustment: m.priceAdjustment, active: m.active }); setShowForm(true); }
+  function openNew() { setEditId(null); setForm(EMPTY_ALBUM); setShowForm(true); }
+  function openEdit(a: Album) {
+    setEditId(a.id);
+    setForm({ name: a.name, description: a.description, surcharge: a.surcharge, fabrics: a.fabrics.map((f) => ({ ...f })), active: a.active });
+    setShowForm(true);
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     try {
-      if (editId) { await updateMaterial(editId, form); flash("ok", "Material atualizado!"); }
-      else { await createMaterial(form); flash("ok", "Material criado!"); }
+      if (editId) { await updateAlbum(editId, form); flash("ok", "Álbum atualizado!"); }
+      else { await createAlbum(form); flash("ok", "Álbum criado!"); }
       setShowForm(false); await load();
     } catch (err: any) { flash("err", err.message ?? "Erro"); }
     finally { setSaving(false); }
   }
 
   async function handleDelete(id: string) {
-    try { await deleteMaterial(id); flash("ok", "Excluído."); setDeleteId(null); await load(); }
+    try { await deleteAlbum(id); flash("ok", "Excluído."); setDeleteId(null); await load(); }
     catch (err: any) { flash("err", err.message ?? "Erro"); }
   }
 
-  const tecidos = items.filter((m) => m.type === "tecido");
-  const espumas = items.filter((m) => m.type === "espuma");
+  function updateFabric(i: number, patch: Partial<FabricSample>) {
+    setForm((f) => {
+      const fabrics = [...f.fabrics];
+      fabrics[i] = { ...fabrics[i], ...patch };
+      return { ...f, fabrics };
+    });
+  }
+  function addFabric() {
+    setForm((f) => ({ ...f, fabrics: [...f.fabrics, { id: "", name: "", imageUrl: "" }] }));
+  }
+  function removeFabric(i: number) {
+    setForm((f) => ({ ...f, fabrics: f.fabrics.filter((_, idx) => idx !== i) }));
+  }
+  async function handleFabricUpload(i: number, file: File) {
+    setUploadingIdx(i);
+    try {
+      const { url } = await uploadImage(file);
+      updateFabric(i, { imageUrl: url });
+    } catch (err: any) { flash("err", err.message ?? "Erro no upload"); }
+    finally { setUploadingIdx(null); }
+  }
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold">Tecidos &amp; Espumas</h1>
-          <p className="text-[#a08060] text-sm mt-0.5">{items.length} materiais. Ajuste de preço em % aplicado sobre o preço base.</p>
-        </div>
-        <button onClick={openNew} className={goldBtn} data-testid="button-new-material">+ Adicionar Material</button>
+      <div className="flex justify-end mb-4">
+        <button onClick={openNew} className={goldBtn} data-testid="button-new-album">+ Novo Álbum</button>
       </div>
 
       {loading ? (
         <div className="text-center text-[#a08060] py-16">Carregando...</div>
       ) : (
-        <div className="space-y-6">
-          {[
-            { title: "Tecidos", list: tecidos },
-            { title: "Espumas", list: espumas },
-          ].map((g) => (
-            <div key={g.title}>
-              <h2 className="text-sm uppercase tracking-wider text-[#a08060] mb-2 font-semibold">{g.title}</h2>
-              <div className="space-y-2">
-                {g.list.map((m) => (
-                  <div key={m.id} className={`${cardCls} flex items-center gap-4`}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-medium text-white">{m.name}</h3>
-                        {!m.active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/50 text-red-400 border border-red-800">inativo</span>}
-                        <span className={`text-xs px-2 py-0.5 rounded-full border ${m.priceAdjustment === 0 ? "bg-[#261a0e] text-[#a08060] border-[#3d2e1e]" : m.priceAdjustment > 0 ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-green-900/30 text-green-400 border-green-800/50"}`}>
-                          {m.priceAdjustment > 0 ? "+" : ""}{m.priceAdjustment}%
-                        </span>
-                      </div>
-                      <p className="text-sm text-[#a08060] mt-1 truncate">{m.description}</p>
-                    </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button onClick={() => openEdit(m)} className="px-3 py-1.5 bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg text-sm text-[#c9a96e]">Editar</button>
-                      <button onClick={() => setDeleteId(m.id)} className="px-3 py-1.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900/50 rounded-lg text-sm text-red-400">Excluir</button>
-                    </div>
+        <div className="space-y-3">
+          {items.map((a) => (
+            <div key={a.id} className={cardCls}>
+              <div className="flex items-start gap-4 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-medium text-white">{a.name}</h3>
+                    {!a.active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/50 text-red-400 border border-red-800">inativo</span>}
+                    <span className={`text-xs px-2 py-0.5 rounded-full border ${a.surcharge === 0 ? "bg-[#261a0e] text-[#a08060] border-[#3d2e1e]" : a.surcharge > 0 ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-green-900/30 text-green-400 border-green-800/50"}`}>
+                      {a.surcharge > 0 ? "+" : ""}{brl(a.surcharge)}
+                    </span>
                   </div>
-                ))}
-                {g.list.length === 0 && (
-                  <div className="text-center text-[#a08060] py-6 border border-dashed border-[#2d1f10] rounded-xl text-sm">Nenhum {g.title.toLowerCase()} cadastrado.</div>
-                )}
+                  {a.description && <p className="text-sm text-[#a08060] mt-1">{a.description}</p>}
+                  <p className="text-xs text-[#7a6040] mt-1">{a.fabrics.length} cor{a.fabrics.length !== 1 ? "es" : ""} no álbum</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openEdit(a)} className={ghostBtn}>Editar</button>
+                  <button onClick={() => setDeleteId(a.id)} className={dangerBtn}>Excluir</button>
+                </div>
               </div>
+              {a.fabrics.length > 0 && (
+                <div className="flex gap-2 mt-3 flex-wrap">
+                  {a.fabrics.map((f) => (
+                    <div key={f.id} className="flex items-center gap-2 bg-[#120d06] border border-[#2d1f10] rounded-lg px-2 py-1">
+                      {f.imageUrl ? (
+                        <img src={f.imageUrl} alt={f.name} className="w-6 h-6 rounded object-cover" />
+                      ) : (
+                        <div className="w-6 h-6 rounded bg-[#261a0e] border border-[#3d2e1e]" />
+                      )}
+                      <span className="text-xs text-[#d9c9a0]">{f.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
+          {items.length === 0 && (
+            <div className="text-center text-[#a08060] py-10 border border-dashed border-[#2d1f10] rounded-xl text-sm">
+              Nenhum álbum cadastrado.
+            </div>
+          )}
         </div>
       )}
 
       {showForm && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-lg my-8 shadow-2xl">
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#2d1f10]">
-              <h2 className="font-semibold text-lg">{editId ? "Editar Material" : "Novo Material"}</h2>
+          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-2xl my-8 shadow-2xl">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#2d1f10] sticky top-0 bg-[#1a1208] z-10">
+              <h2 className="font-semibold text-lg">{editId ? "Editar Álbum" : "Novo Álbum"}</h2>
               <button onClick={() => setShowForm(false)} className="text-[#a08060] hover:text-white text-xl leading-none">✕</button>
             </div>
             <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
-              <Field label="Tipo *">
-                <div className="flex gap-3">
-                  <button type="button" onClick={() => setForm({ ...form, type: "tecido" })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.type === "tecido" ? "bg-[#c9a96e] border-[#c9a96e] text-[#1a1208]" : "bg-[#120d06] border-[#2d1f10] text-[#a08060]"}`}>Tecido</button>
-                  <button type="button" onClick={() => setForm({ ...form, type: "espuma" })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.type === "espuma" ? "bg-[#c9a96e] border-[#c9a96e] text-[#1a1208]" : "bg-[#120d06] border-[#2d1f10] text-[#a08060]"}`}>Espuma</button>
-                </div>
-              </Field>
-              <Field label="Nome *">
-                <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+              <Field label="Nome do Álbum *">
+                <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="Ex: Álbum Lisboa" />
               </Field>
               <Field label="Descrição">
-                <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Ex: Linhos nacionais respiráveis" />
               </Field>
-              <Field label="Ajuste de Preço (%)">
-                <input className={inputCls} type="number" step="0.1" value={form.priceAdjustment} onChange={(e) => setForm({ ...form, priceAdjustment: Number(e.target.value) })} placeholder="0 = sem alteração; 10 = +10%; -5 = -5%" />
+              <Field label="Acréscimo ao preço (R$)">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                  <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.surcharge} onChange={(e) => setForm({ ...form, surcharge: Number(e.target.value) })} placeholder="0" />
+                </div>
+                <p className="text-xs text-[#7a6040] mt-1">Valor somado ao preço base da metragem quando o cliente escolhe este álbum.</p>
+              </Field>
+              <Field label="Cores/tecidos do álbum">
+                <div className="space-y-2">
+                  {form.fabrics.map((f, i) => (
+                    <div key={i} className="flex gap-2 items-center bg-[#120d06] border border-[#2d1f10] rounded-lg p-2">
+                      <div className="w-14 h-14 rounded bg-[#261a0e] border border-[#3d2e1e] flex-shrink-0 overflow-hidden">
+                        {f.imageUrl && <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover" />}
+                      </div>
+                      <input
+                        className={inputCls}
+                        placeholder="Nome da cor (ex: Linho Cru)"
+                        value={f.name}
+                        onChange={(e) => updateFabric(i, { name: e.target.value })}
+                      />
+                      <input
+                        ref={(el) => { fileRefs.current[i] = el; }}
+                        type="file" accept="image/*" className="hidden"
+                        onChange={(e) => e.target.files?.[0] && handleFabricUpload(i, e.target.files[0])}
+                      />
+                      <button
+                        type="button"
+                        disabled={uploadingIdx === i}
+                        onClick={() => fileRefs.current[i]?.click()}
+                        className={ghostBtn + " flex-shrink-0 disabled:opacity-50"}
+                      >
+                        {uploadingIdx === i ? "..." : "📷"}
+                      </button>
+                      <button type="button" onClick={() => removeFabric(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={addFabric} className={ghostBtn}>+ Adicionar cor</button>
+                </div>
               </Field>
               <Field label="Status">
                 <div className="flex gap-3">
@@ -457,7 +650,9 @@ function MateriaisTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }
               </Field>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">Cancelar</button>
-                <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#c9a96e] hover:bg-[#b8954f] disabled:opacity-50 text-[#1a1208] font-semibold rounded-lg text-sm">{saving ? "Salvando..." : "Salvar"}</button>
+                <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#c9a96e] hover:bg-[#b8954f] disabled:opacity-50 text-[#1a1208] font-semibold rounded-lg text-sm">
+                  {saving ? "Salvando..." : editId ? "Salvar" : "Criar"}
+                </button>
               </div>
             </form>
           </div>
@@ -467,8 +662,8 @@ function MateriaisTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }
       {deleteId && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
           <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-sm p-6">
-            <h3 className="font-semibold text-lg mb-2">Excluir Material</h3>
-            <p className="text-[#a08060] text-sm mb-6">Tem certeza que deseja excluir este material?</p>
+            <h3 className="font-semibold text-lg mb-2">Excluir Álbum</h3>
+            <p className="text-[#a08060] text-sm mb-6">Confirma a exclusão?</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">Cancelar</button>
               <button onClick={() => handleDelete(deleteId)} className="flex-1 py-2.5 bg-red-700 hover:bg-red-600 text-white font-semibold rounded-lg text-sm">Excluir</button>
@@ -480,127 +675,229 @@ function MateriaisTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }
   );
 }
 
-// ---------- CLIENTES ----------
-function ClientesTab() {
-  const [data, setData] = useState<{ totalCount: number; users: Client[] } | null>(null);
+// ---------- ESPUMAS ----------
+const EMPTY_ESP = { type: "espuma" as const, name: "", description: "", priceAdjustment: 0, active: true };
+
+function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
+  const [items, setItems] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState(EMPTY_ESP);
+  const [saving, setSaving] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchClients()
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+  useEffect(() => { load(); }, []);
+  async function load() {
+    setLoading(true);
+    try { setItems(await fetchAdminMaterials()); } finally { setLoading(false); }
+  }
 
-  if (loading) return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
-  if (error) return <div className="text-center text-red-400 py-16">{error}</div>;
-  if (!data) return null;
+  function openNew() { setEditId(null); setForm(EMPTY_ESP); setShowForm(true); }
+  function openEdit(m: Material) { setEditId(m.id); setForm({ type: "espuma", name: m.name, description: m.description, priceAdjustment: m.priceAdjustment, active: m.active }); setShowForm(true); }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editId) { await updateMaterial(editId, form); flash("ok", "Espuma atualizada!"); }
+      else { await createMaterial(form); flash("ok", "Espuma criada!"); }
+      setShowForm(false); await load();
+    } catch (err: any) { flash("err", err.message ?? "Erro"); }
+    finally { setSaving(false); }
+  }
+
+  async function handleDelete(id: string) {
+    try { await deleteMaterial(id); flash("ok", "Excluída."); setDeleteId(null); await load(); }
+    catch (err: any) { flash("err", err.message ?? "Erro"); }
+  }
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">Clientes Cadastrados</h1>
-        <p className="text-[#a08060] text-sm mt-0.5">{data.totalCount} {data.totalCount === 1 ? "cliente" : "clientes"} no total</p>
+      <div className="flex justify-end mb-4">
+        <button onClick={openNew} className={goldBtn} data-testid="button-new-espuma">+ Nova Espuma</button>
       </div>
-      <div className="space-y-2">
-        {data.users.map((u) => {
-          const name = `${u.firstName} ${u.lastName}`.trim() || "(sem nome)";
-          return (
-            <div key={u.id} className={`${cardCls} flex items-center gap-4`}>
-              {u.imageUrl ? (
-                <img src={u.imageUrl} alt={name} className="w-10 h-10 rounded-full object-cover" />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-[#261a0e] flex items-center justify-center text-[#c9a96e] font-semibold">
-                  {(u.email[0] || "?").toUpperCase()}
-                </div>
-              )}
+      {loading ? (
+        <div className="text-center text-[#a08060] py-16">Carregando...</div>
+      ) : (
+        <div className="space-y-2">
+          {items.map((m) => (
+            <div key={m.id} className={`${cardCls} flex items-center gap-4`}>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-white truncate">{name}</div>
-                <div className="text-sm text-[#a08060] truncate">{u.email}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-medium text-white">{m.name}</h3>
+                  {!m.active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/50 text-red-400 border border-red-800">inativo</span>}
+                  <span className={`text-xs px-2 py-0.5 rounded-full border ${m.priceAdjustment === 0 ? "bg-[#261a0e] text-[#a08060] border-[#3d2e1e]" : m.priceAdjustment > 0 ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-green-900/30 text-green-400 border-green-800/50"}`}>
+                    {m.priceAdjustment > 0 ? "+" : ""}{brl(m.priceAdjustment)}
+                  </span>
+                </div>
+                <p className="text-sm text-[#a08060] mt-1 truncate">{m.description}</p>
               </div>
-              <div className="text-right text-xs text-[#a08060] flex-shrink-0">
-                <div>Cadastro: {new Date(u.createdAt).toLocaleDateString("pt-BR")}</div>
-                {u.lastSignInAt && <div>Último login: {new Date(u.lastSignInAt).toLocaleDateString("pt-BR")}</div>}
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => openEdit(m)} className={ghostBtn}>Editar</button>
+                <button onClick={() => setDeleteId(m.id)} className={dangerBtn}>Excluir</button>
               </div>
             </div>
-          );
-        })}
-        {data.users.length === 0 && (
-          <div className="text-center text-[#a08060] py-16 border border-dashed border-[#2d1f10] rounded-xl">Nenhum cliente cadastrado ainda.</div>
-        )}
+          ))}
+          {items.length === 0 && (
+            <div className="text-center text-[#a08060] py-10 border border-dashed border-[#2d1f10] rounded-xl text-sm">Nenhuma espuma cadastrada.</div>
+          )}
+        </div>
+      )}
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-lg my-8 shadow-2xl">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#2d1f10]">
+              <h2 className="font-semibold text-lg">{editId ? "Editar Espuma" : "Nova Espuma"}</h2>
+              <button onClick={() => setShowForm(false)} className="text-[#a08060] hover:text-white text-xl leading-none">✕</button>
+            </div>
+            <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
+              <Field label="Nome *">
+                <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="Ex: Espuma D23" />
+              </Field>
+              <Field label="Descrição">
+                <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              </Field>
+              <Field label="Acréscimo ao preço (R$)">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                  <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.priceAdjustment} onChange={(e) => setForm({ ...form, priceAdjustment: Number(e.target.value) })} placeholder="0 = padrão" />
+                </div>
+                <p className="text-xs text-[#7a6040] mt-1">Valor somado (ou subtraído, se negativo) ao preço final.</p>
+              </Field>
+              <Field label="Status">
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setForm({ ...form, active: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.active ? "bg-green-900/50 border-green-700 text-green-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✓ Ativo</button>
+                  <button type="button" onClick={() => setForm({ ...form, active: false })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${!form.active ? "bg-red-900/50 border-red-700 text-red-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✗ Inativo</button>
+                </div>
+              </Field>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">Cancelar</button>
+                <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#c9a96e] hover:bg-[#b8954f] disabled:opacity-50 text-[#1a1208] font-semibold rounded-lg text-sm">
+                  {saving ? "Salvando..." : editId ? "Salvar" : "Criar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1a1208] border border-[#3d2e1e] rounded-2xl w-full max-w-sm p-6">
+            <h3 className="font-semibold text-lg mb-2">Excluir Espuma</h3>
+            <p className="text-[#a08060] text-sm mb-6">Confirma a exclusão?</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteId(null)} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">Cancelar</button>
+              <button onClick={() => handleDelete(deleteId)} className="flex-1 py-2.5 bg-red-700 hover:bg-red-600 text-white font-semibold rounded-lg text-sm">Excluir</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ======================================================================
+// CLIENTES
+// ======================================================================
+
+function ClientesTab() {
+  const [data, setData] = useState<{ totalCount: number; users: Client[] } | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetchClients().then(setData).catch(() => setData({ totalCount: 0, users: [] })).finally(() => setLoading(false));
+  }, []);
+  if (loading) return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
+  if (!data || data.users.length === 0) return (
+    <div className="text-center text-[#a08060] py-16 border border-dashed border-[#2d1f10] rounded-xl">
+      Nenhum cliente cadastrado ainda.
+    </div>
+  );
+  return (
+    <>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold">Clientes</h1>
+        <p className="text-[#a08060] text-sm mt-0.5">{data.totalCount} cadastrado{data.totalCount !== 1 ? "s" : ""}</p>
+      </div>
+      <div className="space-y-2">
+        {data.users.map((u) => (
+          <div key={u.id} className={`${cardCls} flex items-center gap-4`}>
+            {u.imageUrl ? <img src={u.imageUrl} alt="" className="w-10 h-10 rounded-full object-cover" /> : <div className="w-10 h-10 rounded-full bg-[#261a0e]" />}
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-white truncate">{[u.firstName, u.lastName].filter(Boolean).join(" ") || u.email}</p>
+              <p className="text-xs text-[#a08060] truncate">{u.email}</p>
+            </div>
+            <div className="text-right text-xs text-[#a08060]">
+              <p>Cadastro: {new Date(u.createdAt).toLocaleDateString("pt-BR")}</p>
+              {u.lastSignInAt && <p>Último acesso: {new Date(u.lastSignInAt).toLocaleDateString("pt-BR")}</p>}
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );
 }
 
-// ---------- ESTATÍSTICAS ----------
+// ======================================================================
+// ESTATÍSTICAS
+// ======================================================================
+
 function EstatisticasTab() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    fetchStats().then(setStats).catch(() => {}).finally(() => setLoading(false));
+    fetchStats().then(setStats).catch(() => setStats(null)).finally(() => setLoading(false));
   }, []);
-
   if (loading) return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
-  if (!stats) return <div className="text-center text-red-400 py-16">Não foi possível carregar estatísticas</div>;
+  if (!stats) return <div className="text-center text-red-400 py-16">Erro ao carregar estatísticas.</div>;
 
   const kpis = [
-    { label: "Visualizações totais", value: stats.totalViews },
-    { label: "Visualizações últimos 7 dias", value: stats.views7d },
-    { label: "Visualizações últimos 30 dias", value: stats.views30d },
-    { label: "Cliques no WhatsApp", value: stats.totalWhatsapp },
-    { label: "WhatsApp últimos 7 dias", value: stats.whatsapp7d },
-    { label: "WhatsApp últimos 30 dias", value: stats.whatsapp30d },
+    { label: "Visualizações (total)", value: stats.totalViews },
+    { label: "Visualizações (7 dias)", value: stats.views7d },
+    { label: "Visualizações (30 dias)", value: stats.views30d },
+    { label: "Cliques WhatsApp (total)", value: stats.totalWhatsapp },
+    { label: "Cliques WhatsApp (7d)", value: stats.whatsapp7d },
+    { label: "Cliques WhatsApp (30d)", value: stats.whatsapp30d },
   ];
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">Estatísticas</h1>
-        <p className="text-[#a08060] text-sm mt-0.5">Visão geral do tráfego e engajamento.</p>
-      </div>
-
+      <h1 className="text-xl font-semibold mb-6">Estatísticas</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
         {kpis.map((k) => (
           <div key={k.label} className={cardCls}>
-            <div className="text-2xl font-bold text-[#c9a96e]">{k.value}</div>
-            <div className="text-xs text-[#a08060] mt-1">{k.label}</div>
+            <p className="text-xs text-[#a08060] uppercase tracking-wider">{k.label}</p>
+            <p className="text-2xl font-semibold text-[#c9a96e] mt-1">{k.value}</p>
           </div>
         ))}
       </div>
-
       <div className="grid md:grid-cols-2 gap-4">
         <div className={cardCls}>
-          <h3 className="font-semibold mb-3 text-[#c9a96e]">Produtos mais vistos</h3>
-          {stats.topViewed.length === 0 ? (
-            <p className="text-sm text-[#a08060]">Sem dados ainda.</p>
-          ) : (
-            <ul className="space-y-2">
-              {stats.topViewed.map((p) => (
-                <li key={p.id} className="flex justify-between text-sm">
-                  <span className="text-white truncate pr-2">{p.name}</span>
-                  <span className="text-[#c9a96e] font-semibold flex-shrink-0">{p.count}</span>
+          <h3 className="font-semibold text-white mb-3">Produtos mais vistos</h3>
+          {stats.topViewed.length === 0 ? <p className="text-sm text-[#a08060]">Sem dados ainda.</p> : (
+            <ol className="space-y-2">
+              {stats.topViewed.map((t, i) => (
+                <li key={t.id} className="flex items-center justify-between text-sm">
+                  <span className="text-white"><span className="text-[#c9a96e] font-semibold mr-2">{i + 1}.</span>{t.name}</span>
+                  <span className="text-[#a08060]">{t.count} views</span>
                 </li>
               ))}
-            </ul>
+            </ol>
           )}
         </div>
-
         <div className={cardCls}>
-          <h3 className="font-semibold mb-3 text-[#c9a96e]">Produtos com mais cliques no WhatsApp</h3>
-          {stats.topWhatsapp.length === 0 ? (
-            <p className="text-sm text-[#a08060]">Sem dados ainda.</p>
-          ) : (
-            <ul className="space-y-2">
-              {stats.topWhatsapp.map((p) => (
-                <li key={p.id} className="flex justify-between text-sm">
-                  <span className="text-white truncate pr-2">{p.name}</span>
-                  <span className="text-[#c9a96e] font-semibold flex-shrink-0">{p.count}</span>
+          <h3 className="font-semibold text-white mb-3">Produtos com mais cliques no WhatsApp</h3>
+          {stats.topWhatsapp.length === 0 ? <p className="text-sm text-[#a08060]">Sem dados ainda.</p> : (
+            <ol className="space-y-2">
+              {stats.topWhatsapp.map((t, i) => (
+                <li key={t.id} className="flex items-center justify-between text-sm">
+                  <span className="text-white"><span className="text-[#c9a96e] font-semibold mr-2">{i + 1}.</span>{t.name}</span>
+                  <span className="text-[#a08060]">{t.count} cliques</span>
                 </li>
               ))}
-            </ul>
+            </ol>
           )}
         </div>
       </div>
@@ -608,53 +905,35 @@ function EstatisticasTab() {
   );
 }
 
-// ---------- WHATSAPP EVENTS ----------
+// ======================================================================
+// WHATSAPP
+// ======================================================================
+
 function WhatsappTab() {
   const [events, setEvents] = useState<WhatsappEvent[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    fetchWhatsappEvents().then(setEvents).catch(() => {}).finally(() => setLoading(false));
+    fetchWhatsappEvents().then(setEvents).catch(() => setEvents([])).finally(() => setLoading(false));
   }, []);
-
   if (loading) return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
-
   return (
     <>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">Cliques no WhatsApp</h1>
-        <p className="text-[#a08060] text-sm mt-0.5">Histórico recente de quem clicou para falar conosco. {events.length} {events.length === 1 ? "evento" : "eventos"}.</p>
-      </div>
-
-      <div className="space-y-2">
-        {events.map((e) => (
-          <div key={e.id} className={`${cardCls} flex items-center justify-between gap-4`}>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-white truncate">{e.productName || "Botão geral (rodapé)"}</div>
-              {e.productId && <div className="text-xs text-[#a08060] truncate">ID: {e.productId}</div>}
+      <h1 className="text-xl font-semibold mb-6">Histórico de Cliques no WhatsApp</h1>
+      {events.length === 0 ? (
+        <div className="text-center text-[#a08060] py-16 border border-dashed border-[#2d1f10] rounded-xl">Nenhum clique registrado ainda.</div>
+      ) : (
+        <div className="space-y-2">
+          {events.map((e) => (
+            <div key={e.id} className={`${cardCls} flex items-center justify-between gap-4`}>
+              <div>
+                <p className="font-medium text-white">{e.productName || "Botão flutuante (sem produto)"}</p>
+                {e.productId && <p className="text-xs text-[#a08060]">{e.productId}</p>}
+              </div>
+              <p className="text-sm text-[#a08060] whitespace-nowrap">{new Date(e.ts).toLocaleString("pt-BR")}</p>
             </div>
-            <div className="text-xs text-[#a08060] flex-shrink-0 text-right">
-              {new Date(e.ts).toLocaleString("pt-BR")}
-            </div>
-          </div>
-        ))}
-        {events.length === 0 && (
-          <div className="text-center text-[#a08060] py-16 border border-dashed border-[#2d1f10] rounded-xl">Nenhum clique registrado ainda.</div>
-        )}
-      </div>
-    </>
-  );
-}
-
-export default function Admin() {
-  return (
-    <>
-      <Show when="signed-in">
-        <AdminInner />
-      </Show>
-      <Show when="signed-out">
-        <Redirect to="/sign-in" />
-      </Show>
+          ))}
+        </div>
+      )}
     </>
   );
 }

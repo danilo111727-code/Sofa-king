@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Sofá Teste Retrátil",
+    "price": 2000,
+    "description": "Sofá retrátil de teste",
+    "longDescription": "",
+    "image": "/images/placeholder.png",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "2,00 m",
+        "basePrice": 2000
+      },
+      {
+        "label": "2,30 m",
+        "basePrice": 2500
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 3000
+      }
+    ],
+    "id": "sofa-teste-retratil"
+  }
+]

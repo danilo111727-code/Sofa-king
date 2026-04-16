@@ -5,6 +5,11 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = join(__dirname, "../../data/products.json");
 
+export interface SizeOption {
+  label: string;
+  basePrice: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -17,12 +22,34 @@ export interface Product {
   fabrics: string[];
   disponibilidade: boolean;
   prazoEntrega: string;
+  sizes: SizeOption[];
+}
+
+function normalizeSizes(sizes: any): SizeOption[] {
+  if (!Array.isArray(sizes)) return [];
+  return sizes
+    .map((s) => ({
+      label: String(s?.label ?? "").trim(),
+      basePrice: Number(s?.basePrice) || 0,
+    }))
+    .filter((s) => s.label);
+}
+
+function derivedPrice(sizes: SizeOption[], fallback: number): number {
+  if (sizes.length === 0) return fallback;
+  return Math.min(...sizes.map((s) => s.basePrice).filter((n) => n > 0));
 }
 
 function load(): Product[] {
   if (!existsSync(DATA_FILE)) return [];
   try {
-    return JSON.parse(readFileSync(DATA_FILE, "utf-8")) as Product[];
+    const raw = JSON.parse(readFileSync(DATA_FILE, "utf-8")) as any[];
+    return raw.map((p) => ({
+      ...p,
+      sizes: normalizeSizes(p.sizes),
+      colors: Array.isArray(p.colors) ? p.colors : [],
+      fabrics: Array.isArray(p.fabrics) ? p.fabrics : [],
+    })) as Product[];
   } catch {
     return [];
   }
@@ -48,10 +75,14 @@ export function create(data: Omit<Product, "id">): Product {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  const unique = products.some((p) => p.id === id)
-    ? `${id}-${Date.now()}`
-    : id;
-  const product: Product = { id: unique, ...data };
+  const unique = products.some((p) => p.id === id) ? `${id}-${Date.now()}` : id;
+  const sizes = normalizeSizes(data.sizes);
+  const product: Product = {
+    ...data,
+    id: unique,
+    sizes,
+    price: derivedPrice(sizes, Number(data.price) || 0),
+  };
   products.push(product);
   save(products);
   return product;
@@ -61,9 +92,12 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
   const products = load();
   const idx = products.findIndex((p) => p.id === id);
   if (idx === -1) return null;
-  products[idx] = { ...products[idx], ...data };
+  const merged = { ...products[idx], ...data };
+  if (data.sizes !== undefined) merged.sizes = normalizeSizes(data.sizes);
+  merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0);
+  products[idx] = merged;
   save(products);
-  return products[idx];
+  return merged;
 }
 
 export function remove(id: string): boolean {

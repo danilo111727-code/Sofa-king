@@ -1,0 +1,28 @@
+{
+  "albums": [
+    {
+      "id": "album-lisboa",
+      "name": "Álbum Lisboa",
+      "description": "Linhos nacionais — toque natural e respirável.",
+      "surcharge": 0,
+      "fabrics": [
+        {
+          "id": "linho-cru",
+          "name": "Linho Cru",
+          "imageUrl": ""
+        },
+        {
+          "id": "linho-grafite",
+          "name": "Linho Grafite",
+          "imageUrl": ""
+        },
+        {
+          "id": "linho-marinho",
+          "name": "Linho Marinho",
+          "imageUrl": ""
+        }
+      ],
+      "active": true
+    }
+  ]
+}

@@ -1,3 +1,8 @@
+export interface SizeOption {
+  label: string;
+  basePrice: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -10,14 +15,30 @@ export interface Product {
   fabrics: string[];
   disponibilidade: boolean;
   prazoEntrega: string;
+  sizes: SizeOption[];
 }
 
 export interface Material {
   id: string;
-  type: "tecido" | "espuma";
+  type: "espuma";
   name: string;
   description: string;
   priceAdjustment: number;
+  active: boolean;
+}
+
+export interface FabricSample {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+export interface Album {
+  id: string;
+  name: string;
+  description: string;
+  surcharge: number;
+  fabrics: FabricSample[];
   active: boolean;
 }
 
@@ -100,7 +121,7 @@ export function trackWhatsapp(data: { productId?: string; productName?: string }
   fetch(`${BASE}/events/whatsapp`, { method: "POST", headers: jsonHeaders, body: JSON.stringify(data) }).catch(() => {});
 }
 
-// --- Materials ---
+// --- Materials (espumas) ---
 export async function fetchMaterials(): Promise<Material[]> {
   const res = await fetch(`${BASE}/materials`);
   if (!res.ok) throw new Error("Erro ao carregar materiais");
@@ -132,6 +153,36 @@ export async function updateMaterial(id: string, data: Partial<Omit<Material, "i
 export async function deleteMaterial(id: string): Promise<void> {
   const res = await fetch(`${BASE}/admin/materials/${id}`, { method: "DELETE", credentials: "include" });
   if (!res.ok) throw new Error("Erro ao excluir material");
+}
+
+// --- Albums ---
+export async function fetchAlbums(): Promise<Album[]> {
+  const res = await fetch(`${BASE}/albums`);
+  if (!res.ok) throw new Error("Erro ao carregar álbuns");
+  return res.json();
+}
+export async function fetchAdminAlbums(): Promise<Album[]> {
+  const res = await fetch(`${BASE}/admin/albums`, { credentials: "include" });
+  if (!res.ok) throw new Error("Erro ao carregar álbuns");
+  return res.json();
+}
+export async function createAlbum(data: Omit<Album, "id">): Promise<Album> {
+  const res = await fetch(`${BASE}/admin/albums`, {
+    method: "POST", headers: jsonHeaders, credentials: "include", body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Erro ao criar álbum");
+  return res.json();
+}
+export async function updateAlbum(id: string, data: Partial<Omit<Album, "id">>): Promise<Album> {
+  const res = await fetch(`${BASE}/admin/albums/${id}`, {
+    method: "PUT", headers: jsonHeaders, credentials: "include", body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Erro ao atualizar álbum");
+  return res.json();
+}
+export async function deleteAlbum(id: string): Promise<void> {
+  const res = await fetch(`${BASE}/admin/albums/${id}`, { method: "DELETE", credentials: "include" });
+  if (!res.ok) throw new Error("Erro ao excluir álbum");
 }
 
 // --- Stats / WhatsApp / Clients ---

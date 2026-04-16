@@ -42,14 +42,14 @@ router.get("/products/:id", (req, res) => {
 });
 
 router.post("/products", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega } = req.body;
-  if (!name || price == null) {
-    res.status(400).json({ error: "Nome e preço são obrigatórios" });
+  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
+  if (!name) {
+    res.status(400).json({ error: "Nome é obrigatório" });
     return;
   }
   const product = store.create({
     name,
-    price: Number(price),
+    price: Number(price) || 0,
     description: description ?? "",
     longDescription: longDescription ?? "",
     image: image ?? "/images/placeholder.png",
@@ -58,12 +58,13 @@ router.post("/products", requireAdmin, (req, res) => {
     fabrics: Array.isArray(fabrics) ? fabrics : (fabrics ? String(fabrics).split(",").map((s: string) => s.trim()) : []),
     disponibilidade: disponibilidade !== false && disponibilidade !== "false",
     prazoEntrega: prazoEntrega ?? "A consultar",
+    sizes: Array.isArray(sizes) ? sizes : [],
   });
   res.status(201).json(product);
 });
 
 router.put("/products/:id", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega } = req.body;
+  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
     ...(price !== undefined && { price: Number(price) }),
@@ -75,6 +76,7 @@ router.put("/products/:id", requireAdmin, (req, res) => {
     ...(fabrics !== undefined && { fabrics: Array.isArray(fabrics) ? fabrics : String(fabrics).split(",").map((s: string) => s.trim()) }),
     ...(disponibilidade !== undefined && { disponibilidade: disponibilidade !== false && disponibilidade !== "false" }),
     ...(prazoEntrega !== undefined && { prazoEntrega }),
+    ...(sizes !== undefined && { sizes: Array.isArray(sizes) ? sizes : [] }),
   });
   if (!updated) {
     res.status(404).json({ error: "Produto não encontrado" });
