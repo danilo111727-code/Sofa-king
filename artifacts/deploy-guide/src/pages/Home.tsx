@@ -39,9 +39,12 @@ export default function Home() {
                 <Star className="w-4 h-4 text-accent fill-accent" />
                 <span className="text-sm font-medium tracking-wide uppercase">Nova Coleção Jardins</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.1] mb-6" data-testid="text-hero-title">
-                Sofa King
+              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.1] mb-3" data-testid="text-hero-title">
+                Sofá King
               </h1>
+              <p className="text-sm md:text-base tracking-[0.3em] uppercase text-accent mb-6 font-medium" data-testid="text-hero-tagline">
+                Estofados planejados
+              </p>
               <p className="text-xl md:text-2xl font-light text-white/90 mb-2" data-testid="text-hero-subtitle">
                 Escolha seu modelo.
               </p>

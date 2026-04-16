@@ -3,9 +3,10 @@ export function Footer() {
     <footer className="bg-primary text-primary-foreground mt-24 py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="space-y-4">
-          <h3 className="font-serif text-2xl font-bold">Sofa King</h3>
-          <p className="text-primary-foreground/80 text-sm max-w-xs leading-relaxed">
-            Sofás premium para lares modernos. Design brasileiro, conforto absoluto e qualidade inigualável no coração dos Jardins.
+          <h3 className="font-serif text-2xl font-bold">SOFÁ KING</h3>
+          <p className="text-xs tracking-[0.25em] uppercase text-accent font-medium -mt-2">Estofados planejados</p>
+          <p className="text-primary-foreground/80 text-sm max-w-xs leading-relaxed pt-2">
+            Sofás sob medida com design brasileiro contemporâneo, formas orgânicas e conforto absoluto para o seu lar.
           </p>
         </div>
         <div>

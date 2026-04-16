@@ -11,8 +11,12 @@ export function Navbar() {
           <Button variant="ghost" size="icon" className="md:hidden" data-testid="button-mobile-menu">
             <Menu className="h-5 w-5" />
           </Button>
-          <Link href="/" className="flex items-center gap-2" data-testid="link-home-logo">
-            <img src={logoImg} alt="Sofá King" className="h-12 w-auto object-contain" />
+          <Link href="/" className="flex items-center gap-3" data-testid="link-home-logo">
+            <img src={logoImg} alt="Sofá King" className="h-11 w-auto object-contain" />
+            <div className="hidden sm:flex flex-col leading-none">
+              <span className="font-serif text-xl font-bold tracking-wide text-foreground">SOFÁ KING</span>
+              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-0.5">Estofados planejados</span>
+            </div>
           </Link>
         </div>
 
