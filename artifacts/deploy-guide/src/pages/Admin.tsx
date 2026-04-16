@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Redirect } from "wouter";
+import { useUser, useClerk, Show } from "@clerk/react";
 import {
   fetchProducts,
+  fetchAdminStatus,
   createProduct,
   updateProduct,
   deleteProduct,
-  adminLogout,
-  verifyToken,
   type Product,
 } from "@/lib/api";
 
@@ -55,8 +55,10 @@ function fromProduct(p: Product): FormData {
   };
 }
 
-export default function Admin() {
+function AdminInner() {
   const [, navigate] = useLocation();
+  const { signOut } = useClerk();
+  const { user } = useUser();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -65,11 +67,13 @@ export default function Admin() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    verifyToken().then((valid) => {
-      if (!valid) navigate("/admin/login");
-      else loadProducts();
+    fetchAdminStatus().then((s) => {
+      setIsAdmin(s.isAdmin);
+      if (s.isAdmin) loadProducts();
+      else setLoading(false);
     });
   }, []);
 
@@ -136,8 +140,34 @@ export default function Admin() {
   }
 
   async function handleLogout() {
-    await adminLogout();
-    navigate("/");
+    await signOut({ redirectUrl: "/" });
+  }
+
+  if (isAdmin === false) {
+    const email = user?.primaryEmailAddress?.emailAddress;
+    return (
+      <div className="min-h-screen bg-[#120d06] text-white flex items-center justify-center px-4">
+        <div className="max-w-md text-center bg-[#1a1208] border border-[#3d2e1e] rounded-2xl p-8">
+          <div className="text-[#c9a96e] text-4xl mb-3">🔒</div>
+          <h1 className="text-xl font-semibold mb-2">Acesso restrito</h1>
+          <p className="text-[#a08060] text-sm mb-6">
+            Você está logado como <strong className="text-white">{email}</strong>, mas esta conta não tem permissão para acessar o painel administrativo.
+          </p>
+          <div className="flex gap-3">
+            <button onClick={() => navigate("/")} className="flex-1 py-2.5 border border-[#3d2e1e] rounded-lg text-[#a08060] hover:text-white text-sm">
+              Voltar ao site
+            </button>
+            <button onClick={handleLogout} className="flex-1 py-2.5 bg-[#c9a96e] hover:bg-[#b8954f] text-[#1a1208] font-semibold rounded-lg text-sm">
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAdmin === null) {
+    return <div className="min-h-screen bg-[#120d06] text-[#a08060] flex items-center justify-center">Verificando acesso...</div>;
   }
 
   function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -338,5 +368,18 @@ export default function Admin() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Admin() {
+  return (
+    <>
+      <Show when="signed-in">
+        <AdminInner />
+      </Show>
+      <Show when="signed-out">
+        <Redirect to="/sign-in" />
+      </Show>
+    </>
   );
 }

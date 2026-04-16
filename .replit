@@ -30,3 +30,4 @@ externalPort = 80
 
 [userenv.shared]
 ADMIN_PASSWORD = "SofaKing@2024"
+ADMIN_EMAILS = "danilo111727@gmail.com"

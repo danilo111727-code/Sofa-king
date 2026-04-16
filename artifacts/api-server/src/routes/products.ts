@@ -1,16 +1,31 @@
 import { Router } from "express";
+import { clerkClient, getAuth } from "@clerk/express";
 import * as store from "../lib/productStore.js";
-import { verify } from "../lib/authStore.js";
 
 const router = Router();
 
-function requireAuth(req: any, res: any, next: any) {
-  const token = req.headers["x-admin-token"] as string | undefined;
-  if (!verify(token)) {
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
+  .split(",")
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
+
+async function requireAdmin(req: any, res: any, next: any) {
+  try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      res.status(401).json({ error: "Não autenticado" });
+      return;
+    }
+    const user = await clerkClient.users.getUser(userId);
+    const emails = user.emailAddresses.map((e) => e.emailAddress.toLowerCase());
+    if (!emails.some((e) => ADMIN_EMAILS.includes(e))) {
+      res.status(403).json({ error: "Acesso restrito ao administrador" });
+      return;
+    }
+    next();
+  } catch (err) {
     res.status(401).json({ error: "Não autorizado" });
-    return;
   }
-  next();
 }
 
 router.get("/products", (_req, res) => {
@@ -26,7 +41,7 @@ router.get("/products/:id", (req, res) => {
   res.json(product);
 });
 
-router.post("/products", requireAuth, (req, res) => {
+router.post("/products", requireAdmin, (req, res) => {
   const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega } = req.body;
   if (!name || price == null) {
     res.status(400).json({ error: "Nome e preço são obrigatórios" });
@@ -47,7 +62,7 @@ router.post("/products", requireAuth, (req, res) => {
   res.status(201).json(product);
 });
 
-router.put("/products/:id", requireAuth, (req, res) => {
+router.put("/products/:id", requireAdmin, (req, res) => {
   const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
@@ -68,13 +83,29 @@ router.put("/products/:id", requireAuth, (req, res) => {
   res.json(updated);
 });
 
-router.delete("/products/:id", requireAuth, (req, res) => {
+router.delete("/products/:id", requireAdmin, (req, res) => {
   const ok = store.remove(req.params.id);
   if (!ok) {
     res.status(404).json({ error: "Produto não encontrado" });
     return;
   }
   res.json({ success: true });
+});
+
+router.get("/admin/me", async (req, res) => {
+  try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      res.json({ isAdmin: false, signedIn: false });
+      return;
+    }
+    const user = await clerkClient.users.getUser(userId);
+    const emails = user.emailAddresses.map((e) => e.emailAddress.toLowerCase());
+    const isAdmin = emails.some((e) => ADMIN_EMAILS.includes(e));
+    res.json({ isAdmin, signedIn: true, email: user.emailAddresses[0]?.emailAddress });
+  } catch {
+    res.json({ isAdmin: false, signedIn: false });
+  }
 });
 
 export default router;
