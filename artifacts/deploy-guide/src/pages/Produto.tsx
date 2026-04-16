@@ -208,11 +208,7 @@ export default function Produto() {
                 >
                   {product.disponibilidade ? "Adicionar ao carrinho" : "Produto indisponível"}
                 </Button>
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center p-4 rounded-lg bg-secondary/20">
-                    <Truck className="w-5 h-5 text-primary" />
-                    <span>Frete grátis SP</span>
-                  </div>
+                <div className="pt-4">
                   <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center p-4 rounded-lg bg-secondary/20">
                     <ShieldCheck className="w-5 h-5 text-primary" />
                     <span>5 anos de garantia</span>
