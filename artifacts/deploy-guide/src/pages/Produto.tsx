@@ -359,8 +359,8 @@ export default function Produto() {
                     })}
                   </div>
                   {selectedFoam && (selectedFoam.weightSupport || selectedFoam.comfortLevel || selectedFoam.useIndication || selectedFoam.longTermBehavior) && (
-                    <div className="mt-3 rounded-lg border border-border bg-secondary/20 p-3 text-xs" data-testid="foam-specs">
-                      <div className="font-semibold text-foreground mb-2">Ficha técnica — {selectedFoam.name}</div>
+                    <div key={selectedFoam.id} className="mt-3 rounded-lg border-2 border-primary bg-primary/10 p-3 text-xs animate-in fade-in duration-300" data-testid="foam-specs">
+                      <div className="font-semibold text-primary mb-2">Ficha técnica — {selectedFoam.name}</div>
                       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                         {selectedFoam.weightSupport && (
                           <div className="flex gap-1.5">
