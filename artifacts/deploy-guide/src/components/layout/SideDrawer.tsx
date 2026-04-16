@@ -9,11 +9,11 @@ type MenuItem =
   | { label: string; children: { label: string; href: string }[] };
 
 const menu: MenuItem[] = [
+  { label: "⭐ BESTSELLERS", href: "/?destaque=1#produtos" },
+  { label: "TODOS OS MODELOS", href: "/#produtos" },
   {
     label: "SOFÁS",
     children: [
-      { label: "⭐ Bestsellers", href: "/?destaque=1#produtos" },
-      { label: "Exibir todos", href: "/#produtos" },
       { label: "Sofá Retrátil", href: "/?categoria=retratil#produtos" },
       { label: "Sofá-cama", href: "/?categoria=cama#produtos" },
       { label: "Sofá de Canto", href: "/?categoria=canto#produtos" },

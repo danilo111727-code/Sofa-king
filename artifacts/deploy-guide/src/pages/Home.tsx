@@ -41,7 +41,8 @@ export default function Home() {
     let avail = products.filter((p) => p.disponibilidade);
     if (onlyBestsellers) avail = avail.filter((p) => p.bestseller);
     if (activeCategory) avail = avail.filter((p) => p.category === activeCategory);
-    return avail;
+    // Newest first (products.json appends new items at the end).
+    return [...avail].reverse();
   }, [products, activeCategory, onlyBestsellers]);
 
   useEffect(() => {

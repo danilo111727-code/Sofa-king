@@ -166,7 +166,8 @@
         "basePrice": 0
       }
     ],
-    "id": "retratil-istambul"
+    "id": "retratil-istambul",
+    "bestseller": true
   },
   {
     "name": "Detroit",
@@ -304,7 +305,8 @@
         "basePrice": 0
       }
     ],
-    "id": "retratil-brooklyn"
+    "id": "retratil-brooklyn",
+    "bestseller": true
   },
   {
     "name": "Londres",
@@ -994,7 +996,8 @@
         "basePrice": 0
       }
     ],
-    "id": "canto-oslo-living"
+    "id": "canto-oslo-living",
+    "bestseller": true
   },
   {
     "name": "Aura",
@@ -1063,7 +1066,8 @@
         "basePrice": 0
       }
     ],
-    "id": "organicos-aura"
+    "id": "organicos-aura",
+    "bestseller": true
   },
   {
     "name": "Bloom",
@@ -2098,7 +2102,8 @@
         "basePrice": 0
       }
     ],
-    "id": "chaise-malibu"
+    "id": "chaise-malibu",
+    "bestseller": true
   },
   {
     "name": "Flow",
