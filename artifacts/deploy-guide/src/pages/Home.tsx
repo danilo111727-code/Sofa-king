@@ -92,6 +92,90 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Horizontal scroll row of models */}
+        <section className="py-14 md:py-20 bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between mb-6 md:mb-8">
+              <div>
+                <p className="text-xs tracking-[0.4em] uppercase text-accent mb-2 font-semibold">Nossos modelos</p>
+                <h2 className="text-2xl md:text-4xl font-serif font-bold text-foreground">
+                  Explore o catálogo
+                </h2>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="flex gap-4 overflow-hidden">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="shrink-0 w-[260px] md:w-[300px] h-[280px] bg-muted/30 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div
+                className="flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 [scrollbar-width:thin]"
+                data-testid="scroll-row-products"
+              >
+                {products
+                  .filter((p) => p.disponibilidade)
+                  .slice()
+                  .reverse()
+                  .map((product) => (
+                    <Link
+                      key={product.id}
+                      href={`/produto/${product.id}`}
+                      className="group shrink-0 w-[220px] sm:w-[260px] md:w-[300px] snap-start"
+                      data-testid={`scroll-card-${product.id}`}
+                    >
+                      <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-lg">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt={displayName(product.name, product.category)}
+                              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 text-xs">
+                              Sem foto
+                            </div>
+                          )}
+                          {product.bestseller && (
+                            <span className="absolute top-2 left-2 text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                              ⭐ Bestseller
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-base font-serif font-bold text-foreground group-hover:text-primary transition-colors leading-tight mb-1 line-clamp-2 min-h-[2.6rem]">
+                            {displayName(product.name, product.category)}
+                          </h3>
+                          {product.price > 0 ? (
+                            <span className="text-sm font-medium text-accent">
+                              R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">Consultar valor</span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            )}
+
+            <div className="flex justify-center mt-8">
+              <Link
+                href="/modelos"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-md bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+                data-testid="button-view-all"
+              >
+                Visualizar todos <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {false && (
         <section id="produtos" className="py-24 bg-background scroll-mt-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
