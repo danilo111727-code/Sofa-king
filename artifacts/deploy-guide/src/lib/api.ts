@@ -27,6 +27,7 @@ export interface Material {
   description: string;
   priceAdjustment: number;
   active: boolean;
+  imageUrl?: string;
 }
 
 export interface FabricSample {

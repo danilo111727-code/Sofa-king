@@ -300,20 +300,25 @@ export default function Produto() {
                   <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-foreground">
                     3. Escolha a espuma
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {foams.map((f, i) => (
                       <button
                         key={f.id}
                         onClick={() => setFoamIdx(i)}
-                        className={`px-4 py-2.5 rounded-md text-sm font-medium border transition-all text-left ${
+                        className={`p-2 rounded-md text-sm font-medium border transition-all text-left flex flex-col ${
                           foamIdx === i
                             ? "bg-primary text-primary-foreground border-primary"
                             : "bg-transparent text-foreground border-border hover:border-primary/50"
                         }`}
                         data-testid={`button-foam-${f.id}`}
                       >
-                        <div className="font-semibold">{f.name}</div>
-                        <div className="text-xs opacity-80">
+                        {f.imageUrl && (
+                          <div className="w-full aspect-[4/3] rounded bg-white/60 overflow-hidden mb-2 border border-border/50">
+                            <img src={f.imageUrl} alt={f.name} className="w-full h-full object-contain" loading="lazy" />
+                          </div>
+                        )}
+                        <div className="font-semibold leading-tight">{f.name}</div>
+                        <div className="text-xs opacity-80 mt-0.5">
                           {f.priceAdjustment > 0 ? `+${brl(f.priceAdjustment)}` : f.priceAdjustment < 0 ? brl(f.priceAdjustment) : "incluso"}
                         </div>
                       </button>

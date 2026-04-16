@@ -14,6 +14,7 @@ export interface Material {
   description: string;
   priceAdjustment: number;
   active: boolean;
+  imageUrl?: string;
 }
 
 interface File {
