@@ -227,12 +227,13 @@ interface ProdutoForm {
   dimensions: string;
   prazoEntrega: string;
   disponibilidade: boolean;
+  bestseller: boolean;
   sizes: SizeOption[];
 }
 
 const EMPTY_PRODUTO: ProdutoForm = {
   name: "", category: "", description: "", longDescription: "", images: [],
-  dimensions: "", prazoEntrega: "", disponibilidade: true,
+  dimensions: "", prazoEntrega: "", disponibilidade: true, bestseller: false,
   sizes: [],
 };
 
@@ -256,7 +257,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
   function openNew() { setEditId(null); setForm(EMPTY_PRODUTO); setShowForm(true); }
   function openEdit(p: Product) {
     setEditId(p.id);
-    const validCats: ProductCategory[] = ["retratil", "canto", "modulos", ""];
+    const validCats: ProductCategory[] = CATEGORIES.map((c) => c.id);
     const cat: ProductCategory = validCats.includes(p.category as ProductCategory) ? (p.category as ProductCategory) : "";
     setForm({
       name: p.name,
@@ -265,6 +266,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
       images: p.images && p.images.length ? [...p.images] : (p.image ? [p.image] : []),
       dimensions: p.dimensions, prazoEntrega: p.prazoEntrega,
       disponibilidade: p.disponibilidade,
+      bestseller: Boolean((p as any).bestseller),
       sizes: p.sizes && p.sizes.length ? p.sizes : [],
     });
     setShowForm(true);
@@ -289,6 +291,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
         dimensions: form.dimensions,
         prazoEntrega: form.prazoEntrega || "A consultar",
         disponibilidade: form.disponibilidade,
+        bestseller: form.bestseller,
         sizes: form.sizes,
         colors: [],
         fabrics: [],
@@ -593,6 +596,12 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setForm({ ...form, disponibilidade: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.disponibilidade ? "bg-green-900/50 border-green-700 text-green-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✓ Sim</button>
                     <button type="button" onClick={() => setForm({ ...form, disponibilidade: false })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${!form.disponibilidade ? "bg-red-900/50 border-red-700 text-red-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✗ Não</button>
+                  </div>
+                </Field>
+                <Field label="Bestseller (aparece na faixa de destaque)">
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setForm({ ...form, bestseller: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.bestseller ? "bg-yellow-900/50 border-yellow-600 text-yellow-300" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`} data-testid="button-bestseller-yes">⭐ Sim</button>
+                    <button type="button" onClick={() => setForm({ ...form, bestseller: false })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${!form.bestseller ? "bg-[#1a1208] border-[#3d2b18] text-[#c9a96e]" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`} data-testid="button-bestseller-no">Não</button>
                   </div>
                 </Field>
               </div>

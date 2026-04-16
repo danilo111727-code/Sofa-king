@@ -50,6 +50,7 @@ export interface Product {
   disponibilidade: boolean;
   prazoEntrega: string;
   sizes: SizeOption[];
+  bestseller: boolean;
 }
 
 function normalizeSizes(sizes: any): SizeOption[] {
@@ -96,6 +97,7 @@ function load(): Product[] {
         images,
         image: images[0] || p.image || "",
         category: normalizeCategory(p.category),
+        bestseller: Boolean(p.bestseller),
       };
     }) as Product[];
   } catch {
@@ -133,6 +135,7 @@ export function create(data: Omit<Product, "id">): Product {
     images,
     image: images[0] || "",
     category: normalizeCategory(data.category),
+    bestseller: Boolean(data.bestseller),
     price: derivedPrice(sizes, Number(data.price) || 0),
   };
   products.push(product);
@@ -158,6 +161,7 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
     merged.image = newImages[0] || "";
   }
   if (data.category !== undefined) merged.category = normalizeCategory(data.category);
+  if (data.bestseller !== undefined) merged.bestseller = Boolean(data.bestseller);
   merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0);
   products[idx] = merged;
   save(products);

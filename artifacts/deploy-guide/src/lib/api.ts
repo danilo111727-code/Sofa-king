@@ -18,6 +18,7 @@ export interface Product {
   disponibilidade: boolean;
   prazoEntrega: string;
   sizes: SizeOption[];
+  bestseller?: boolean;
 }
 
 export interface Material {

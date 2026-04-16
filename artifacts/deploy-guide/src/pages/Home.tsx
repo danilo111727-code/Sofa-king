@@ -9,34 +9,40 @@ import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
 
 const VALID_CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
 
-function useCategoryFilter(): string {
+function useFilters(): { category: string; bestseller: boolean } {
   const [location] = useLocation();
   return useMemo(() => {
-    // Prefer wouter's `location` (path + optional ?query), strip any #hash first.
     const noHash = location.split("#")[0];
     const qs = noHash.includes("?") ? noHash.slice(noHash.indexOf("?") + 1) : "";
-    // Fall back to the real URL search for cases where wouter strips it.
     const search = qs || (typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "");
-    const raw = new URLSearchParams(search).get("categoria") ?? "";
-    return VALID_CATEGORY_IDS.has(raw as any) ? raw : "";
+    const params = new URLSearchParams(search);
+    const raw = params.get("categoria") ?? "";
+    return {
+      category: VALID_CATEGORY_IDS.has(raw as any) ? raw : "",
+      bestseller: params.get("destaque") === "1",
+    };
   }, [location]);
 }
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const activeCategory = useCategoryFilter();
+  const { category: activeCategory, bestseller: onlyBestsellers } = useFilters();
   const activeCatDef = getCategory(activeCategory);
 
   useEffect(() => {
-    trackView({ path: activeCategory ? `/?categoria=${activeCategory}` : "/" });
-  }, [activeCategory]);
+    const path = onlyBestsellers
+      ? "/?destaque=1"
+      : activeCategory ? `/?categoria=${activeCategory}` : "/";
+    trackView({ path });
+  }, [activeCategory, onlyBestsellers]);
 
   const filteredProducts = useMemo(() => {
-    const avail = products.filter((p) => p.disponibilidade);
-    if (!activeCategory) return avail;
-    return avail.filter((p) => p.category === activeCategory);
-  }, [products, activeCategory]);
+    let avail = products.filter((p) => p.disponibilidade);
+    if (onlyBestsellers) avail = avail.filter((p) => p.bestseller);
+    if (activeCategory) avail = avail.filter((p) => p.category === activeCategory);
+    return avail;
+  }, [products, activeCategory, onlyBestsellers]);
 
   useEffect(() => {
     fetchProducts()
@@ -91,7 +97,7 @@ export default function Home() {
             <div className="text-center mb-10">
               <p className="text-xs tracking-[0.4em] uppercase text-accent mb-4 font-semibold">Vagas abertas</p>
               <h2 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-5" data-testid="text-section-title">
-                {activeCatDef ? activeCatDef.label : "Modelos disponíveis agora"}
+                {onlyBestsellers ? "⭐ Bestsellers" : activeCatDef ? activeCatDef.label : "Modelos disponíveis agora"}
               </h2>
               <div className="w-12 h-[2px] bg-accent mx-auto mb-6" />
               <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -104,13 +110,24 @@ export default function Home() {
               <Link
                 href="/"
                 className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                  !activeCategory
+                  !activeCategory && !onlyBestsellers
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
                 }`}
                 data-testid="filter-category-todos"
               >
                 Todos
+              </Link>
+              <Link
+                href="/?destaque=1"
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                  onlyBestsellers
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                }`}
+                data-testid="filter-bestseller"
+              >
+                ⭐ Bestsellers
               </Link>
               {CATEGORIES.map((c) => (
                 <Link

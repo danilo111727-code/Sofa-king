@@ -3,6 +3,7 @@ import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { SideDrawer } from "./SideDrawer";
+import { BestsellerStrip } from "./BestsellerStrip";
 import { Show, useUser, useClerk } from "@clerk/react";
 import logoImg from "@assets/sofa-king-logo.png";
 import { useCart } from "@/contexts/CartContext";
@@ -111,7 +112,7 @@ export function Navbar() {
             <CartIcon />
           </div>
         </div>
-        <div className="bg-[#25D366] text-white text-xs sm:text-sm py-2 overflow-hidden">
+        <div className="bg-primary text-primary-foreground text-sm sm:text-base py-3 overflow-hidden font-medium tracking-wide">
           <div className="flex items-center gap-12 whitespace-nowrap animate-marquee">
             <span className="px-4">✓ Personalize tecido, medidas e acabamento</span>
             <span className="px-4">✓ Acabamento artesanal premium</span>
@@ -121,6 +122,7 @@ export function Navbar() {
             <span className="px-4">✓ 10 anos de inovação e comprometimento</span>
           </div>
         </div>
+        <BestsellerStrip />
       </header>
     </>
   );
