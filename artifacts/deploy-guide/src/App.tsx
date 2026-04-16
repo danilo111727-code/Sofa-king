@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import Modelos from "@/pages/Modelos";
 import Produto from "@/pages/Produto";
 import Carrinho from "@/pages/Carrinho";
 import Admin from "@/pages/Admin";
@@ -72,6 +73,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/modelos" component={Modelos} />
       <Route path="/produto/:id" component={Produto} />
       <Route path="/carrinho" component={Carrinho} />
       <Route path="/sign-in/*?" component={SignInPage} />

@@ -92,7 +92,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Products Section */}
+        {false && (
         <section id="produtos" className="py-24 bg-background scroll-mt-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
@@ -212,6 +212,7 @@ export default function Home() {
             )}
           </div>
         </section>
+        )}
 
         {/* Manifesto / Sobre o Ateliê */}
         <section className="relative py-28 bg-gradient-to-b from-secondary/40 via-background to-background overflow-hidden">
