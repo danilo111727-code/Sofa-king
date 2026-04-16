@@ -13,6 +13,8 @@ export interface Material {
   name: string;
   description: string;
   priceAdjustment: number;
+  /** Optional per-size overrides keyed by size label. Falls back to `priceAdjustment`. */
+  priceAdjustmentBySize?: Record<string, number>;
   active: boolean;
   imageUrl?: string;
 }
@@ -61,11 +63,31 @@ export function getActive(): Material[] {
   return load().materials.filter((m) => m.active);
 }
 
+function normalizeBySize(input: Record<string, number> | null | undefined): Record<string, number> | undefined {
+  if (!input || typeof input !== "object") return undefined;
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(input)) {
+    const n = Number(v);
+    if (Number.isFinite(n)) out[k] = n;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+export function resolveFoamAdjustment(m: Material, sizeLabel: string): number {
+  const v = m.priceAdjustmentBySize?.[sizeLabel];
+  return typeof v === "number" && Number.isFinite(v) ? v : m.priceAdjustment;
+}
+
 export function create(data: Omit<Material, "id">): Material {
   const d = load();
   const baseId = `esp-${slug(data.name)}`;
   const id = d.materials.some((m) => m.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
-  const m: Material = { id, ...data, type: "espuma" };
+  const m: Material = {
+    id,
+    ...data,
+    type: "espuma",
+    priceAdjustmentBySize: normalizeBySize(data.priceAdjustmentBySize),
+  };
   d.materials.push(m);
   save(d);
   return m;
@@ -75,7 +97,11 @@ export function update(id: string, data: Partial<Omit<Material, "id">>): Materia
   const d = load();
   const idx = d.materials.findIndex((m) => m.id === id);
   if (idx === -1) return null;
-  d.materials[idx] = { ...d.materials[idx], ...data, type: "espuma" };
+  const next = { ...d.materials[idx], ...data, type: "espuma" as const };
+  if (data.priceAdjustmentBySize !== undefined) {
+    next.priceAdjustmentBySize = normalizeBySize(data.priceAdjustmentBySize);
+  }
+  d.materials[idx] = next;
   save(d);
   return d.materials[idx];
 }

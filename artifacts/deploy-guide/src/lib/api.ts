@@ -26,8 +26,16 @@ export interface Material {
   name: string;
   description: string;
   priceAdjustment: number;
+  /** Optional per-size overrides keyed by size label. Falls back to `priceAdjustment`. */
+  priceAdjustmentBySize?: Record<string, number>;
   active: boolean;
   imageUrl?: string;
+}
+
+export function resolveFoamAdjustment(m: Pick<Material, "priceAdjustment" | "priceAdjustmentBySize"> | null | undefined, sizeLabel: string): number {
+  if (!m) return 0;
+  const v = m.priceAdjustmentBySize?.[sizeLabel];
+  return typeof v === "number" && Number.isFinite(v) ? v : m.priceAdjustment;
 }
 
 export interface FabricSample {
@@ -41,8 +49,16 @@ export interface Album {
   name: string;
   description: string;
   surcharge: number;
+  /** Optional per-size overrides keyed by size label. Falls back to `surcharge`. */
+  surchargeBySize?: Record<string, number>;
   fabrics: FabricSample[];
   active: boolean;
+}
+
+export function resolveAlbumSurcharge(a: Pick<Album, "surcharge" | "surchargeBySize"> | null | undefined, sizeLabel: string): number {
+  if (!a) return 0;
+  const v = a.surchargeBySize?.[sizeLabel];
+  return typeof v === "number" && Number.isFinite(v) ? v : a.surcharge;
 }
 
 export interface Client {
@@ -204,6 +220,13 @@ export async function fetchWhatsappEvents(): Promise<WhatsappEvent[]> {
 export async function fetchClients(): Promise<{ totalCount: number; users: Client[] }> {
   const res = await fetch(`${BASE}/admin/clients`, { credentials: "include" });
   if (!res.ok) throw new Error("Erro ao carregar clientes");
+  return res.json();
+}
+
+// --- Known sizes (union across all products) ---
+export async function fetchKnownSizes(): Promise<string[]> {
+  const res = await fetch(`${BASE}/admin/known-sizes`, { credentials: "include" });
+  if (!res.ok) throw new Error("Erro ao carregar metragens");
   return res.json();
 }
 

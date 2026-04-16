@@ -15,6 +15,7 @@ import {
   createAlbum,
   updateAlbum,
   deleteAlbum,
+  fetchKnownSizes,
   fetchStats,
   fetchWhatsappEvents,
   fetchClients,
@@ -49,6 +50,66 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+/** Per-size surcharge editor. Empty input = use default (baseLabel) value. */
+function SurchargeBySizeEditor({
+  knownSizes,
+  value,
+  onChange,
+  defaultValue,
+  helpLabel,
+}: {
+  knownSizes: string[];
+  value: Record<string, number>;
+  onChange: (next: Record<string, number>) => void;
+  defaultValue: number;
+  helpLabel: string;
+}) {
+  if (knownSizes.length === 0) {
+    return (
+      <p className="text-xs text-[#7a6040]">
+        Nenhuma metragem cadastrada nos produtos ainda. Cadastre metragens nos produtos para poder definir acréscimos específicos aqui.
+      </p>
+    );
+  }
+  const setOne = (label: string, raw: string) => {
+    const next = { ...value };
+    if (raw.trim() === "") { delete next[label]; }
+    else { const n = Number(raw); if (Number.isFinite(n)) next[label] = n; }
+    onChange(next);
+  };
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-[#7a6040]">
+        {helpLabel} Deixe em branco para usar o valor padrão (<strong>{brl(defaultValue)}</strong>).
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {knownSizes.map((label) => {
+          const has = value[label] !== undefined;
+          return (
+            <div key={label} className="flex items-center gap-2 bg-[#120d06] border border-[#2d1f10] rounded-lg px-3 py-2">
+              <span className="text-sm text-[#d9c9a0] w-20 flex-shrink-0">{label}</span>
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                <input
+                  type="number" step="0.01"
+                  className={`${inputCls} pl-9`}
+                  value={has ? String(value[label]) : ""}
+                  placeholder={String(defaultValue)}
+                  onChange={(e) => setOne(label, e.target.value)}
+                  data-testid={`input-surcharge-${label.replace(/\s+/g, "")}`}
+                />
+              </div>
+              {has && (
+                <button type="button" onClick={() => setOne(label, "")} className="text-xs text-[#a08060] hover:text-white flex-shrink-0" title="Voltar ao padrão">✕</button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export default function Admin() {
@@ -607,10 +668,11 @@ interface AlbumForm {
   name: string;
   description: string;
   surcharge: number;
+  surchargeBySize: Record<string, number>;
   fabrics: FabricSample[];
   active: boolean;
 }
-const EMPTY_ALBUM: AlbumForm = { name: "", description: "", surcharge: 0, fabrics: [], active: true };
+const EMPTY_ALBUM: AlbumForm = { name: "", description: "", surcharge: 0, surchargeBySize: {}, fabrics: [], active: true };
 
 function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [items, setItems] = useState<Album[]>([]);
@@ -621,9 +683,10 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
+  const [knownSizes, setKnownSizes] = useState<string[]>([]);
   const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); fetchKnownSizes().then(setKnownSizes).catch(() => {}); }, []);
   async function load() {
     setLoading(true);
     try { setItems(await fetchAdminAlbums()); } finally { setLoading(false); }
@@ -632,7 +695,14 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
   function openNew() { setEditId(null); setForm(EMPTY_ALBUM); setShowForm(true); }
   function openEdit(a: Album) {
     setEditId(a.id);
-    setForm({ name: a.name, description: a.description, surcharge: a.surcharge, fabrics: a.fabrics.map((f) => ({ ...f })), active: a.active });
+    setForm({
+      name: a.name,
+      description: a.description,
+      surcharge: a.surcharge,
+      surchargeBySize: { ...(a.surchargeBySize || {}) },
+      fabrics: a.fabrics.map((f) => ({ ...f })),
+      active: a.active,
+    });
     setShowForm(true);
   }
 
@@ -741,12 +811,21 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
               <Field label="Descrição">
                 <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Ex: Linhos nacionais respiráveis" />
               </Field>
-              <Field label="Acréscimo ao preço (R$)">
+              <Field label="Acréscimo padrão (R$)">
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
                   <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.surcharge} onChange={(e) => setForm({ ...form, surcharge: Number(e.target.value) })} placeholder="0" />
                 </div>
-                <p className="text-xs text-[#7a6040] mt-1">Valor somado ao preço base da metragem quando o cliente escolhe este álbum.</p>
+                <p className="text-xs text-[#7a6040] mt-1">Usado para qualquer metragem que não tenha valor específico abaixo.</p>
+              </Field>
+              <Field label="Acréscimo por metragem (opcional)">
+                <SurchargeBySizeEditor
+                  knownSizes={knownSizes}
+                  value={form.surchargeBySize}
+                  onChange={(next) => setForm({ ...form, surchargeBySize: next })}
+                  defaultValue={form.surcharge}
+                  helpLabel="Defina um acréscimo específico para cada metragem."
+                />
               </Field>
               <Field label="Cores/tecidos do álbum">
                 <div className="space-y-2">
@@ -814,25 +893,47 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
 }
 
 // ---------- ESPUMAS ----------
-const EMPTY_ESP = { type: "espuma" as const, name: "", description: "", priceAdjustment: 0, active: true };
+interface FoamForm {
+  type: "espuma";
+  name: string;
+  description: string;
+  priceAdjustment: number;
+  priceAdjustmentBySize: Record<string, number>;
+  imageUrl: string;
+  active: boolean;
+}
+const EMPTY_ESP: FoamForm = { type: "espuma", name: "", description: "", priceAdjustment: 0, priceAdjustmentBySize: {}, imageUrl: "", active: true };
 
 function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [items, setItems] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState(EMPTY_ESP);
+  const [form, setForm] = useState<FoamForm>(EMPTY_ESP);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [knownSizes, setKnownSizes] = useState<string[]>([]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); fetchKnownSizes().then(setKnownSizes).catch(() => {}); }, []);
   async function load() {
     setLoading(true);
     try { setItems(await fetchAdminMaterials()); } finally { setLoading(false); }
   }
 
   function openNew() { setEditId(null); setForm(EMPTY_ESP); setShowForm(true); }
-  function openEdit(m: Material) { setEditId(m.id); setForm({ type: "espuma", name: m.name, description: m.description, priceAdjustment: m.priceAdjustment, active: m.active }); setShowForm(true); }
+  function openEdit(m: Material) {
+    setEditId(m.id);
+    setForm({
+      type: "espuma",
+      name: m.name,
+      description: m.description,
+      priceAdjustment: m.priceAdjustment,
+      priceAdjustmentBySize: { ...(m.priceAdjustmentBySize || {}) },
+      imageUrl: m.imageUrl || "",
+      active: m.active,
+    });
+    setShowForm(true);
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -897,12 +998,21 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
               <Field label="Descrição">
                 <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </Field>
-              <Field label="Acréscimo ao preço (R$)">
+              <Field label="Acréscimo padrão (R$)">
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
                   <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.priceAdjustment} onChange={(e) => setForm({ ...form, priceAdjustment: Number(e.target.value) })} placeholder="0 = padrão" />
                 </div>
-                <p className="text-xs text-[#7a6040] mt-1">Valor somado (ou subtraído, se negativo) ao preço final.</p>
+                <p className="text-xs text-[#7a6040] mt-1">Usado para qualquer metragem que não tenha valor específico abaixo.</p>
+              </Field>
+              <Field label="Acréscimo por metragem (opcional)">
+                <SurchargeBySizeEditor
+                  knownSizes={knownSizes}
+                  value={form.priceAdjustmentBySize}
+                  onChange={(next) => setForm({ ...form, priceAdjustmentBySize: next })}
+                  defaultValue={form.priceAdjustment}
+                  helpLabel="Defina um acréscimo específico para cada metragem."
+                />
               </Field>
               <Field label="Status">
                 <div className="flex gap-3">

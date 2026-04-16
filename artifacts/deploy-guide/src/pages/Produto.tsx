@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
   fetchProduct, fetchAlbums, fetchMaterials, trackView,
+  resolveAlbumSurcharge, resolveFoamAdjustment,
   type Product, type Album, type Material, type FabricSample,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -53,12 +54,18 @@ export default function Produto() {
   const selectedAlbum = albums[albumIdx];
   const selectedFoam = foams[foamIdx];
 
+  const albumSurcharge = useMemo(
+    () => (selectedSize ? resolveAlbumSurcharge(selectedAlbum, selectedSize.label) : 0),
+    [selectedAlbum, selectedSize],
+  );
+  const foamAdjustment = useMemo(
+    () => (selectedSize ? resolveFoamAdjustment(selectedFoam, selectedSize.label) : 0),
+    [selectedFoam, selectedSize],
+  );
   const finalPrice = useMemo(() => {
     const base = selectedSize?.basePrice ?? 0;
-    const albumSur = selectedAlbum?.surcharge ?? 0;
-    const foamSur = selectedFoam?.priceAdjustment ?? 0;
-    return base + albumSur + foamSur;
-  }, [selectedSize, selectedAlbum, selectedFoam]);
+    return base + albumSurcharge + foamAdjustment;
+  }, [selectedSize, albumSurcharge, foamAdjustment]);
 
   const pixPrice = useMemo(() => applyPixDiscount(finalPrice), [finalPrice]);
   const installmentPrice = useMemo(() => finalPrice / MAX_INSTALLMENTS, [finalPrice]);
@@ -116,11 +123,11 @@ export default function Produto() {
       productImage: galleryImages[0] || product.image,
       size: { label: selectedSize.label, basePrice: selectedSize.basePrice },
       album: selectedAlbum
-        ? { id: selectedAlbum.id, name: selectedAlbum.name, surcharge: selectedAlbum.surcharge }
+        ? { id: selectedAlbum.id, name: selectedAlbum.name, surcharge: albumSurcharge }
         : null,
       fabric: fabric ? { id: fabric.id, name: fabric.name, imageUrl: fabric.imageUrl } : null,
       foam: selectedFoam
-        ? { id: selectedFoam.id, name: selectedFoam.name, priceAdjustment: selectedFoam.priceAdjustment }
+        ? { id: selectedFoam.id, name: selectedFoam.name, priceAdjustment: foamAdjustment }
         : null,
       unitPrice: finalPrice,
     });
@@ -247,7 +254,9 @@ export default function Produto() {
                     2. Escolha o álbum de tecido
                   </h3>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {albums.map((a, i) => (
+                    {albums.map((a, i) => {
+                      const s = selectedSize ? resolveAlbumSurcharge(a, selectedSize.label) : a.surcharge;
+                      return (
                       <button
                         key={a.id}
                         onClick={() => setAlbumIdx(i)}
@@ -259,9 +268,10 @@ export default function Produto() {
                         data-testid={`button-album-${a.id}`}
                       >
                         <div className="font-semibold">{a.name}</div>
-                        <div className="text-xs opacity-80">{a.surcharge > 0 ? `+${brl(a.surcharge)}` : a.surcharge < 0 ? brl(a.surcharge) : "incluso"}</div>
+                        <div className="text-xs opacity-80">{s > 0 ? `+${brl(s)}` : s < 0 ? brl(s) : "incluso"}</div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {selectedAlbum && selectedAlbum.fabrics.length > 0 && (
@@ -301,7 +311,9 @@ export default function Produto() {
                     3. Escolha a espuma
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {foams.map((f, i) => (
+                    {foams.map((f, i) => {
+                      const adj = selectedSize ? resolveFoamAdjustment(f, selectedSize.label) : f.priceAdjustment;
+                      return (
                       <button
                         key={f.id}
                         onClick={() => setFoamIdx(i)}
@@ -319,10 +331,11 @@ export default function Produto() {
                         )}
                         <div className="font-semibold leading-tight">{f.name}</div>
                         <div className="text-xs opacity-80 mt-0.5">
-                          {f.priceAdjustment > 0 ? `+${brl(f.priceAdjustment)}` : f.priceAdjustment < 0 ? brl(f.priceAdjustment) : "incluso"}
+                          {adj > 0 ? `+${brl(adj)}` : adj < 0 ? brl(adj) : "incluso"}
                         </div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -346,8 +359,8 @@ export default function Produto() {
                   </div>
                   <div className="text-xs text-muted-foreground mt-3 space-y-0.5 pt-3 border-t border-border">
                     {selectedSize && <div>• Metragem {selectedSize.label}: {brl(selectedSize.basePrice)}</div>}
-                    {selectedAlbum && selectedAlbum.surcharge !== 0 && <div>• {selectedAlbum.name}: {selectedAlbum.surcharge > 0 ? "+" : ""}{brl(selectedAlbum.surcharge)}</div>}
-                    {selectedFoam && selectedFoam.priceAdjustment !== 0 && <div>• {selectedFoam.name}: {selectedFoam.priceAdjustment > 0 ? "+" : ""}{brl(selectedFoam.priceAdjustment)}</div>}
+                    {selectedAlbum && albumSurcharge !== 0 && <div>• {selectedAlbum.name}: {albumSurcharge > 0 ? "+" : ""}{brl(albumSurcharge)}</div>}
+                    {selectedFoam && foamAdjustment !== 0 && <div>• {selectedFoam.name}: {foamAdjustment > 0 ? "+" : ""}{brl(foamAdjustment)}</div>}
                   </div>
                 </div>
               )}

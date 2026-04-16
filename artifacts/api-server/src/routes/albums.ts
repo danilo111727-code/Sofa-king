@@ -13,7 +13,7 @@ router.get("/admin/albums", requireAdmin, (_req, res) => {
 });
 
 router.post("/admin/albums", requireAdmin, (req, res) => {
-  const { name, description, surcharge, fabrics, active } = req.body;
+  const { name, description, surcharge, surchargeBySize, fabrics, active } = req.body;
   if (!name) {
     res.status(400).json({ error: "Nome é obrigatório" });
     return;
@@ -22,6 +22,7 @@ router.post("/admin/albums", requireAdmin, (req, res) => {
     name,
     description: description ?? "",
     surcharge: Number(surcharge) || 0,
+    surchargeBySize: surchargeBySize && typeof surchargeBySize === "object" ? surchargeBySize : undefined,
     fabrics: Array.isArray(fabrics) ? fabrics : [],
     active: active !== false,
   });
@@ -29,11 +30,12 @@ router.post("/admin/albums", requireAdmin, (req, res) => {
 });
 
 router.put("/admin/albums/:id", requireAdmin, (req, res) => {
-  const { name, description, surcharge, fabrics, active } = req.body;
+  const { name, description, surcharge, surchargeBySize, fabrics, active } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
     ...(description !== undefined && { description }),
     ...(surcharge !== undefined && { surcharge: Number(surcharge) }),
+    ...(surchargeBySize !== undefined && { surchargeBySize }),
     ...(fabrics !== undefined && { fabrics }),
     ...(active !== undefined && { active }),
   });

@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { clerkClient } from "@clerk/express";
 import { requireAdmin } from "../lib/adminAuth.js";
 import * as events from "../lib/eventStore.js";
+import * as productStore from "../lib/productStore.js";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
@@ -13,6 +14,19 @@ const storage = new ObjectStorageService();
 
 router.get("/admin/stats", requireAdmin, (_req, res) => {
   res.json(events.getStats());
+});
+
+// Union of all size labels currently used across products (preserves first-seen order).
+router.get("/admin/known-sizes", requireAdmin, (_req, res) => {
+  const seen: string[] = [];
+  const set = new Set<string>();
+  for (const p of productStore.getAll()) {
+    for (const s of p.sizes || []) {
+      const lbl = (s.label || "").trim();
+      if (lbl && !set.has(lbl)) { set.add(lbl); seen.push(lbl); }
+    }
+  }
+  res.json(seen);
 });
 
 router.get("/admin/whatsapp-events", requireAdmin, (_req, res) => {
