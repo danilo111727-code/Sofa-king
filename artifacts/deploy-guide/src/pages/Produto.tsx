@@ -4,7 +4,7 @@ import { ChevronRight, ArrowLeft, Ruler, Palette, Info, Check, ShieldCheck, Truc
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { fetchProduct, type Product } from "@/lib/api";
+import { fetchProduct, trackView, type Product } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
@@ -26,6 +26,7 @@ export default function Produto() {
         setProduct(p);
         setSelectedColor(p.colors[0] ?? "");
         setSelectedFabric(p.fabrics[0] ?? "");
+        trackView({ productId: p.id, productName: p.name, path: `/produto/${p.id}` });
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));

@@ -4,11 +4,15 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { fetchProducts, type Product } from "@/lib/api";
+import { fetchProducts, trackView, type Product } from "@/lib/api";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    trackView({ path: "/" });
+  }, []);
 
   useEffect(() => {
     fetchProducts()

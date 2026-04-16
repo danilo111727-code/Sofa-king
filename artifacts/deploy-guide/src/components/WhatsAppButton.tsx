@@ -1,3 +1,5 @@
+import { trackWhatsapp } from "@/lib/api";
+
 const WHATSAPP_NUMBER = "5575991495793";
 const MESSAGE = "Olá! Vim pelo site da Sofá King e gostaria de mais informações.";
 
@@ -9,6 +11,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
+      onClick={() => trackWhatsapp({})}
       className="fixed bottom-5 right-5 left-5 sm:left-auto sm:right-6 sm:bottom-6 z-50 bg-[#25D366] hover:bg-[#1ebe57] text-white rounded-full pl-6 pr-5 py-3.5 shadow-2xl hover:shadow-[#25D366]/50 transition-all hover:scale-[1.02] flex items-center justify-center gap-3 max-w-md mx-auto sm:mx-0 font-semibold"
       data-testid="button-whatsapp"
     >
