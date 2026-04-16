@@ -7,9 +7,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Produto from "@/pages/Produto";
+import Carrinho from "@/pages/Carrinho";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { CartProvider } from "@/contexts/CartContext";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +73,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/produto/:id" component={Produto} />
+      <Route path="/carrinho" component={Carrinho} />
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/*?" component={SignUpPage} />
       <Route path="/admin/login" component={AdminLogin} />
@@ -98,11 +101,13 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
-        <TooltipProvider>
-          <Router />
-          <WhatsAppOnPublic />
-          <Toaster />
-        </TooltipProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Router />
+            <WhatsAppOnPublic />
+            <Toaster />
+          </TooltipProvider>
+        </CartProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );

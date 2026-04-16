@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { SideDrawer } from "./SideDrawer";
 import { Show, useUser, useClerk } from "@clerk/react";
 import logoImg from "@assets/sofa-king-logo.png";
+import { useCart } from "@/contexts/CartContext";
 
 function AuthButtons() {
   const { user } = useUser();
@@ -50,6 +51,25 @@ function AuthButtons() {
   );
 }
 
+function CartIcon() {
+  const { count } = useCart();
+  return (
+    <Link href="/carrinho" data-testid="button-cart">
+      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" aria-label="Ver carrinho">
+        <ShoppingCart className="h-5 w-5" />
+        {count > 0 && (
+          <span
+            className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center"
+            data-testid="text-cart-count"
+          >
+            {count > 99 ? "99+" : count}
+          </span>
+        )}
+      </Button>
+    </Link>
+  );
+}
+
 export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -88,18 +108,15 @@ export function Navbar() {
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" data-testid="button-search">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" data-testid="button-cart">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-accent"></span>
-            </Button>
+            <CartIcon />
           </div>
         </div>
         <div className="bg-[#25D366] text-white text-xs sm:text-sm py-2 overflow-hidden">
           <div className="flex items-center gap-12 whitespace-nowrap animate-marquee">
-            <span className="px-4">✓ Estofados planejados sob medida</span>
+            <span className="px-4">✓ Personalize tecido, medidas e acabamento</span>
             <span className="px-4">✓ Acabamento artesanal premium</span>
             <span className="px-4">✓ 10 anos de inovação e comprometimento</span>
-            <span className="px-4">✓ Estofados planejados sob medida</span>
+            <span className="px-4">✓ Personalize tecido, medidas e acabamento</span>
             <span className="px-4">✓ Acabamento artesanal premium</span>
             <span className="px-4">✓ 10 anos de inovação e comprometimento</span>
           </div>

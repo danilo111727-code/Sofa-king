@@ -1,16 +1,16 @@
-import { useParams, Link } from "wouter";
-import { ChevronRight, ArrowLeft, Ruler, Info, Check, ShieldCheck } from "lucide-react";
+import { useParams, Link, useLocation } from "wouter";
+import { ChevronRight, ArrowLeft, Ruler, Info, Check, ShieldCheck, ShoppingCart } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
-  fetchProduct, fetchAlbums, fetchMaterials, trackView, trackWhatsapp,
+  fetchProduct, fetchAlbums, fetchMaterials, trackView,
   type Product, type Album, type Material, type FabricSample,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-const WHATSAPP = "5575991495793";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -18,6 +18,9 @@ function brl(v: number): string {
 
 export default function Produto() {
   const { id } = useParams<{ id: string }>();
+  const [, navigate] = useLocation();
+  const { add } = useCart();
+  const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [foams, setFoams] = useState<Material[]>([]);
@@ -92,17 +95,31 @@ export default function Produto() {
     );
   }
 
-  const handleWhatsApp = () => {
-    trackWhatsapp({ productId: product.id, productName: product.name });
-    const parts = [
-      `Olá! Tenho interesse no ${product.name}`,
-      selectedSize ? `Metragem: ${selectedSize.label}` : "",
-      selectedAlbum ? `Álbum: ${selectedAlbum.name}${fabric ? ` (${fabric.name})` : ""}` : "",
-      selectedFoam ? `Espuma: ${selectedFoam.name}` : "",
-      `Total: ${brl(finalPrice)}`,
-    ].filter(Boolean);
-    const msg = encodeURIComponent(parts.join("\n"));
-    window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, "_blank");
+  const handleAddToCart = (goToCart: boolean) => {
+    if (!selectedSize) return;
+    add({
+      productId: product.id,
+      productName: product.name,
+      productImage: product.image,
+      size: { label: selectedSize.label, basePrice: selectedSize.basePrice },
+      album: selectedAlbum
+        ? { id: selectedAlbum.id, name: selectedAlbum.name, surcharge: selectedAlbum.surcharge }
+        : null,
+      fabric: fabric ? { id: fabric.id, name: fabric.name, imageUrl: fabric.imageUrl } : null,
+      foam: selectedFoam
+        ? { id: selectedFoam.id, name: selectedFoam.name, priceAdjustment: selectedFoam.priceAdjustment }
+        : null,
+      unitPrice: finalPrice,
+    });
+    if (goToCart) {
+      navigate("/carrinho");
+    } else {
+      toast({
+        title: "Adicionado ao carrinho",
+        description: `${product.name} — ${selectedSize.label} por ${brl(finalPrice)}`,
+        duration: 2500,
+      });
+    }
   };
 
   const noSizes = product.sizes.length === 0;
@@ -287,15 +304,31 @@ export default function Produto() {
                 </div>
               )}
 
-              <Button
-                size="lg"
-                onClick={handleWhatsApp}
-                disabled={!product.disponibilidade}
-                className="w-full h-14 text-base font-semibold bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                data-testid="button-whatsapp-cta"
-              >
-                {product.disponibilidade ? "Comprar pelo WhatsApp" : "Produto indisponível"}
-              </Button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => handleAddToCart(false)}
+                  disabled={!product.disponibilidade || noSizes}
+                  className="h-14 text-base font-semibold"
+                  data-testid="button-add-to-cart"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Adicionar ao carrinho
+                </Button>
+                <Button
+                  size="lg"
+                  onClick={() => handleAddToCart(true)}
+                  disabled={!product.disponibilidade || noSizes}
+                  className="h-14 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                  data-testid="button-buy-now"
+                >
+                  {product.disponibilidade ? "Comprar agora" : "Indisponível"}
+                </Button>
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                O fechamento do pedido é feito pelo WhatsApp, direto do seu carrinho.
+              </p>
 
               <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center p-3 mt-3 rounded-lg bg-secondary/20">
                 <ShieldCheck className="w-5 h-5 text-primary" />
