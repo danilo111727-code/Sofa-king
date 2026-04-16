@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -23,37 +23,30 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <section className="relative w-full h-[88vh] min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="/images/hero.png" 
-              alt="Sala de estar elegante com sofá premium" 
+            <img
+              src="/images/hero.png"
+              alt="Sofá minimalista moderno em sala clara e arejada"
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
-          
-          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
+
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24">
             <div className="max-w-2xl text-white">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6" data-testid="badge-hero-collection">
-                <Star className="w-4 h-4 text-accent fill-accent" />
-                <span className="text-sm font-medium tracking-wide uppercase">Nova Coleção Jardins</span>
-              </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.1] mb-3" data-testid="text-hero-title">
-                Sofá King
+              <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-white/80 mb-5 font-semibold" data-testid="text-hero-tagline">
+                Estofados planejados · Ateliê
+              </p>
+              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.05] mb-6 text-white drop-shadow-lg" data-testid="text-hero-title">
+                Estofados<br />minimalistas e<br /><em className="italic font-normal">modernos.</em>
               </h1>
-              <p className="text-sm md:text-base tracking-[0.3em] uppercase text-accent mb-6 font-medium" data-testid="text-hero-tagline">
-                Estofados planejados
+              <p className="text-base md:text-lg text-white/85 mb-10 max-w-lg leading-relaxed">
+                Modelos planejados no nosso ateliê em Feira de Santana. Você escolhe a metragem, o tecido e a espuma — a gente faz à mão.
               </p>
-              <p className="text-xl md:text-2xl font-light text-white/90 mb-2" data-testid="text-hero-subtitle">
-                Escolha seu modelo.
-              </p>
-              <p className="text-base md:text-lg text-white/80 mb-10 max-w-xl leading-relaxed">
-                Ateliê de estofados sob medida. Cada peça é desenhada e produzida artesanalmente para lares que valorizam o feito à mão.
-              </p>
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-none md:rounded-md text-base" data-testid="button-hero-cta">
+              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-md text-base" data-testid="button-hero-cta">
                 <a href="#produtos">
-                  Explorar Coleção <ArrowRight className="ml-2 w-5 h-5" />
+                  Ver vagas abertas <ArrowRight className="ml-2 w-5 h-5" />
                 </a>
               </Button>
             </div>
