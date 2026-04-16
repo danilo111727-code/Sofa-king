@@ -63,13 +63,15 @@ export default function Home() {
         {/* Featured Products Section */}
         <section id="produtos" className="py-24 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4" data-testid="text-section-title">Design Sofisticado</h2>
-                <p className="text-muted-foreground text-lg max-w-2xl">
-                  Descubra nossa curadoria de sofás projetados para transformar sua sala no ambiente mais acolhedor da casa.
-                </p>
-              </div>
+            <div className="text-center mb-16">
+              <p className="text-xs tracking-[0.4em] uppercase text-accent mb-4 font-semibold">Vagas abertas</p>
+              <h2 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-5" data-testid="text-section-title">
+                Modelos disponíveis agora
+              </h2>
+              <div className="w-12 h-[2px] bg-accent mx-auto mb-6" />
+              <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Estes são os projetos com vaga aberta no nosso ateliê neste momento. Cada um pode ser personalizado em medidas, tecidos e acabamentos.
+              </p>
             </div>
 
             {loading ? (
@@ -123,35 +125,59 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Brand Philosophy Section */}
-        <section className="py-24 bg-secondary/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">Um Ateliê, Não Uma Fábrica</h2>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10">
-              Na Sofá King cada peça é planejada e construída sob medida, dentro da agenda do nosso ateliê. Não trabalhamos com produção em série — trabalhamos com o tempo certo de cada projeto, do tecido escolhido ao último acabamento à mão.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 text-left">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-                  <span className="font-serif italic text-xl">1</span>
+        {/* Manifesto / Sobre o Ateliê */}
+        <section className="relative py-28 bg-gradient-to-b from-secondary/40 via-background to-background overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" aria-hidden="true">
+            <div className="absolute top-10 left-10 font-serif text-[20rem] leading-none text-foreground select-none">"</div>
+          </div>
+
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="max-w-3xl mx-auto text-center mb-20">
+              <p className="text-xs tracking-[0.4em] uppercase text-accent mb-5 font-semibold">Nosso ateliê</p>
+              <h2 className="text-4xl md:text-6xl font-serif font-bold text-foreground leading-[1.1] mb-8">
+                Cada peça nasce de uma <em className="italic text-accent">conversa</em>, não de uma esteira.
+              </h2>
+              <div className="w-16 h-[2px] bg-accent mx-auto mb-8" />
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                Somos um ateliê — não uma fábrica. Aqui o estofado começa quando você nos diz como quer viver na sua sala. A partir daí, escolhemos juntos o desenho, o tecido, as medidas e os acabamentos. Cada vaga aberta na nossa agenda é uma nova história sendo construída à mão.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border/60 rounded-2xl overflow-hidden border border-border/60 shadow-sm">
+              <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="font-serif italic text-4xl text-accent">i.</span>
+                  <h3 className="text-xl font-serif font-bold text-foreground">Sob medida</h3>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Sob Medida</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Cada peça é planejada conforme o seu espaço, gosto e necessidade — medidas, tecidos e acabamentos escolhidos com você.</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Medidas, formato, tecido, espuma, profundidade de assento. Você decide cada detalhe junto com a gente — não escolhe entre opções prontas.
+                </p>
               </div>
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-                  <span className="font-serif italic text-xl">2</span>
+              <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="font-serif italic text-4xl text-accent">ii.</span>
+                  <h3 className="text-xl font-serif font-bold text-foreground">Feito à mão</h3>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Feito à Mão</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Produção artesanal no nosso ateliê. Sem linha de montagem — cada estofado é construído com cuidado, no tempo que precisa.</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Estrutura cortada, montada, estofada e costurada peça por peça dentro do nosso ateliê em Feira de Santana. O tempo de cada projeto é o tempo do bem-feito.
+                </p>
               </div>
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-                  <span className="font-serif italic text-xl">3</span>
+              <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="font-serif italic text-4xl text-accent">iii.</span>
+                  <h3 className="text-xl font-serif font-bold text-foreground">Vagas limitadas</h3>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Vagas Limitadas</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Como ateliê, abrimos as vagas de produção conforme a agenda. Os modelos disponíveis aqui no site são as vagas atuais.</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Trabalhamos com agenda. Os modelos que aparecem disponíveis no site são as vagas que liberamos agora. Quando enche, abrimos as próximas.
+                </p>
               </div>
+            </div>
+
+            <div className="mt-20 max-w-3xl mx-auto text-center">
+              <p className="font-serif text-2xl md:text-3xl italic text-foreground/90 leading-relaxed">
+                "Não fazemos sofás em série.<br className="hidden md:block" /> Fazemos o seu sofá."
+              </p>
+              <p className="mt-6 text-xs tracking-[0.3em] uppercase text-muted-foreground">— Sofá King · Estofados planejados</p>
             </div>
           </div>
         </section>
