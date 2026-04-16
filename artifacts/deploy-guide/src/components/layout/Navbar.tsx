@@ -1,9 +1,54 @@
 import { Link } from "wouter";
-import { ShoppingCart, Menu, Search } from "lucide-react";
+import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { SideDrawer } from "./SideDrawer";
+import { Show, useUser, useClerk } from "@clerk/react";
 import logoImg from "@assets/sofa-king-logo.png";
+
+function AuthButtons() {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const firstName = user?.firstName || user?.username || user?.primaryEmailAddress?.emailAddress?.split("@")[0] || "Conta";
+
+  return (
+    <>
+      <Show when="signed-out">
+        <Link href="/sign-in" data-testid="link-signin">
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-foreground hover:text-foreground gap-2">
+            <User className="h-4 w-4" /> Entrar
+          </Button>
+        </Link>
+        <Link href="/sign-up" data-testid="link-signup">
+          <Button size="sm" className="hidden sm:inline-flex bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
+            Cadastrar
+          </Button>
+        </Link>
+        <Link href="/sign-in" data-testid="link-signin-mobile" className="sm:hidden">
+          <Button variant="ghost" size="icon" aria-label="Entrar">
+            <User className="h-5 w-5" />
+          </Button>
+        </Link>
+      </Show>
+      <Show when="signed-in">
+        <span className="hidden md:inline text-sm text-muted-foreground" data-testid="text-username">
+          Olá, <strong className="text-foreground">{firstName}</strong>
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => signOut({ redirectUrl: `${basePath}/` })}
+          className="gap-2"
+          data-testid="button-signout"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline">Sair</span>
+        </Button>
+      </Show>
+    </>
+  );
+}
 
 export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,7 +77,8 @@ export function Navbar() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <AuthButtons />
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" data-testid="button-search">
               <Search className="h-5 w-5" />
             </Button>
