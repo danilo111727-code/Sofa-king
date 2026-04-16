@@ -177,12 +177,50 @@ export default function Home() {
                 <span className="text-2xl">🛡️</span>
                 <h3 className="text-2xl md:text-3xl font-serif font-bold">Garantia</h3>
               </div>
-              <p className="text-muted-foreground leading-relaxed">
-                Todos os estofados Sofá King possuem <strong className="text-foreground">5 anos de garantia</strong> na
-                estrutura de madeira de reflorestamento e <strong className="text-foreground">1 ano de garantia</strong> em
-                espumas, tecidos e acabamentos contra defeitos de fabricação.
-                Nosso compromisso é com peças que duram gerações — feitas para serem usadas e amadas todos os dias.
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                A Sofá King concede garantia para os produtos a partir da data de entrega, conforme abaixo:
               </p>
+              <div className="grid sm:grid-cols-3 gap-4 mb-8">
+                <div className="bg-muted/40 rounded-lg p-5 border border-border/50">
+                  <p className="text-2xl font-serif font-bold text-foreground">02 anos</p>
+                  <p className="text-sm text-muted-foreground mt-1">Estrutura de madeira</p>
+                </div>
+                <div className="bg-muted/40 rounded-lg p-5 border border-border/50">
+                  <p className="text-2xl font-serif font-bold text-foreground">01 ano</p>
+                  <p className="text-sm text-muted-foreground mt-1">Espumas</p>
+                </div>
+                <div className="bg-muted/40 rounded-lg p-5 border border-border/50">
+                  <p className="text-2xl font-serif font-bold text-foreground">03 meses</p>
+                  <p className="text-sm text-muted-foreground mt-1">Tecido</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <span className="text-green-600">✓</span> A garantia cobre defeitos de fabricação relacionados a:
+                  </h4>
+                  <ul className="space-y-2 text-muted-foreground text-sm">
+                    <li className="flex gap-2"><span className="text-accent">●</span> Estrutura de madeira</li>
+                    <li className="flex gap-2"><span className="text-accent">●</span> Espumas</li>
+                    <li className="flex gap-2"><span className="text-accent">●</span> Percintas elásticas</li>
+                    <li className="flex gap-2"><span className="text-accent">●</span> Costuras</li>
+                    <li className="flex gap-2"><span className="text-accent">●</span> Tecido (dentro do prazo de cobertura)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <span className="text-red-500">✕</span> A garantia não cobre:
+                  </h4>
+                  <ul className="space-y-2 text-muted-foreground text-sm">
+                    <li className="flex gap-2"><span className="text-muted-foreground">●</span> Desgaste natural do tecido</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">●</span> Manchas, rasgos ou mau uso</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">●</span> Danos causados por umidade, água ou exposição ao sol</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">●</span> Transporte por terceiros</li>
+                    <li className="flex gap-2"><span className="text-muted-foreground">●</span> Modificações ou consertos feitos por terceiros</li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
             <div id="pagamento" className="scroll-mt-24" data-testid="section-pagamento">
