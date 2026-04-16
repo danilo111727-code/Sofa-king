@@ -10,9 +10,30 @@ export interface SizeOption {
   basePrice: number;
 }
 
-export type ProductCategory = "retratil" | "canto" | "modulos" | "";
+export type ProductCategory =
+  | "retratil"
+  | "cama"
+  | "canto"
+  | "organicos"
+  | "living"
+  | "fixo"
+  | "chaise"
+  | "ilha"
+  | "modulos"
+  | "";
 
-const VALID_CATEGORIES: ProductCategory[] = ["retratil", "canto", "modulos", ""];
+const VALID_CATEGORIES: ProductCategory[] = [
+  "retratil",
+  "cama",
+  "canto",
+  "organicos",
+  "living",
+  "fixo",
+  "chaise",
+  "ilha",
+  "modulos",
+  "",
+];
 
 export interface Product {
   id: string;
