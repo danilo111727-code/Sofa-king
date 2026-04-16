@@ -1,5 +1,5 @@
 import { useParams, Link, useLocation } from "wouter";
-import { ChevronRight, ArrowLeft, Ruler, Info, Check, ShieldCheck, ShoppingCart } from "lucide-react";
+import { ChevronRight, ArrowLeft, Ruler, Info, Check, ShieldCheck, ShoppingCart, ChevronDown, X } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -34,6 +34,7 @@ export default function Produto() {
   const [fabric, setFabric] = useState<FabricSample | null>(null);
   const [foamIdx, setFoamIdx] = useState(0);
   const [foamSheetOpen, setFoamSheetOpen] = useState(false);
+  const [sizeSheetOpen, setSizeSheetOpen] = useState(false);
   const [mainImageIdx, setMainImageIdx] = useState(0);
 
   useEffect(() => {
@@ -249,36 +250,27 @@ export default function Produto() {
                   <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-foreground">
                     1. Escolha a metragem
                   </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {product.sizes.map((s, i) => {
-                      const sizeAlbumSurcharge = resolveAlbumSurcharge(selectedAlbum, s.label);
-                      const sizeFoamAdj = resolveFoamAdjustment(selectedFoam, s.label);
-                      const sizeTotal = s.basePrice + sizeAlbumSurcharge + sizeFoamAdj;
-                      const sizeInstallment = sizeTotal / MAX_INSTALLMENTS;
-                      const sizePix = applyPixDiscount(sizeTotal);
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setSizeIdx(i)}
-                          className={`px-3 py-2.5 rounded-md text-sm font-medium border transition-all text-left ${
-                            sizeIdx === i
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-transparent text-foreground border-border hover:border-primary/50"
-                          }`}
-                          data-testid={`button-size-${i}`}
-                        >
-                          <div className="font-semibold">{s.label}</div>
-                          <div className="text-sm font-bold mt-0.5">{brl(sizeTotal)}</div>
-                          <div className="text-[11px] opacity-80 mt-0.5 leading-tight">
-                            {MAX_INSTALLMENTS}x {brl(sizeInstallment)}
+                  <button
+                    type="button"
+                    onClick={() => setSizeSheetOpen(true)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-md border border-border bg-background hover:border-primary/60 transition-colors text-left"
+                    data-testid="button-open-size-selector"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Ruler className="w-4 h-4 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-foreground truncate">
+                          {selectedSize ? selectedSize.label : "Selecione uma medida…"}
+                        </div>
+                        {selectedSize && (
+                          <div className="text-xs text-muted-foreground">
+                            {brl(selectedSize.basePrice + resolveAlbumSurcharge(selectedAlbum, selectedSize.label) + resolveFoamAdjustment(selectedFoam, selectedSize.label))}
                           </div>
-                          <div className={`text-[11px] mt-0.5 leading-tight font-medium ${sizeIdx === i ? "opacity-90" : "text-green-700"}`}>
-                            PIX {brl(sizePix)}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                        )}
+                      </div>
+                    </div>
+                    <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
+                  </button>
                   <a
                     href={`https://wa.me/5575991495793?text=${encodeURIComponent(`Olá! Tenho interesse no "${fullName}" e gostaria de orçamento em uma medida diferente das padrão. Qual metragem você precisa?`)}`}
                     target="_blank"
@@ -525,6 +517,80 @@ export default function Produto() {
             >
               Entendi, continuar
             </button>
+          </div>
+        </div>
+      )}
+
+      {sizeSheetOpen && product && product.sizes.length > 0 && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 animate-in fade-in duration-200"
+          onClick={() => setSizeSheetOpen(false)}
+          data-testid="size-selector-overlay"
+        >
+          <div
+            className="bg-background w-full sm:max-w-md sm:rounded-lg rounded-t-2xl border-t-2 sm:border-2 border-primary shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 max-h-[85vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            data-testid="size-selector-sheet"
+          >
+            <div className="flex items-start justify-between gap-3 p-5 pb-3 border-b border-border">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Metragem</div>
+                <div className="text-lg font-semibold text-primary">Selecione uma medida</div>
+              </div>
+              <button
+                onClick={() => setSizeSheetOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 -m-1"
+                aria-label="Fechar"
+                data-testid="button-close-size-selector"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="overflow-y-auto p-3 space-y-2">
+              {product.sizes.map((s, i) => {
+                const sizeAlbumSurcharge = resolveAlbumSurcharge(selectedAlbum, s.label);
+                const sizeFoamAdj = resolveFoamAdjustment(selectedFoam, s.label);
+                const sizeTotal = s.basePrice + sizeAlbumSurcharge + sizeFoamAdj;
+                const sizeInstallment = sizeTotal / MAX_INSTALLMENTS;
+                const sizePix = applyPixDiscount(sizeTotal);
+                const active = sizeIdx === i;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => { setSizeIdx(i); setSizeSheetOpen(false); }}
+                    className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md border text-left transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-foreground border-border hover:border-primary/60"
+                    }`}
+                    data-testid={`button-size-${i}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${active ? "border-primary-foreground" : "border-border"}`}>
+                        {active && <div className="w-2.5 h-2.5 rounded-full bg-primary-foreground" />}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold truncate">{s.label}</div>
+                        <div className={`text-[11px] ${active ? "opacity-90" : "text-muted-foreground"}`}>
+                          {MAX_INSTALLMENTS}x {brl(sizeInstallment)} · PIX {brl(sizePix)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="font-bold text-sm whitespace-nowrap">{brl(sizeTotal)}</div>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="p-3 border-t border-border">
+              <a
+                href={`https://wa.me/5575991495793?text=${encodeURIComponent(`Olá! Tenho interesse no "${fullName}" e gostaria de orçamento em uma medida diferente das padrão. Qual metragem você precisa?`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full text-center text-sm font-medium text-green-700 hover:text-green-800 border border-green-700/40 hover:border-green-700 rounded-md px-3 py-2.5 transition-colors"
+              >
+                Precisa de outra medida? Fale no WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       )}
