@@ -49,10 +49,13 @@ export default function Home() {
               <p className="text-base md:text-lg text-white/85 mb-10 max-w-lg leading-relaxed">
                 10 anos de inovação e comprometimento com o cliente.
               </p>
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-md text-base" data-testid="button-hero-cta">
-                <a href="#produtos">
-                  Ver vagas abertas <ArrowRight className="ml-2 w-5 h-5" />
-                </a>
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-md text-base"
+                data-testid="button-hero-cta"
+                onClick={() => window.dispatchEvent(new Event("open-side-drawer"))}
+              >
+                Conheça nossas peças <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
           </div>

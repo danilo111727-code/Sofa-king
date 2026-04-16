@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SideDrawer } from "./SideDrawer";
 import { Show, useUser, useClerk } from "@clerk/react";
 import logoImg from "@assets/sofa-king-logo.png";
@@ -52,6 +52,12 @@ function AuthButtons() {
 
 export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setDrawerOpen(true);
+    window.addEventListener("open-side-drawer", handler);
+    return () => window.removeEventListener("open-side-drawer", handler);
+  }, []);
 
   return (
     <>
