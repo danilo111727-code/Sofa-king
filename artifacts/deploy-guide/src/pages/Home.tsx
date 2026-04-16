@@ -47,7 +47,7 @@ export default function Home() {
                 <em className="italic font-normal">Fazemos o seu sofá.</em>
               </h1>
               <p className="text-base md:text-lg text-white/85 mb-10 max-w-lg leading-relaxed">
-                Modelos planejados no nosso ateliê em Feira de Santana. Você escolhe a metragem, o tecido e a espuma — a gente faz à mão.
+                10 anos de inovação e comprometimento com o cliente.
               </p>
               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-md text-base" data-testid="button-hero-cta">
                 <a href="#produtos">
