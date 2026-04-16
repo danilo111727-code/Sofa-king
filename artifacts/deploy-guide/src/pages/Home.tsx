@@ -147,10 +147,10 @@ export default function Home() {
               <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
                 <div className="flex items-center gap-4 mb-6">
                   <span className="font-serif italic text-4xl text-accent">i.</span>
-                  <h3 className="text-xl font-serif font-bold text-foreground">Sob medida</h3>
+                  <h3 className="text-xl font-serif font-bold text-foreground">Você personaliza</h3>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                  Medidas, formato, tecido, espuma, profundidade de assento. Você decide cada detalhe junto com a gente — não escolhe entre opções prontas.
+                  Escolhe o modelo, a metragem, o tecido e a espuma. Cada projeto é montado com você — não é um produto de prateleira.
                 </p>
               </div>
               <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
@@ -254,18 +254,26 @@ export default function Home() {
                 <span className="text-2xl">💳</span>
                 <h3 className="text-2xl md:text-3xl font-serif font-bold">Forma de Pagamento</h3>
               </div>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Para sua comodidade, oferecemos diversas opções de pagamento:
-              </p>
-              <ul className="grid sm:grid-cols-2 gap-3 text-foreground">
-                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Pix com 5% de desconto à vista</li>
-                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Cartão de crédito em até 10x sem juros</li>
-                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Boleto bancário à vista</li>
-                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Transferência bancária</li>
-              </ul>
-              <p className="text-muted-foreground leading-relaxed mt-4">
-                Condições especiais e parcelamento estendido podem ser combinados diretamente com nosso vendedor pelo WhatsApp.
-              </p>
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <div className="bg-muted/40 rounded-lg p-5 border border-border/50">
+                  <p className="text-xs tracking-[0.25em] uppercase text-accent font-semibold mb-2">À vista</p>
+                  <p className="text-2xl font-serif font-bold text-foreground">10% de desconto</p>
+                  <p className="text-sm text-muted-foreground mt-1">Pagamento à vista no fechamento</p>
+                </div>
+                <div className="bg-muted/40 rounded-lg p-5 border border-border/50">
+                  <p className="text-xs tracking-[0.25em] uppercase text-accent font-semibold mb-2">Cartão</p>
+                  <p className="text-2xl font-serif font-bold text-foreground">Em até 10x</p>
+                  <p className="text-sm text-muted-foreground mt-1">No cartão de crédito</p>
+                </div>
+              </div>
+              <div className="bg-secondary/40 border-l-4 border-accent rounded-r-lg p-5">
+                <p className="font-semibold text-foreground mb-2">Como funciona o parcelamento do projeto:</p>
+                <ul className="space-y-2 text-muted-foreground text-sm">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> <span><strong className="text-foreground">50% de entrada</strong> para iniciar a produção da sua peça no ateliê.</span></li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> <span>Quando a peça está pronta, fazemos um <strong className="text-foreground">vídeo ao vivo</strong> com você — ou você pode <strong className="text-foreground">conferir pessoalmente no ateliê</strong>.</span></li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> <span>Aprovado, você paga os <strong className="text-foreground">50% restantes antes da entrega</strong>.</span></li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>
