@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Guia de Deploy"
+title = "Sofa King"
 version = "1.0.0"
 id = "artifacts/deploy-guide"
 router = "path"
@@ -12,7 +12,7 @@ version = "1.0.0"
 [[services]]
 name = "web"
 paths = [ "/" ]
-localPort = 20416
+localPort = 5173
 
 [services.development]
 run = "pnpm --filter @workspace/deploy-guide run dev"
@@ -27,5 +27,5 @@ from = "/*"
 to = "/index.html"
 
 [services.env]
-PORT = "20416"
+PORT = "5173"
 BASE_PATH = "/"

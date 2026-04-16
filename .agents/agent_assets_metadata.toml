@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "nu-At-UuWazJSFSIySBpw"
+uri = "file://artifacts/deploy-guide/public/images/sofa-retratil.png"
+type = "image"
+title = "Milano retractable sofa"
+
+[[generated]]
+id = "8S2-FIHI5PR8XAti2xYY3"
+uri = "file://artifacts/deploy-guide/public/images/sofa-canto.png"
+type = "image"
+title = "Venezia L-shaped sofa"
+
+[[generated]]
+id = "OD46-ixRwHSf4L3judyeb"
+uri = "file://artifacts/deploy-guide/public/images/sofa-namoradeira.png"
+type = "image"
+title = "Florenca loveseat"
+
+[[generated]]
+id = "KcE3l06utb0AwCN1W5mec"
+uri = "file://artifacts/deploy-guide/public/images/sofa-modular.png"
+type = "image"
+title = "Berlim modular sofa"
+
+[[generated]]
+id = "4thkW3iddEC72NJX31fib"
+uri = "file://artifacts/deploy-guide/public/images/hero.png"
+type = "image"
+title = "Warm elegant Brazilian living room"
