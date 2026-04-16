@@ -164,10 +164,11 @@ export default function Home() {
                 <h3 className="text-2xl md:text-3xl font-serif font-bold">Prazo de Entrega</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Nossos estofados são planejados sob medida e produzidos artesanalmente.
-                O prazo de produção e entrega varia entre <strong className="text-foreground">10 a 40 dias úteis</strong>,
-                conforme o modelo escolhido. O prazo exato de cada peça aparece na página do produto.
-                Realizamos entrega em diversas regiões do Brasil — fale com nosso vendedor para confirmar disponibilidade na sua cidade.
+                Nossos estofados são planejados sob medida e produzidos artesanalmente,
+                por isso <strong className="text-foreground">não trabalhamos com prazo fixo</strong>.
+                As vagas de produção são liberadas conforme nossa disponibilidade — quando uma vaga é aberta,
+                o produto aparece como disponível aqui no site. Para confirmar o prazo da sua peça e a entrega na sua cidade,
+                fale com nosso vendedor pelo WhatsApp.
               </p>
             </div>
 
@@ -194,7 +195,7 @@ export default function Home() {
               </p>
               <ul className="grid sm:grid-cols-2 gap-3 text-foreground">
                 <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Pix com 5% de desconto à vista</li>
-                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Cartão de crédito em até 12x sem juros</li>
+                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Cartão de crédito em até 10x sem juros</li>
                 <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Boleto bancário à vista</li>
                 <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Transferência bancária</li>
               </ul>
