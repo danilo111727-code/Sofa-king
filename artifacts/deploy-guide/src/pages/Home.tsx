@@ -49,7 +49,7 @@ export default function Home() {
                 Escolha seu modelo.
               </p>
               <p className="text-base md:text-lg text-white/80 mb-10 max-w-xl leading-relaxed">
-                Design brasileiro contemporâneo, conforto incomparável e acabamento artesanal para lares que valorizam a verdadeira elegância.
+                Ateliê de estofados sob medida. Cada peça é desenhada e produzida artesanalmente para lares que valorizam o feito à mão.
               </p>
               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-none md:rounded-md text-base" data-testid="button-hero-cta">
                 <a href="#produtos">
@@ -126,31 +126,31 @@ export default function Home() {
         {/* Brand Philosophy Section */}
         <section className="py-24 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">A Arte de Receber Bem</h2>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">Um Ateliê, Não Uma Fábrica</h2>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10">
-              Na Sofa King, acreditamos que o sofá é o coração de uma casa. É onde a vida acontece, onde as histórias são contadas e onde o verdadeiro conforto encontra a sofisticação estética do design brasileiro.
+              Na Sofá King cada peça é planejada e construída sob medida, dentro da agenda do nosso ateliê. Não trabalhamos com produção em série — trabalhamos com o tempo certo de cada projeto, do tecido escolhido ao último acabamento à mão.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 text-left">
               <div className="space-y-3">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="font-serif italic text-xl">1</span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Materiais Premium</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Madeira de reflorestamento, espumas de alta densidade e tecidos selecionados para durar gerações.</p>
+                <h3 className="text-lg font-semibold text-foreground">Sob Medida</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Cada peça é planejada conforme o seu espaço, gosto e necessidade — medidas, tecidos e acabamentos escolhidos com você.</p>
               </div>
               <div className="space-y-3">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="font-serif italic text-xl">2</span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Design Exclusivo</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Linhas pensadas para se adaptar a diferentes estilos arquitetônicos, do minimalista ao clássico.</p>
+                <h3 className="text-lg font-semibold text-foreground">Feito à Mão</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Produção artesanal no nosso ateliê. Sem linha de montagem — cada estofado é construído com cuidado, no tempo que precisa.</p>
               </div>
               <div className="space-y-3">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                   <span className="font-serif italic text-xl">3</span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Conforto Absoluto</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Ergonomia estudada exaustivamente para garantir o abraço perfeito a cada vez que você se senta.</p>
+                <h3 className="text-lg font-semibold text-foreground">Vagas Limitadas</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Como ateliê, abrimos as vagas de produção conforme a agenda. Os modelos disponíveis aqui no site são as vagas atuais.</p>
               </div>
             </div>
           </div>
