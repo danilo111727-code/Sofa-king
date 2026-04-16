@@ -224,10 +224,10 @@ export default function Produto() {
                   <div className="mt-2 space-y-0.5">
                     <p className="text-sm text-foreground">
                       <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong>{" "}
-                      <span className="text-muted-foreground">sem juros no cartão</span>
+                      <span className="text-muted-foreground">sem juros</span>
                     </p>
                     <p className="text-sm text-green-700">
-                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista no PIX: {brl(pixPrice)}</strong>
+                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista: {brl(pixPrice)}</strong>
                     </p>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-2">
@@ -248,22 +248,35 @@ export default function Produto() {
                   <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-foreground">
                     1. Escolha a metragem
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setSizeIdx(i)}
-                        className={`px-4 py-2.5 rounded-md text-sm font-medium border transition-all ${
-                          sizeIdx === i
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-transparent text-foreground border-border hover:border-primary/50"
-                        }`}
-                        data-testid={`button-size-${i}`}
-                      >
-                        <div>{s.label}</div>
-                        <div className="text-xs opacity-80 mt-0.5">{brl(s.basePrice)}</div>
-                      </button>
-                    ))}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {product.sizes.map((s, i) => {
+                      const sizeAlbumSurcharge = resolveAlbumSurcharge(selectedAlbum, s.label);
+                      const sizeFoamAdj = resolveFoamAdjustment(selectedFoam, s.label);
+                      const sizeTotal = s.basePrice + sizeAlbumSurcharge + sizeFoamAdj;
+                      const sizeInstallment = sizeTotal / MAX_INSTALLMENTS;
+                      const sizePix = applyPixDiscount(sizeTotal);
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setSizeIdx(i)}
+                          className={`px-3 py-2.5 rounded-md text-sm font-medium border transition-all text-left ${
+                            sizeIdx === i
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-transparent text-foreground border-border hover:border-primary/50"
+                          }`}
+                          data-testid={`button-size-${i}`}
+                        >
+                          <div className="font-semibold">{s.label}</div>
+                          <div className="text-sm font-bold mt-0.5">{brl(sizeTotal)}</div>
+                          <div className="text-[11px] opacity-80 mt-0.5 leading-tight">
+                            {MAX_INSTALLMENTS}x {brl(sizeInstallment)}
+                          </div>
+                          <div className={`text-[11px] mt-0.5 leading-tight font-medium ${sizeIdx === i ? "opacity-90" : "text-green-700"}`}>
+                            PIX {brl(sizePix)}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -403,10 +416,10 @@ export default function Produto() {
                   </p>
                   <div className="mt-2 space-y-1">
                     <p className="text-sm text-foreground" data-testid="text-installment">
-                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong> <span className="text-muted-foreground">sem juros no cartão</span>
+                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong> <span className="text-muted-foreground">sem juros</span>
                     </p>
                     <p className="text-sm text-green-700" data-testid="text-pix-price">
-                      <strong>ou {brl(pixPrice)} no PIX</strong> <span className="text-green-700/80">({PIX_DISCOUNT_PCT}% OFF à vista)</span>
+                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista: {brl(pixPrice)}</strong>
                     </p>
                   </div>
                   <div className="text-xs text-muted-foreground mt-3 space-y-0.5 pt-3 border-t border-border">

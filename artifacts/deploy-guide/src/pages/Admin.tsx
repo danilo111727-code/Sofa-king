@@ -581,7 +581,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
 
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Prazo de Entrega">
-                  <input className={inputCls} value={form.prazoEntrega} onChange={(e) => setForm({ ...form, prazoEntrega: e.target.value })} placeholder="Ex: 15-20 dias" />
+                  <input className={inputCls} value={form.prazoEntrega} onChange={(e) => setForm({ ...form, prazoEntrega: e.target.value })} placeholder="Ex: A consultar" />
                 </Field>
                 <Field label="Disponibilidade">
                   <div className="flex items-center gap-2">
