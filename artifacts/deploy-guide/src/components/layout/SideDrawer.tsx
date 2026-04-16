@@ -1,5 +1,7 @@
-import { X, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { X, Search, ChevronDown, ChevronRight, User, LogOut, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
+import { Show, useUser, useClerk } from "@clerk/react";
 
 type MenuItem =
   | { label: string; href: string }
@@ -32,6 +34,10 @@ interface SideDrawerProps {
 
 export function SideDrawer({ open, onClose }: SideDrawerProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const firstName = user?.firstName || user?.username || user?.primaryEmailAddress?.emailAddress?.split("@")[0] || "";
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -56,6 +62,38 @@ export function SideDrawer({ open, onClose }: SideDrawerProps) {
         </div>
 
         <div className="p-5 pb-24">
+          <div className="mb-6">
+            <Show when="signed-out">
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/sign-in" onClick={onClose} data-testid="link-drawer-signin">
+                  <button className="w-full flex items-center justify-center gap-2 py-3 border border-border rounded-md text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors">
+                    <User className="w-4 h-4" /> Entrar
+                  </button>
+                </Link>
+                <Link href="/sign-up" onClick={onClose} data-testid="link-drawer-signup">
+                  <button className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors">
+                    <UserPlus className="w-4 h-4" /> Cadastrar
+                  </button>
+                </Link>
+              </div>
+            </Show>
+            <Show when="signed-in">
+              <div className="rounded-md border border-border bg-muted/30 px-4 py-3 flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs text-muted-foreground">Olá,</p>
+                  <p className="text-sm font-semibold text-foreground truncate">{firstName}</p>
+                </div>
+                <button
+                  onClick={() => { onClose(); signOut({ redirectUrl: `${basePath}/` }); }}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="button-drawer-signout"
+                >
+                  <LogOut className="w-4 h-4" /> Sair
+                </button>
+              </div>
+            </Show>
+          </div>
+
           <div className="relative mb-6">
             <input
               type="text"
