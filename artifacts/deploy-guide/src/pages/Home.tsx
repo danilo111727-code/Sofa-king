@@ -49,7 +49,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col w-full bg-background selection:bg-primary/20">
       <Navbar />
 
-      <main className="flex-grow">
+      <main className="flex-grow pb-20 sm:pb-8">
         {/* Hero Section */}
         <section className="relative w-full h-[88vh] min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
           <div className="absolute inset-0 z-0">

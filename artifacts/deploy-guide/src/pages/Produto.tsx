@@ -148,7 +148,7 @@ export default function Produto() {
     <div className="min-h-screen flex flex-col w-full bg-background">
       <Navbar />
 
-      <main className="flex-grow">
+      <main className="flex-grow pb-24 sm:pb-12">
         <div className="bg-secondary/30 py-4 border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center text-sm text-muted-foreground">
