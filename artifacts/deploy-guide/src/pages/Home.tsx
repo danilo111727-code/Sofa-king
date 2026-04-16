@@ -58,17 +58,17 @@ export default function Home() {
 
       <main className="flex-grow pb-20 sm:pb-8">
         {/* Hero Section */}
-        <section className="relative w-full h-[88vh] min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
+        <section className="relative w-full h-[60vh] min-h-[460px] md:h-[88vh] md:min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
           <div className="absolute inset-0 z-0">
             <img
               src="/images/hero.png"
               alt="Sofá minimalista moderno em sala clara e arejada"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-[center_30%] md:object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
 
-          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24">
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pb-10 md:pb-24">
             <div className="max-w-2xl text-white">
               <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-white/80 mb-5 font-semibold" data-testid="text-hero-tagline">
                 Sofá King · Ateliê de Estofados Planejados
