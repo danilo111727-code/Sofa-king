@@ -1,7 +1,8 @@
-import { X, Search, ChevronDown, ChevronRight, User, LogOut, UserPlus } from "lucide-react";
+import { X, Search, ChevronDown, ChevronRight, User, LogOut, UserPlus, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Show, useUser, useClerk } from "@clerk/react";
+import { fetchAdminStatus } from "@/lib/api";
 
 type MenuItem =
   | { label: string; href: string }
@@ -34,6 +35,7 @@ interface SideDrawerProps {
 
 export function SideDrawer({ open, onClose }: SideDrawerProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { user } = useUser();
   const { signOut } = useClerk();
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -44,6 +46,14 @@ export function SideDrawer({ open, onClose }: SideDrawerProps) {
     else document.body.style.overflow = "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  useEffect(() => {
+    if (user) {
+      fetchAdminStatus().then((s) => setIsAdmin(s.isAdmin)).catch(() => setIsAdmin(false));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   return (
     <>
@@ -91,6 +101,13 @@ export function SideDrawer({ open, onClose }: SideDrawerProps) {
                   <LogOut className="w-4 h-4" /> Sair
                 </button>
               </div>
+              {isAdmin && (
+                <Link href="/admin" onClick={onClose} data-testid="link-drawer-admin">
+                  <button className="mt-2 w-full flex items-center justify-center gap-2 py-3 bg-[#c9a96e] hover:bg-[#b8954f] text-[#1a1208] rounded-md text-sm font-semibold transition-colors">
+                    <Settings className="w-4 h-4" /> Painel Admin
+                  </button>
+                </Link>
+              )}
             </Show>
           </div>
 
