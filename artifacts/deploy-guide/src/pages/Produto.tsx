@@ -390,53 +390,24 @@ export default function Produto() {
               <p className="text-xs text-center text-muted-foreground mt-2">
                 O fechamento do pedido é feito pelo WhatsApp, direto do seu carrinho.
               </p>
-
-              <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center p-3 mt-3 rounded-lg bg-secondary/20">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <span>5 anos de garantia</span>
-              </div>
             </div>
           </div>
 
-          {/* Specs */}
-          <div className="mt-20 pt-12 border-t border-border">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-serif font-bold mb-8 text-center">Especificações Técnicas</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-                <div className="space-y-6">
-                  {product.dimensions && (
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
-                        <Ruler className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground mb-1">Dimensões</h4>
-                        <p className="text-muted-foreground leading-relaxed">{product.dimensions}</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
-                      <Info className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-1">Estrutura</h4>
-                      <p className="text-muted-foreground leading-relaxed">Madeira maciça seca e imunizada. Percintas elásticas e molas de alta durabilidade.</p>
-                    </div>
+          {product.dimensions && (
+            <div className="mt-16 pt-10 border-t border-border">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
+                    <Ruler className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-1">Dimensões</h4>
+                    <p className="text-muted-foreground leading-relaxed">{product.dimensions}</p>
                   </div>
                 </div>
-                <div className="bg-secondary/30 p-8 rounded-xl">
-                  <h4 className="font-semibold text-foreground mb-4">O que está incluso:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-muted-foreground"><Check className="w-4 h-4 text-accent" /> Entrega agendada</li>
-                    <li className="flex items-center gap-3 text-muted-foreground"><Check className="w-4 h-4 text-accent" /> Montagem no local (Feira de Santana)</li>
-                    <li className="flex items-center gap-3 text-muted-foreground"><Check className="w-4 h-4 text-accent" /> Certificado de garantia</li>
-                    <li className="flex items-center gap-3 text-muted-foreground"><Check className="w-4 h-4 text-accent" /> Orientações de cuidado com o tecido</li>
-                  </ul>
-                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </main>
 
