@@ -11,14 +11,8 @@
     "disponibilidade": true,
     "prazoEntrega": "A consultar",
     "sizes": [
-      {
-        "label": "2,00 m",
-        "basePrice": 2000
-      },
-      {
-        "label": "2,30 m",
-        "basePrice": 2500
-      }
+      { "label": "2,00 m", "basePrice": 2000 },
+      { "label": "2,30 m", "basePrice": 2500 }
     ],
     "id": "sofa-teste-retratil"
   },
@@ -34,14 +28,8 @@
     "disponibilidade": true,
     "prazoEntrega": "A consultar",
     "sizes": [
-      {
-        "label": "2,00 m",
-        "basePrice": 2000
-      },
-      {
-        "label": "2,30 m",
-        "basePrice": 2500
-      }
+      { "label": "2,00 m", "basePrice": 2000 },
+      { "label": "2,30 m", "basePrice": 2500 }
     ],
     "id": "sofa-teste-carrinho"
   },
@@ -57,15 +45,28 @@
     "disponibilidade": true,
     "prazoEntrega": "A consultar",
     "sizes": [
-      {
-        "label": "2,00 m",
-        "basePrice": 2000
-      },
-      {
-        "label": "2,30 m",
-        "basePrice": 2500
-      }
+      { "label": "2,00 m", "basePrice": 2000 },
+      { "label": "2,30 m", "basePrice": 2500 }
     ],
     "id": "sofa-carrinho-teste"
+  },
+  {
+    "name": "Sofá [TESTE] Demonstração de Valores",
+    "price": 3200,
+    "description": "Produto de teste para visualização — remover antes de publicar de vez.",
+    "longDescription": "Este produto existe só para demonstrar como os preços, parcelas e PIX aparecem ao variar metragem, álbum e espuma. Pode excluir no painel admin quando quiser.",
+    "image": "/images/placeholder.png",
+    "dimensions": "Exemplo: 2,60 m × 0,95 m × 0,85 m",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      { "label": "1,80 m", "basePrice": 3200 },
+      { "label": "2,20 m", "basePrice": 3900 },
+      { "label": "2,60 m", "basePrice": 4600 },
+      { "label": "3,00 m", "basePrice": 5400 }
+    ],
+    "id": "sofa-teste-demo-valores"
   }
 ]
