@@ -6,10 +6,20 @@ type MenuItem =
   | { label: string; children: { label: string; href: string }[] };
 
 const menu: MenuItem[] = [
-  { label: "SOFÁS", href: "#produtos" },
-  { label: "POLTRONAS", href: "#produtos" },
+  {
+    label: "SOFÁS",
+    children: [
+      { label: "Sofá Cama", href: "#produtos" },
+      { label: "Sofá Fixo", href: "#produtos" },
+      { label: "Sofá Retrátil", href: "#produtos" },
+      { label: "Sofá Living", href: "#produtos" },
+      { label: "Sofá Ilha", href: "#produtos" },
+      { label: "Sofá Chaise", href: "#produtos" },
+      { label: "Sofá de Canto", href: "#produtos" },
+    ],
+  },
+  { label: "POLTRONAS E PUFFS", href: "#produtos" },
   { label: "CAMA", href: "#produtos" },
-  { label: "PUFF", href: "#produtos" },
   { label: "PRAZO DE ENTREGA", href: "#prazo-entrega" },
   { label: "GARANTIA", href: "#garantia" },
   { label: "FORMA DE PAGAMENTO", href: "#pagamento" },
