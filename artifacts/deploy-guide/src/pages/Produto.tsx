@@ -1,23 +1,49 @@
 import { useParams } from "wouter";
 import { Link } from "wouter";
 import { ChevronRight, ArrowLeft, Ruler, Palette, Info, Check, ShieldCheck, Truck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { products } from "@/data/products";
+import { fetchProduct, type Product } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 
 export default function Produto() {
   const { id } = useParams<{ id: string }>();
-  const product = products.find(p => p.id === id);
   const { toast } = useToast();
-  
-  const [selectedColor, setSelectedColor] = useState<string>(product?.colors[0] || "");
-  const [selectedFabric, setSelectedFabric] = useState<string>(product?.fabrics[0] || "");
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedFabric, setSelectedFabric] = useState<string>("");
 
-  if (!product) {
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    fetchProduct(id)
+      .then((p) => {
+        setProduct(p);
+        setSelectedColor(p.colors[0] ?? "");
+        setSelectedFabric(p.fabrics[0] ?? "");
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col w-full bg-background">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-muted-foreground">Carregando...</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !product) {
     return (
       <div className="min-h-screen flex flex-col w-full bg-background">
         <Navbar />
@@ -76,7 +102,6 @@ export default function Produto() {
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
-                {/* Thumbnails (just repeating the main image for mockup purposes) */}
                 <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-primary cursor-pointer opacity-100">
                   <img src={product.image} alt="Vista 1" className="w-full h-full object-cover" />
                 </div>
@@ -91,12 +116,22 @@ export default function Produto() {
 
             {/* Product Info */}
             <div className="flex flex-col">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4" data-testid="text-product-detail-name">
-                {product.name}
-              </h1>
-              <p className="text-3xl font-medium text-accent mb-6" data-testid="text-product-detail-price">
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground" data-testid="text-product-detail-name">
+                  {product.name}
+                </h1>
+                {!product.disponibilidade && (
+                  <span className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full font-medium">Indisponível</span>
+                )}
+              </div>
+              <p className="text-3xl font-medium text-accent mb-2" data-testid="text-product-detail-price">
                 R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
+              {product.prazoEntrega && (
+                <p className="text-sm text-muted-foreground mb-6 flex items-center gap-1">
+                  🚚 Prazo de entrega: <strong>{product.prazoEntrega}</strong>
+                </p>
+              )}
               
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed" data-testid="text-product-detail-desc">
                 {product.longDescription}
@@ -106,54 +141,57 @@ export default function Produto() {
 
               {/* Configurations */}
               <div className="space-y-8">
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2 text-foreground">
-                    <Palette className="w-4 h-4 text-primary" /> Tecido
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {product.fabrics.map((fabric) => (
-                      <button
-                        key={fabric}
-                        onClick={() => setSelectedFabric(fabric)}
-                        className={`px-5 py-3 rounded-md text-sm font-medium transition-all ${
-                          selectedFabric === fabric 
-                            ? "bg-primary text-primary-foreground border-primary shadow-md" 
-                            : "bg-transparent text-foreground border border-border hover:border-primary/50"
-                        }`}
-                        data-testid={`button-fabric-${fabric}`}
-                      >
-                        {fabric}
-                      </button>
-                    ))}
+                {product.fabrics.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2 text-foreground">
+                      <Palette className="w-4 h-4 text-primary" /> Tecido
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {product.fabrics.map((fabric) => (
+                        <button
+                          key={fabric}
+                          onClick={() => setSelectedFabric(fabric)}
+                          className={`px-5 py-3 rounded-md text-sm font-medium transition-all ${
+                            selectedFabric === fabric 
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-transparent text-foreground border border-border hover:border-primary/50"
+                          }`}
+                          data-testid={`button-fabric-${fabric}`}
+                        >
+                          {fabric}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2 text-foreground">
-                    Cor: <span className="text-muted-foreground font-normal capitalize">{selectedColor}</span>
-                  </h3>
-                  <div className="flex flex-wrap gap-4">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`group relative w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                          selectedColor === color 
-                            ? "ring-2 ring-primary ring-offset-2 ring-offset-background" 
-                            : "ring-1 ring-border hover:ring-primary/50"
-                        }`}
-                        title={color}
-                        aria-label={`Selecionar cor ${color}`}
-                        data-testid={`button-color-${color}`}
-                      >
-                        {/* Mock color representation based on name */}
-                        <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden shadow-inner flex items-center justify-center">
-                           <span className="text-[10px] text-foreground/50">{color.substring(0, 2)}</span>
-                        </div>
-                      </button>
-                    ))}
+                {product.colors.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 flex items-center gap-2 text-foreground">
+                      Cor: <span className="text-muted-foreground font-normal capitalize">{selectedColor}</span>
+                    </h3>
+                    <div className="flex flex-wrap gap-4">
+                      {product.colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={`group relative w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                            selectedColor === color 
+                              ? "ring-2 ring-primary ring-offset-2 ring-offset-background" 
+                              : "ring-1 ring-border hover:ring-primary/50"
+                          }`}
+                          title={color}
+                          aria-label={`Selecionar cor ${color}`}
+                          data-testid={`button-color-${color}`}
+                        >
+                          <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden shadow-inner flex items-center justify-center">
+                            <span className="text-[10px] text-foreground/50">{color.substring(0, 2)}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <Separator className="my-10" />
@@ -164,9 +202,10 @@ export default function Produto() {
                   size="lg" 
                   className="w-full h-16 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                   onClick={handleAddToCart}
+                  disabled={!product.disponibilidade}
                   data-testid="button-add-to-cart"
                 >
-                  Adicionar ao carrinho
+                  {product.disponibilidade ? "Adicionar ao carrinho" : "Produto indisponível"}
                 </Button>
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center p-4 rounded-lg bg-secondary/20">
@@ -189,15 +228,17 @@ export default function Produto() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
                 <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
-                      <Ruler className="w-5 h-5" />
+                  {product.dimensions && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
+                        <Ruler className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground mb-1">Dimensões</h4>
+                        <p className="text-muted-foreground leading-relaxed" data-testid="text-product-dimensions">{product.dimensions}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-1">Dimensões</h4>
-                      <p className="text-muted-foreground leading-relaxed" data-testid="text-product-dimensions">{product.dimensions}</p>
-                    </div>
-                  </div>
+                  )}
                   
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">

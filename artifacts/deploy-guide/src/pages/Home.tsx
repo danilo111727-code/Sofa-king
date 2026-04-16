@@ -2,10 +2,21 @@ import { Link } from "wouter";
 import { ArrowRight, Star } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { fetchProducts, type Product } from "@/lib/api";
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts()
+      .then(setProducts)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col w-full bg-background selection:bg-primary/20">
       <Navbar />
@@ -58,39 +69,54 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-12">
-              {products.map((product, index) => (
-                <Link key={product.id} href={`/produto/${product.id}`} className="group group/card" data-testid={`card-product-${product.id}`}>
-                  <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/20 transition-all duration-500 hover:shadow-xl">
-                    <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover/card:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/5 transition-colors duration-500" />
-                    </div>
-                    <div className="p-8 flex flex-col flex-grow">
-                      <div className="flex justify-between items-start mb-4 gap-4">
-                        <h3 className="text-2xl font-serif font-bold text-foreground group-hover/card:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
-                          {product.name}
-                        </h3>
-                        <span className="text-xl font-medium text-accent whitespace-nowrap" data-testid={`text-product-price-${product.id}`}>
-                          R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </span>
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="bg-muted/30 rounded-lg h-80 animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-12">
+                {products
+                  .filter((p) => p.disponibilidade)
+                  .map((product) => (
+                  <Link key={product.id} href={`/produto/${product.id}`} className="group group/card" data-testid={`card-product-${product.id}`}>
+                    <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/20 transition-all duration-500 hover:shadow-xl">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover/card:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/5 transition-colors duration-500" />
                       </div>
-                      <p className="text-muted-foreground leading-relaxed flex-grow" data-testid={`text-product-desc-${product.id}`}>
-                        {product.description}
-                      </p>
-                      <div className="mt-8 pt-6 border-t border-border flex items-center justify-between text-sm font-medium text-primary">
-                        <span>Ver detalhes do produto</span>
-                        <ArrowRight className="w-4 h-4 transform group-hover/card:translate-x-2 transition-transform" />
+                      <div className="p-8 flex flex-col flex-grow">
+                        <div className="flex justify-between items-start mb-4 gap-4">
+                          <h3 className="text-2xl font-serif font-bold text-foreground group-hover/card:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
+                            {product.name}
+                          </h3>
+                          <span className="text-xl font-medium text-accent whitespace-nowrap" data-testid={`text-product-price-${product.id}`}>
+                            R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground leading-relaxed flex-grow" data-testid={`text-product-desc-${product.id}`}>
+                          {product.description}
+                        </p>
+                        {product.prazoEntrega && (
+                          <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                            🚚 Entrega: {product.prazoEntrega}
+                          </p>
+                        )}
+                        <div className="mt-8 pt-6 border-t border-border flex items-center justify-between text-sm font-medium text-primary">
+                          <span>Ver detalhes do produto</span>
+                          <ArrowRight className="w-4 h-4 transform group-hover/card:translate-x-2 transition-transform" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
