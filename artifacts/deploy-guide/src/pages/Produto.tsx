@@ -210,9 +210,30 @@ export default function Produto() {
               </p>
 
               {product.prazoEntrega && (
-                <p className="text-sm text-muted-foreground mb-6 flex items-center gap-1">
+                <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1">
                   🚚 Prazo de entrega: <strong>{product.prazoEntrega}</strong>
                 </p>
+              )}
+
+              {/* Price highlight — mostra o preço total e condições de pagamento antes das seleções */}
+              {!noSizes && (
+                <div className="rounded-xl border border-border bg-gradient-to-br from-secondary/40 to-secondary/10 p-4 sm:p-5 mb-5" data-testid="price-highlight">
+                  <p className="text-3xl sm:text-4xl font-bold text-accent leading-none" data-testid="text-price-highlight">
+                    {brl(finalPrice)}
+                  </p>
+                  <div className="mt-2 space-y-0.5">
+                    <p className="text-sm text-foreground">
+                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong>{" "}
+                      <span className="text-muted-foreground">sem juros no cartão</span>
+                    </p>
+                    <p className="text-sm text-green-700">
+                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista no PIX: {brl(pixPrice)}</strong>
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-2">
+                    Valor atualiza conforme você escolhe metragem, álbum e espuma abaixo.
+                  </p>
+                </div>
               )}
 
               <Separator className="my-4" />
