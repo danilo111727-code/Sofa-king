@@ -104,8 +104,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_1.jpg",
+    "images": [
+      "/images/stock/sofa_living_1.jpg"
+    ],
     "category": "retratil",
     "dimensions": "",
     "colors": [],
@@ -243,8 +245,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_2.jpg",
+    "images": [
+      "/images/stock/sofa_living_2.jpg"
+    ],
     "category": "retratil",
     "dimensions": "",
     "colors": [],
@@ -934,8 +938,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_3.jpg",
+    "images": [
+      "/images/stock/sofa_living_3.jpg"
+    ],
     "category": "canto",
     "dimensions": "",
     "colors": [],
@@ -1004,8 +1010,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_4.jpg",
+    "images": [
+      "/images/stock/sofa_living_4.jpg"
+    ],
     "category": "organicos",
     "dimensions": "",
     "colors": [],
@@ -1350,8 +1358,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_8.jpg",
+    "images": [
+      "/images/stock/sofa_living_8.jpg"
+    ],
     "category": "living",
     "dimensions": "",
     "colors": [],
@@ -2040,8 +2050,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_5.jpg",
+    "images": [
+      "/images/stock/sofa_living_5.jpg"
+    ],
     "category": "chaise",
     "dimensions": "",
     "colors": [],
@@ -2110,8 +2122,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_6.jpg",
+    "images": [
+      "/images/stock/sofa_living_6.jpg"
+    ],
     "category": "chaise",
     "dimensions": "",
     "colors": [],
@@ -2317,8 +2331,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "",
-    "images": [],
+    "image": "/images/stock/sofa_living_7.jpg",
+    "images": [
+      "/images/stock/sofa_living_7.jpg"
+    ],
     "category": "ilha",
     "dimensions": "",
     "colors": [],

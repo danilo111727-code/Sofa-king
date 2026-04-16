@@ -83,3 +83,51 @@ id = "TB0aRzowdW1Gg8kMuMSS6"
 uri = "file://artifacts/deploy-guide/public/foams/d33-soft-molas.png"
 type = "image"
 title = "D33 + Soft + Molas — três camadas (molas + D33 + soft)"
+
+[[outputs]]
+id = "HrFCVcp0J88ZR_dk1VQHD"
+uri = "file://attached_assets/stock_images/sofa_living_1.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "DENGSvpFbRZ1RczNudS4S"
+uri = "file://attached_assets/stock_images/sofa_living_2.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "pvVB6gUaxIWxy_oMw1HLh"
+uri = "file://attached_assets/stock_images/sofa_living_3.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "z9PAS5ZACOMZOlCABMAHr"
+uri = "file://attached_assets/stock_images/sofa_living_4.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "jSgMOS5FWTHY1khR8dbmB"
+uri = "file://attached_assets/stock_images/sofa_living_5.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "h3iUzkFt3WSpGPGXcmFtE"
+uri = "file://attached_assets/stock_images/sofa_living_6.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "3bJAydk1r4lanuXeQ-7pb"
+uri = "file://attached_assets/stock_images/sofa_living_7.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
+
+[[outputs]]
+id = "EKnw20usuHY4h9iT8v8Z9"
+uri = "file://attached_assets/stock_images/sofa_living_8.jpg"
+type = "image"
+title = "modern upholstered sofa in a bright living room, minimalist style"
