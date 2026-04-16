@@ -70,7 +70,7 @@ export default function Home() {
               </h2>
               <div className="w-12 h-[2px] bg-accent mx-auto mb-6" />
               <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                Estes são os projetos com vaga aberta no nosso ateliê neste momento. Cada um pode ser personalizado em medidas, tecidos e acabamentos.
+                Vendas pelo site são feitas a partir dos nossos <strong className="text-foreground">modelos padronizados</strong>, que você pode personalizar em <strong className="text-foreground">tecido, espuma e metragem</strong>.
               </p>
             </div>
 
@@ -150,7 +150,7 @@ export default function Home() {
                   <h3 className="text-xl font-serif font-bold text-foreground">Você personaliza</h3>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                  Escolhe o modelo, a metragem, o tecido e a espuma. Cada projeto é montado com você — não é um produto de prateleira.
+                  As vendas pelo site são dos nossos modelos padronizados — você escolhe a <strong className="text-foreground">metragem</strong>, o <strong className="text-foreground">tecido</strong> e a <strong className="text-foreground">espuma</strong> ideais para sua peça.
                 </p>
               </div>
               <div className="bg-background p-10 md:p-12 hover:bg-secondary/30 transition-colors">
