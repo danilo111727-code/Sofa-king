@@ -33,6 +33,7 @@ export default function Produto() {
   const [albumIdx, setAlbumIdx] = useState(0);
   const [fabric, setFabric] = useState<FabricSample | null>(null);
   const [foamIdx, setFoamIdx] = useState(0);
+  const [foamSheetOpen, setFoamSheetOpen] = useState(false);
   const [mainImageIdx, setMainImageIdx] = useState(0);
 
   useEffect(() => {
@@ -360,7 +361,7 @@ export default function Produto() {
                       return (
                       <button
                         key={f.id}
-                        onClick={() => setFoamIdx(i)}
+                        onClick={() => { setFoamIdx(i); setFoamSheetOpen(true); }}
                         className={`p-2 rounded-md text-sm font-medium border transition-all text-left flex flex-col ${
                           foamIdx === i
                             ? "bg-primary text-primary-foreground border-primary"
@@ -382,35 +383,15 @@ export default function Produto() {
                     })}
                   </div>
                   {selectedFoam && (selectedFoam.weightSupport || selectedFoam.comfortLevel || selectedFoam.useIndication || selectedFoam.longTermBehavior) && (
-                    <div key={selectedFoam.id} className="mt-3 rounded-lg border-2 border-primary bg-primary/10 p-3 text-xs animate-in fade-in duration-300" data-testid="foam-specs">
-                      <div className="font-semibold text-primary mb-2">Ficha técnica — {selectedFoam.name}</div>
-                      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
-                        {selectedFoam.weightSupport && (
-                          <div className="flex gap-1.5">
-                            <dt className="text-muted-foreground">Peso suportado:</dt>
-                            <dd className="text-foreground font-medium">{selectedFoam.weightSupport}</dd>
-                          </div>
-                        )}
-                        {selectedFoam.comfortLevel && (
-                          <div className="flex gap-1.5">
-                            <dt className="text-muted-foreground">Nível de conforto:</dt>
-                            <dd className="text-foreground font-medium">{selectedFoam.comfortLevel}</dd>
-                          </div>
-                        )}
-                        {selectedFoam.useIndication && (
-                          <div className="flex gap-1.5">
-                            <dt className="text-muted-foreground">Indicação de uso:</dt>
-                            <dd className="text-foreground font-medium">{selectedFoam.useIndication}</dd>
-                          </div>
-                        )}
-                        {selectedFoam.longTermBehavior && (
-                          <div className="flex gap-1.5 sm:col-span-2">
-                            <dt className="text-muted-foreground shrink-0">Longo prazo:</dt>
-                            <dd className="text-foreground">{selectedFoam.longTermBehavior}</dd>
-                          </div>
-                        )}
-                      </dl>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFoamSheetOpen(true)}
+                      className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                      data-testid="button-show-foam-specs"
+                    >
+                      <Info className="w-3.5 h-3.5" />
+                      Ver ficha técnica — {selectedFoam.name}
+                    </button>
                   )}
                 </div>
               )}
@@ -485,6 +466,68 @@ export default function Produto() {
           )}
         </div>
       </main>
+
+      {foamSheetOpen && selectedFoam && (selectedFoam.weightSupport || selectedFoam.comfortLevel || selectedFoam.useIndication || selectedFoam.longTermBehavior) && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 animate-in fade-in duration-200"
+          onClick={() => setFoamSheetOpen(false)}
+          data-testid="foam-specs-overlay"
+        >
+          <div
+            className="bg-background w-full sm:max-w-md sm:rounded-lg rounded-t-2xl border-t-2 sm:border-2 border-primary p-5 shadow-2xl animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+            data-testid="foam-specs-sheet"
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Ficha técnica</div>
+                <div className="text-lg font-semibold text-primary">{selectedFoam.name}</div>
+              </div>
+              <button
+                onClick={() => setFoamSheetOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 -m-1"
+                aria-label="Fechar"
+                data-testid="button-close-foam-specs"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <dl className="space-y-3 text-sm">
+              {selectedFoam.weightSupport && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">Peso suportado</dt>
+                  <dd className="text-foreground font-medium">{selectedFoam.weightSupport}</dd>
+                </div>
+              )}
+              {selectedFoam.comfortLevel && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">Nível de conforto</dt>
+                  <dd className="text-foreground font-medium">{selectedFoam.comfortLevel}</dd>
+                </div>
+              )}
+              {selectedFoam.useIndication && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">Indicação de uso</dt>
+                  <dd className="text-foreground font-medium">{selectedFoam.useIndication}</dd>
+                </div>
+              )}
+              {selectedFoam.longTermBehavior && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">Comportamento a longo prazo</dt>
+                  <dd className="text-foreground leading-relaxed">{selectedFoam.longTermBehavior}</dd>
+                </div>
+              )}
+            </dl>
+            <button
+              onClick={() => setFoamSheetOpen(false)}
+              className="mt-5 w-full bg-primary text-primary-foreground py-2.5 rounded-md text-sm font-semibold hover:bg-primary/90"
+              data-testid="button-confirm-foam-specs"
+            >
+              Entendi, continuar
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
