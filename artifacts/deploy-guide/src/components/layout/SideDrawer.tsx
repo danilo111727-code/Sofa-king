@@ -6,24 +6,8 @@ type MenuItem =
   | { label: string; children: { label: string; href: string }[] };
 
 const menu: MenuItem[] = [
-  {
-    label: "SOFÁS",
-    children: [
-      { label: "Sofá Cama", href: "#produtos" },
-      { label: "Sofá Fixo", href: "#produtos" },
-      { label: "Sofá Living", href: "#produtos" },
-      { label: "Sofá Ilha", href: "#produtos" },
-      { label: "Sofá Chaise", href: "#produtos" },
-      { label: "Sofá de Canto", href: "#produtos" },
-    ],
-  },
-  {
-    label: "POLTRONAS",
-    children: [
-      { label: "Poltronas Compactas", href: "#produtos" },
-      { label: "Poltronas Robustas", href: "#produtos" },
-    ],
-  },
+  { label: "SOFÁS", href: "#produtos" },
+  { label: "POLTRONAS", href: "#produtos" },
   { label: "CAMA", href: "#produtos" },
   { label: "PUFF", href: "#produtos" },
   { label: "PRAZO DE ENTREGA", href: "#prazo-entrega" },
