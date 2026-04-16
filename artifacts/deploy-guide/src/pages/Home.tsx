@@ -155,6 +155,55 @@ export default function Home() {
             </div>
           </div>
         </section>
+        {/* Info sections: Prazo, Garantia, Pagamento */}
+        <section className="py-20 bg-background border-t border-border/50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl space-y-16">
+            <div id="prazo-entrega" className="scroll-mt-24" data-testid="section-prazo-entrega">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🚚</span>
+                <h3 className="text-2xl md:text-3xl font-serif font-bold">Prazo de Entrega</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                Nossos estofados são planejados sob medida e produzidos artesanalmente.
+                O prazo de produção e entrega varia entre <strong className="text-foreground">10 a 40 dias úteis</strong>,
+                conforme o modelo escolhido. O prazo exato de cada peça aparece na página do produto.
+                Realizamos entrega em diversas regiões do Brasil — fale com nosso vendedor para confirmar disponibilidade na sua cidade.
+              </p>
+            </div>
+
+            <div id="garantia" className="scroll-mt-24" data-testid="section-garantia">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🛡️</span>
+                <h3 className="text-2xl md:text-3xl font-serif font-bold">Garantia</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                Todos os estofados Sofá King possuem <strong className="text-foreground">5 anos de garantia</strong> na
+                estrutura de madeira de reflorestamento e <strong className="text-foreground">1 ano de garantia</strong> em
+                espumas, tecidos e acabamentos contra defeitos de fabricação.
+                Nosso compromisso é com peças que duram gerações — feitas para serem usadas e amadas todos os dias.
+              </p>
+            </div>
+
+            <div id="pagamento" className="scroll-mt-24" data-testid="section-pagamento">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">💳</span>
+                <h3 className="text-2xl md:text-3xl font-serif font-bold">Forma de Pagamento</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Para sua comodidade, oferecemos diversas opções de pagamento:
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-3 text-foreground">
+                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Pix com 5% de desconto à vista</li>
+                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Cartão de crédito em até 12x sem juros</li>
+                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Boleto bancário à vista</li>
+                <li className="flex items-start gap-2"><span className="text-accent mt-1">●</span> Transferência bancária</li>
+              </ul>
+              <p className="text-muted-foreground leading-relaxed mt-4">
+                Condições especiais e parcelamento estendido podem ser combinados diretamente com nosso vendedor pelo WhatsApp.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
