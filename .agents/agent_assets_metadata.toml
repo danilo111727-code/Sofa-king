@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "nu-At-UuWazJSFSIySBpw"
@@ -30,3 +29,9 @@ id = "4thkW3iddEC72NJX31fib"
 uri = "file://artifacts/deploy-guide/public/images/hero.png"
 type = "image"
 title = "generated_image"
+
+[[outputs]]
+id = "rZpB6nEzbETbh-sa5slYJ"
+uri = "file://attached_assets/IMG_2449_fundo_branco.png"
+type = "image"
+title = "Sofá em fundo branco"
