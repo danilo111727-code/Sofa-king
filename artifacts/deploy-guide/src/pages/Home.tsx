@@ -40,10 +40,11 @@ export default function Home() {
           <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24">
             <div className="max-w-2xl text-white">
               <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-white/80 mb-5 font-semibold" data-testid="text-hero-tagline">
-                Estofados planejados · Ateliê
+                Sofá King · Ateliê de Estofados Planejados
               </p>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.05] mb-6 text-white drop-shadow-lg" data-testid="text-hero-title">
-                Estofados<br />minimalistas e<br /><em className="italic font-normal">modernos.</em>
+              <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] mb-6 text-white drop-shadow-lg" data-testid="text-hero-title">
+                Não fazemos sofás em série.<br />
+                <em className="italic font-normal">Fazemos o seu sofá.</em>
               </h1>
               <p className="text-base md:text-lg text-white/85 mb-10 max-w-lg leading-relaxed">
                 Modelos planejados no nosso ateliê em Feira de Santana. Você escolhe a metragem, o tecido e a espuma — a gente faz à mão.
