@@ -84,27 +84,31 @@ export function Navbar() {
     <>
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setDrawerOpen(true)}
-              data-testid="button-mobile-menu"
-              aria-label="Abrir menu"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-            <Link href="/" className="flex items-center gap-3" data-testid="link-home-logo">
-              <img src={logoImg} alt="Sofá King" className="h-11 w-auto object-contain" />
-              <div className="hidden sm:flex flex-col leading-none">
-                <span className="font-serif text-xl font-bold tracking-wide text-foreground">SOFÁ KING</span>
-                <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-0.5">Estofados planejados</span>
-              </div>
-            </Link>
-          </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-24 sm:h-28 grid grid-cols-[auto_1fr_auto] items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setDrawerOpen(true)}
+            data-testid="button-mobile-menu"
+            aria-label="Abrir menu"
+            className="justify-self-start"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/"
+            className="justify-self-center flex items-center justify-center"
+            data-testid="link-home-logo"
+          >
+            <img
+              src={logoImg}
+              alt="Sofá King"
+              className="h-16 sm:h-20 w-auto object-contain"
+            />
+          </Link>
+
+          <div className="flex items-center gap-1 sm:gap-2 justify-self-end">
             <AuthButtons />
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" data-testid="button-search">
               <Search className="h-5 w-5" />
