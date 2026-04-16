@@ -30,8 +30,56 @@ uri = "file://artifacts/deploy-guide/public/images/hero.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "2uWfvljzuNpTobmoBvIkZ"
+uri = "file://artifacts/deploy-guide/public/foams/d33-selada.png"
+type = "image"
+title = "foam d33 selada"
+
+[[generated]]
+id = "XzSTxpKURx5qkDsftI4gj"
+uri = "file://artifacts/deploy-guide/public/foams/d45-selada.png"
+type = "image"
+title = "foam d45 selada"
+
+[[generated]]
+id = "UB2jC47ebIBO9S8AXVMEI"
+uri = "file://artifacts/deploy-guide/public/foams/d33-soft.png"
+type = "image"
+title = "foam d33 soft"
+
+[[generated]]
+id = "fazVP0R7Ic4iFjeKM5olE"
+uri = "file://artifacts/deploy-guide/public/foams/d33-soft-molas.png"
+type = "image"
+title = "foam d33 soft molas"
+
 [[outputs]]
 id = "rZpB6nEzbETbh-sa5slYJ"
 uri = "file://attached_assets/IMG_2449_fundo_branco.png"
 type = "image"
 title = "Sofá em fundo branco"
+
+[[outputs]]
+id = "bqj4RXlC0vP-VoqmEEK1U"
+uri = "file://artifacts/deploy-guide/public/foams/d33-selada.png"
+type = "image"
+title = "D33 selada — bloco único firme"
+
+[[outputs]]
+id = "Bg0MxYQFS-F-_XU_s4ioe"
+uri = "file://artifacts/deploy-guide/public/foams/d45-selada.png"
+type = "image"
+title = "D45 selada — bloco único extra firme"
+
+[[outputs]]
+id = "o9rL8MKUTf2hKd_avPaiF"
+uri = "file://artifacts/deploy-guide/public/foams/d33-soft.png"
+type = "image"
+title = "D33 + Soft — duas camadas (base firme + pillow macio)"
+
+[[outputs]]
+id = "TB0aRzowdW1Gg8kMuMSS6"
+uri = "file://artifacts/deploy-guide/public/foams/d33-soft-molas.png"
+type = "image"
+title = "D33 + Soft + Molas — três camadas (molas + D33 + soft)"
