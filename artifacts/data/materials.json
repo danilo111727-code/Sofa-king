@@ -1,27 +1,35 @@
 {
   "materials": [
     {
-      "id": "esp-d20",
+      "id": "esp-d33-selada",
       "type": "espuma",
-      "name": "Espuma D20 (Soft)",
-      "description": "Mais macia, ideal para encostos.",
-      "priceAdjustment": -100,
-      "active": true
-    },
-    {
-      "id": "esp-d23",
-      "type": "espuma",
-      "name": "Espuma D23",
-      "description": "Conforto firme — recomendada para uso diário.",
+      "name": "Espuma D33 selada",
+      "description": "Firme — suporta 90–120kg. Indicada para uso diário. Amacia nos primeiros meses e depois estabiliza, mantendo a estrutura.",
       "priceAdjustment": 0,
       "active": true
     },
     {
-      "id": "esp-d28",
+      "id": "esp-d45-selada",
       "type": "espuma",
-      "name": "Espuma D28 (Premium)",
-      "description": "Mais densa e firme, recomendada para uso intenso.",
-      "priceAdjustment": 150,
+      "name": "Espuma D45 selada",
+      "description": "Firme — suporta 110–150kg. Indicada para uso intenso. Alta durabilidade, quase não deforma.",
+      "priceAdjustment": 0,
+      "active": true
+    },
+    {
+      "id": "esp-d33-soft",
+      "type": "espuma",
+      "name": "Espuma D33 + Soft",
+      "description": "Macio com suporte — suporta 100–130kg. Premium: amacia levemente e mantém o conforto com suporte.",
+      "priceAdjustment": 0,
+      "active": true
+    },
+    {
+      "id": "esp-d33-soft-molas",
+      "type": "espuma",
+      "name": "Espuma D33 + Soft + Molas",
+      "description": "Super macio — suporta 130–160kg+. Linha luxo: alta durabilidade com conforto constante.",
+      "priceAdjustment": 0,
       "active": true
     }
   ]
