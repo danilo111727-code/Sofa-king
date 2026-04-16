@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { ShoppingCart, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoImg from "@assets/IMG_2431_1776343662684.jpeg";
+import logoImg from "@assets/sofa-king-logo.png";
 
 export function Navbar() {
   return (

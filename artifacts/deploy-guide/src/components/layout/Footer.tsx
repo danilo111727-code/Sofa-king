@@ -20,6 +20,7 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-4 tracking-wide">Atendimento</h4>
           <ul className="space-y-3 text-sm text-primary-foreground/80">
+            <li><a href="https://wa.me/5575991495793" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2" data-testid="link-footer-whatsapp">📱 WhatsApp: (75) 99149-5793</a></li>
             <li><a href="#" className="hover:text-white transition-colors" data-testid="link-footer-fale">Fale Conosco</a></li>
             <li><a href="#" className="hover:text-white transition-colors" data-testid="link-footer-faq">Perguntas Frequentes</a></li>
             <li><a href="#" className="hover:text-white transition-colors" data-testid="link-footer-pedido">Acompanhe seu Pedido</a></li>
