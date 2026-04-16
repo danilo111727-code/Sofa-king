@@ -28,6 +28,10 @@ export interface Material {
   priceAdjustment: number;
   /** Optional per-size overrides keyed by size label. Falls back to `priceAdjustment`. */
   priceAdjustmentBySize?: Record<string, number>;
+  weightSupport?: string;
+  comfortLevel?: string;
+  useIndication?: string;
+  longTermBehavior?: string;
   active: boolean;
   imageUrl?: string;
 }

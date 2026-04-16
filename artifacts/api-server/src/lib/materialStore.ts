@@ -15,6 +15,14 @@ export interface Material {
   priceAdjustment: number;
   /** Optional per-size overrides keyed by size label. Falls back to `priceAdjustment`. */
   priceAdjustmentBySize?: Record<string, number>;
+  /** Peso suportado, ex: "90–120kg" */
+  weightSupport?: string;
+  /** Nível de conforto, ex: "Firme" */
+  comfortLevel?: string;
+  /** Indicação de uso, ex: "Uso diário" */
+  useIndication?: string;
+  /** Comportamento a longo prazo */
+  longTermBehavior?: string;
   active: boolean;
   imageUrl?: string;
 }

@@ -337,6 +337,37 @@ export default function Produto() {
                       );
                     })}
                   </div>
+                  {selectedFoam && (selectedFoam.weightSupport || selectedFoam.comfortLevel || selectedFoam.useIndication || selectedFoam.longTermBehavior) && (
+                    <div className="mt-3 rounded-lg border border-border bg-secondary/20 p-3 text-xs" data-testid="foam-specs">
+                      <div className="font-semibold text-foreground mb-2">Ficha técnica — {selectedFoam.name}</div>
+                      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                        {selectedFoam.weightSupport && (
+                          <div className="flex gap-1.5">
+                            <dt className="text-muted-foreground">Peso suportado:</dt>
+                            <dd className="text-foreground font-medium">{selectedFoam.weightSupport}</dd>
+                          </div>
+                        )}
+                        {selectedFoam.comfortLevel && (
+                          <div className="flex gap-1.5">
+                            <dt className="text-muted-foreground">Nível de conforto:</dt>
+                            <dd className="text-foreground font-medium">{selectedFoam.comfortLevel}</dd>
+                          </div>
+                        )}
+                        {selectedFoam.useIndication && (
+                          <div className="flex gap-1.5">
+                            <dt className="text-muted-foreground">Indicação de uso:</dt>
+                            <dd className="text-foreground font-medium">{selectedFoam.useIndication}</dd>
+                          </div>
+                        )}
+                        {selectedFoam.longTermBehavior && (
+                          <div className="flex gap-1.5 sm:col-span-2">
+                            <dt className="text-muted-foreground shrink-0">Longo prazo:</dt>
+                            <dd className="text-foreground">{selectedFoam.longTermBehavior}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </div>
+                  )}
                 </div>
               )}
 

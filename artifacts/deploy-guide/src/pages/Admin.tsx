@@ -899,10 +899,14 @@ interface FoamForm {
   description: string;
   priceAdjustment: number;
   priceAdjustmentBySize: Record<string, number>;
+  weightSupport: string;
+  comfortLevel: string;
+  useIndication: string;
+  longTermBehavior: string;
   imageUrl: string;
   active: boolean;
 }
-const EMPTY_ESP: FoamForm = { type: "espuma", name: "", description: "", priceAdjustment: 0, priceAdjustmentBySize: {}, imageUrl: "", active: true };
+const EMPTY_ESP: FoamForm = { type: "espuma", name: "", description: "", priceAdjustment: 0, priceAdjustmentBySize: {}, weightSupport: "", comfortLevel: "", useIndication: "", longTermBehavior: "", imageUrl: "", active: true };
 
 function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [items, setItems] = useState<Material[]>([]);
@@ -929,6 +933,10 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
       description: m.description,
       priceAdjustment: m.priceAdjustment,
       priceAdjustmentBySize: { ...(m.priceAdjustmentBySize || {}) },
+      weightSupport: m.weightSupport || "",
+      comfortLevel: m.comfortLevel || "",
+      useIndication: m.useIndication || "",
+      longTermBehavior: m.longTermBehavior || "",
       imageUrl: m.imageUrl || "",
       active: m.active,
     });
@@ -1014,6 +1022,23 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
                   helpLabel="Defina um acréscimo específico para cada metragem."
                 />
               </Field>
+              <div className="border-t border-[#2d1f10] pt-4">
+                <h3 className="text-sm font-semibold text-white mb-3">Ficha técnica (opcional)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Field label="Peso suportado">
+                    <input className={inputCls} value={form.weightSupport} onChange={(e) => setForm({ ...form, weightSupport: e.target.value })} placeholder="Ex: 90–120kg" />
+                  </Field>
+                  <Field label="Nível de conforto">
+                    <input className={inputCls} value={form.comfortLevel} onChange={(e) => setForm({ ...form, comfortLevel: e.target.value })} placeholder="Ex: Firme" />
+                  </Field>
+                  <Field label="Indicação de uso">
+                    <input className={inputCls} value={form.useIndication} onChange={(e) => setForm({ ...form, useIndication: e.target.value })} placeholder="Ex: Uso diário" />
+                  </Field>
+                  <Field label="Comportamento a longo prazo">
+                    <input className={inputCls} value={form.longTermBehavior} onChange={(e) => setForm({ ...form, longTermBehavior: e.target.value })} placeholder="Ex: Amacia e estabiliza" />
+                  </Field>
+                </div>
+              </div>
               <Field label="Status">
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setForm({ ...form, active: true })} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${form.active ? "bg-green-900/50 border-green-700 text-green-400" : "bg-[#120d06] border-[#2d1f10] text-[#5a4030]"}`}>✓ Ativo</button>

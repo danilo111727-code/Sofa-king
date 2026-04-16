@@ -13,7 +13,7 @@ router.get("/admin/materials", requireAdmin, (_req, res) => {
 });
 
 router.post("/admin/materials", requireAdmin, (req, res) => {
-  const { type, name, description, priceAdjustment, priceAdjustmentBySize, imageUrl, active } = req.body || {};
+  const { type, name, description, priceAdjustment, priceAdjustmentBySize, weightSupport, comfortLevel, useIndication, longTermBehavior, imageUrl, active } = req.body || {};
   if (!type || !name) {
     res.status(400).json({ error: "Tipo e nome são obrigatórios" });
     return;
@@ -28,6 +28,10 @@ router.post("/admin/materials", requireAdmin, (req, res) => {
     description: description ?? "",
     priceAdjustment: Number(priceAdjustment) || 0,
     priceAdjustmentBySize: priceAdjustmentBySize && typeof priceAdjustmentBySize === "object" ? priceAdjustmentBySize : undefined,
+    weightSupport: typeof weightSupport === "string" ? weightSupport : undefined,
+    comfortLevel: typeof comfortLevel === "string" ? comfortLevel : undefined,
+    useIndication: typeof useIndication === "string" ? useIndication : undefined,
+    longTermBehavior: typeof longTermBehavior === "string" ? longTermBehavior : undefined,
     imageUrl: imageUrl ?? undefined,
     active: active !== false,
   });
@@ -35,13 +39,17 @@ router.post("/admin/materials", requireAdmin, (req, res) => {
 });
 
 router.put("/admin/materials/:id", requireAdmin, (req, res) => {
-  const { type, name, description, priceAdjustment, priceAdjustmentBySize, imageUrl, active } = req.body || {};
+  const { type, name, description, priceAdjustment, priceAdjustmentBySize, weightSupport, comfortLevel, useIndication, longTermBehavior, imageUrl, active } = req.body || {};
   const updated = store.update(req.params.id, {
     ...(type !== undefined && { type }),
     ...(name !== undefined && { name }),
     ...(description !== undefined && { description }),
     ...(priceAdjustment !== undefined && { priceAdjustment: Number(priceAdjustment) }),
     ...(priceAdjustmentBySize !== undefined && { priceAdjustmentBySize }),
+    ...(weightSupport !== undefined && { weightSupport }),
+    ...(comfortLevel !== undefined && { comfortLevel }),
+    ...(useIndication !== undefined && { useIndication }),
+    ...(longTermBehavior !== undefined && { longTermBehavior }),
     ...(imageUrl !== undefined && { imageUrl }),
     ...(active !== undefined && { active: !!active }),
   });
