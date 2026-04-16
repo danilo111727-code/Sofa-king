@@ -12,20 +12,15 @@ const menu: MenuItem[] = [
   {
     label: "SOFÁS",
     children: [
-      { label: "Sofá Cama", href: "#produtos" },
-      { label: "Sofá Fixo", href: "#produtos" },
-      { label: "Sofá Retrátil", href: "#produtos" },
-      { label: "Sofá Living", href: "#produtos" },
-      { label: "Sofá Ilha", href: "#produtos" },
-      { label: "Sofá Chaise", href: "#produtos" },
-      { label: "Sofá de Canto", href: "#produtos" },
+      { label: "Todos os modelos", href: "/#produtos" },
+      { label: "Sofá Retrátil", href: "/?categoria=retratil#produtos" },
+      { label: "Sofá de Canto", href: "/?categoria=canto#produtos" },
+      { label: "Módulos", href: "/?categoria=modulos#produtos" },
     ],
   },
-  { label: "POLTRONAS E PUFFS", href: "#produtos" },
-  { label: "CAMA", href: "#produtos" },
-  { label: "PRAZO DE ENTREGA", href: "#prazo-entrega" },
-  { label: "GARANTIA", href: "#garantia" },
-  { label: "FORMA DE PAGAMENTO", href: "#pagamento" },
+  { label: "PRAZO DE ENTREGA", href: "/#prazo-entrega" },
+  { label: "GARANTIA", href: "/#garantia" },
+  { label: "FORMA DE PAGAMENTO", href: "/#pagamento" },
 ];
 
 interface SideDrawerProps {

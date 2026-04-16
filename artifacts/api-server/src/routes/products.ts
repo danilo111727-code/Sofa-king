@@ -42,7 +42,7 @@ router.get("/products/:id", (req, res) => {
 });
 
 router.post("/products", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
   if (!name) {
     res.status(400).json({ error: "Nome é obrigatório" });
     return;
@@ -53,6 +53,8 @@ router.post("/products", requireAdmin, (req, res) => {
     description: description ?? "",
     longDescription: longDescription ?? "",
     image: image ?? "/images/placeholder.png",
+    images: Array.isArray(images) ? images : [],
+    category: category ?? "",
     dimensions: dimensions ?? "",
     colors: Array.isArray(colors) ? colors : (colors ? String(colors).split(",").map((s: string) => s.trim()) : []),
     fabrics: Array.isArray(fabrics) ? fabrics : (fabrics ? String(fabrics).split(",").map((s: string) => s.trim()) : []),
@@ -64,13 +66,15 @@ router.post("/products", requireAdmin, (req, res) => {
 });
 
 router.put("/products/:id", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
     ...(price !== undefined && { price: Number(price) }),
     ...(description !== undefined && { description }),
     ...(longDescription !== undefined && { longDescription }),
     ...(image !== undefined && { image }),
+    ...(images !== undefined && { images: Array.isArray(images) ? images : [] }),
+    ...(category !== undefined && { category }),
     ...(dimensions !== undefined && { dimensions }),
     ...(colors !== undefined && { colors: Array.isArray(colors) ? colors : String(colors).split(",").map((s: string) => s.trim()) }),
     ...(fabrics !== undefined && { fabrics: Array.isArray(fabrics) ? fabrics : String(fabrics).split(",").map((s: string) => s.trim()) }),

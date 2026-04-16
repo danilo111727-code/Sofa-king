@@ -28,6 +28,7 @@ import {
   type WhatsappEvent,
   type Client,
 } from "@/lib/api";
+import { CATEGORIES, displayName, type ProductCategory } from "@/lib/categories";
 
 const inputCls = "w-full bg-[#1a1208] border border-[#3d2e1e] rounded-lg px-3 py-2.5 text-white text-sm placeholder-[#5a4030] focus:outline-none focus:border-[#c9a96e] transition-colors";
 const cardCls = "bg-[#1a1208] border border-[#2d1f10] rounded-xl p-4";
@@ -158,9 +159,10 @@ export default function Admin() {
 
 interface ProdutoForm {
   name: string;
+  category: ProductCategory;
   description: string;
   longDescription: string;
-  image: string;
+  images: string[];
   dimensions: string;
   prazoEntrega: string;
   disponibilidade: boolean;
@@ -168,7 +170,7 @@ interface ProdutoForm {
 }
 
 const EMPTY_PRODUTO: ProdutoForm = {
-  name: "", description: "", longDescription: "", image: "",
+  name: "", category: "", description: "", longDescription: "", images: [],
   dimensions: "", prazoEntrega: "", disponibilidade: true,
   sizes: [],
 };
@@ -193,9 +195,14 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
   function openNew() { setEditId(null); setForm(EMPTY_PRODUTO); setShowForm(true); }
   function openEdit(p: Product) {
     setEditId(p.id);
+    const validCats: ProductCategory[] = ["retratil", "canto", "modulos", ""];
+    const cat: ProductCategory = validCats.includes(p.category as ProductCategory) ? (p.category as ProductCategory) : "";
     setForm({
-      name: p.name, description: p.description, longDescription: p.longDescription,
-      image: p.image, dimensions: p.dimensions, prazoEntrega: p.prazoEntrega,
+      name: p.name,
+      category: cat,
+      description: p.description, longDescription: p.longDescription,
+      images: p.images && p.images.length ? [...p.images] : (p.image ? [p.image] : []),
+      dimensions: p.dimensions, prazoEntrega: p.prazoEntrega,
       disponibilidade: p.disponibilidade,
       sizes: p.sizes && p.sizes.length ? p.sizes : [],
     });
@@ -211,10 +218,17 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     }
     setSaving(true);
     try {
-      const payload = {
-        ...form,
-        image: form.image || "/images/placeholder.png",
+      const payload: Omit<Product, "id"> = {
+        name: form.name,
+        category: form.category,
+        description: form.description,
+        longDescription: form.longDescription,
+        images: form.images,
+        image: form.images[0] || "/images/placeholder.png",
+        dimensions: form.dimensions,
         prazoEntrega: form.prazoEntrega || "A consultar",
+        disponibilidade: form.disponibilidade,
+        sizes: form.sizes,
         colors: [],
         fabrics: [],
         price: Math.min(...form.sizes.map((s) => s.basePrice).filter((n) => n > 0)) || 0,
@@ -231,14 +245,33 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     catch (err: any) { flash("err", err.message ?? "Erro ao excluir"); }
   }
 
-  async function handleUpload(file: File) {
+  async function handleUpload(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const arr = Array.from(files);
     setUploading(true);
     try {
-      const { url } = await uploadImage(file);
-      setForm((f) => ({ ...f, image: url }));
-      flash("ok", "Imagem enviada!");
+      const uploaded: string[] = [];
+      for (const f of arr) {
+        const { url } = await uploadImage(f);
+        uploaded.push(url);
+      }
+      setForm((f) => ({ ...f, images: [...f.images, ...uploaded] }));
+      flash("ok", `${uploaded.length} imagem${uploaded.length !== 1 ? "s" : ""} enviada${uploaded.length !== 1 ? "s" : ""}!`);
     } catch (err: any) { flash("err", err.message ?? "Erro no upload"); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
+  }
+
+  function moveImage(idx: number, dir: -1 | 1) {
+    setForm((f) => {
+      const arr = [...f.images];
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= arr.length) return f;
+      [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+      return { ...f, images: arr };
+    });
+  }
+  function removeImage(idx: number) {
+    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== idx) }));
   }
 
   function updateSize(i: number, patch: Partial<SizeOption>) {
@@ -280,7 +313,17 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
               <img src={p.image} alt={p.name} className="w-16 h-16 object-cover rounded-lg bg-[#261a0e] flex-shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-medium text-white">{p.name}</h3>
+                  <h3 className="font-medium text-white">{displayName(p.name, p.category)}</h3>
+                  {p.category && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#c9a96e]/20 text-[#c9a96e] border border-[#c9a96e]/30 uppercase tracking-wider">
+                      {CATEGORIES.find(c => c.id === p.category)?.label}
+                    </span>
+                  )}
+                  {p.images && p.images.length > 1 && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#261a0e] text-[#a08060] border border-[#3d2e1e]">
+                      {p.images.length} fotos
+                    </span>
+                  )}
                   <span className={`text-xs px-2 py-0.5 rounded-full ${p.disponibilidade ? "bg-green-900/50 text-green-400 border border-green-800" : "bg-red-900/50 text-red-400 border border-red-800"}`}>
                     {p.disponibilidade ? "Disponível" : "Indisponível"}
                   </span>
@@ -313,21 +356,116 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
               <button onClick={closeForm} className="text-[#a08060] hover:text-white text-xl leading-none">✕</button>
             </div>
             <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
-              <Field label="Nome do Modelo *">
-                <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              </Field>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Nome do Modelo *">
+                  <input
+                    className={inputCls}
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Ex: Istambul"
+                    required
+                  />
+                </Field>
+                <Field label="Categoria">
+                  <select
+                    className={inputCls}
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value as ProductCategory })}
+                    data-testid="select-category"
+                  >
+                    <option value="">— Sem categoria —</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
 
-              <Field label="Imagem">
-                <div className="flex gap-2">
-                  <input className={inputCls} value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="URL ou faça upload" />
-                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])} />
-                  <button type="button" disabled={uploading} onClick={() => fileRef.current?.click()} className="bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg px-3 text-sm text-[#c9a96e] disabled:opacity-50 whitespace-nowrap">
-                    {uploading ? "Enviando..." : "📷 Upload"}
-                  </button>
+              {form.name && (
+                <div className="text-xs text-[#a08060] -mt-2">
+                  Nome no site: <strong className="text-[#c9a96e]">{displayName(form.name, form.category)}</strong>
                 </div>
-                {form.image && (
-                  <img src={form.image} alt="preview" className="mt-2 w-full h-32 object-cover rounded-lg bg-[#261a0e]" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                )}
+              )}
+
+              <Field label="Galeria de Fotos">
+                <div className="space-y-2">
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleUpload(e.target.files)}
+                  />
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    onClick={() => fileRef.current?.click()}
+                    className="w-full bg-[#261a0e] hover:bg-[#3d2e1e] border border-dashed border-[#3d2e1e] rounded-lg py-4 text-sm text-[#c9a96e] disabled:opacity-50"
+                    data-testid="button-upload-images"
+                  >
+                    {uploading ? "Enviando..." : "📷 Adicionar fotos (pode selecionar várias)"}
+                  </button>
+                  {form.images.length === 0 ? (
+                    <p className="text-xs text-[#7a6040] text-center py-2">
+                      Nenhuma foto ainda. A primeira foto enviada vira a capa.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-[#7a6040]">
+                        A primeira foto é a <strong className="text-[#c9a96e]">capa</strong>. Use ↑ ↓ para reordenar.
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {form.images.map((url, i) => (
+                          <div
+                            key={`${url}-${i}`}
+                            className="relative border border-[#3d2e1e] rounded-lg overflow-hidden bg-[#261a0e] group"
+                            data-testid={`gallery-item-${i}`}
+                          >
+                            <img
+                              src={url}
+                              alt={`Foto ${i + 1}`}
+                              className="w-full h-28 object-cover"
+                              onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.2"; }}
+                            />
+                            {i === 0 && (
+                              <span className="absolute top-1 left-1 text-[10px] bg-[#c9a96e] text-[#1a1208] font-bold px-2 py-0.5 rounded-full">
+                                CAPA
+                              </span>
+                            )}
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/70 px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => moveImage(i, -1)}
+                                  disabled={i === 0}
+                                  className="text-white disabled:opacity-30 hover:text-[#c9a96e] px-1 text-sm leading-none"
+                                  aria-label="Mover para cima"
+                                  data-testid={`button-image-up-${i}`}
+                                >↑</button>
+                                <button
+                                  type="button"
+                                  onClick={() => moveImage(i, 1)}
+                                  disabled={i === form.images.length - 1}
+                                  className="text-white disabled:opacity-30 hover:text-[#c9a96e] px-1 text-sm leading-none"
+                                  aria-label="Mover para baixo"
+                                  data-testid={`button-image-down-${i}`}
+                                >↓</button>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeImage(i)}
+                                className="text-red-400 hover:text-red-300 text-xs"
+                                aria-label="Remover foto"
+                                data-testid={`button-image-remove-${i}`}
+                              >✕</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Field>
 
               {/* SIZES TABLE */}

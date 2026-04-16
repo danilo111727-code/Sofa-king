@@ -10,6 +10,8 @@ export interface Product {
   description: string;
   longDescription: string;
   image: string;
+  images: string[];
+  category: string;
   dimensions: string;
   colors: string[];
   fabrics: string[];

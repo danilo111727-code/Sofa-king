@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { displayName, applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -31,6 +32,7 @@ export default function Produto() {
   const [albumIdx, setAlbumIdx] = useState(0);
   const [fabric, setFabric] = useState<FabricSample | null>(null);
   const [foamIdx, setFoamIdx] = useState(0);
+  const [mainImageIdx, setMainImageIdx] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -57,6 +59,17 @@ export default function Produto() {
     const foamSur = selectedFoam?.priceAdjustment ?? 0;
     return base + albumSur + foamSur;
   }, [selectedSize, selectedAlbum, selectedFoam]);
+
+  const pixPrice = useMemo(() => applyPixDiscount(finalPrice), [finalPrice]);
+  const installmentPrice = useMemo(() => finalPrice / MAX_INSTALLMENTS, [finalPrice]);
+  const fullName = product ? displayName(product.name, product.category) : "";
+  const galleryImages = useMemo(() => {
+    if (!product) return [];
+    if (product.images && product.images.length > 0) return product.images;
+    return product.image ? [product.image] : [];
+  }, [product]);
+
+  useEffect(() => { setMainImageIdx(0); }, [product?.id]);
 
   useEffect(() => {
     // when album changes, pick its first fabric
@@ -99,8 +112,8 @@ export default function Produto() {
     if (!selectedSize) return;
     add({
       productId: product.id,
-      productName: product.name,
-      productImage: product.image,
+      productName: fullName,
+      productImage: galleryImages[0] || product.image,
       size: { label: selectedSize.label, basePrice: selectedSize.basePrice },
       album: selectedAlbum
         ? { id: selectedAlbum.id, name: selectedAlbum.name, surcharge: selectedAlbum.surcharge }
@@ -116,7 +129,7 @@ export default function Produto() {
     } else {
       toast({
         title: "Adicionado ao carrinho",
-        description: `${product.name} — ${selectedSize.label} por ${brl(finalPrice)}`,
+        description: `${fullName} — ${selectedSize.label} por ${brl(finalPrice)}`,
         duration: 2500,
       });
     }
@@ -138,25 +151,47 @@ export default function Produto() {
               <ChevronRight className="w-4 h-4 mx-2 text-border" />
               <span>Sofás</span>
               <ChevronRight className="w-4 h-4 mx-2 text-border" />
-              <span className="text-foreground font-medium">{product.name}</span>
+              <span className="text-foreground font-medium">{fullName}</span>
             </div>
           </div>
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            {/* Image */}
-            <div className="space-y-4">
+            {/* Image Gallery */}
+            <div className="space-y-3">
               <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover object-center" data-testid="img-product-main" />
+                <img
+                  src={galleryImages[mainImageIdx] || product.image}
+                  alt={fullName}
+                  className="w-full h-full object-cover object-center"
+                  data-testid="img-product-main"
+                />
               </div>
+              {galleryImages.length > 1 && (
+                <div className="grid grid-cols-5 gap-2" data-testid="product-thumbnails">
+                  {galleryImages.map((url, i) => (
+                    <button
+                      key={`${url}-${i}`}
+                      onClick={() => setMainImageIdx(i)}
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                        mainImageIdx === i ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50 opacity-70 hover:opacity-100"
+                      }`}
+                      data-testid={`thumbnail-${i}`}
+                      aria-label={`Ver foto ${i + 1}`}
+                    >
+                      <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}
             <div className="flex flex-col">
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground" data-testid="text-product-detail-name">
-                  {product.name}
+                  {fullName}
                 </h1>
                 {!product.disponibilidade && (
                   <span className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full font-medium">Indisponível</span>
@@ -296,7 +331,15 @@ export default function Produto() {
                   <p className="text-4xl font-bold text-accent mt-1" data-testid="text-product-detail-price">
                     {brl(finalPrice)}
                   </p>
-                  <div className="text-xs text-muted-foreground mt-2 space-y-0.5">
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-foreground" data-testid="text-installment">
+                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong> <span className="text-muted-foreground">sem juros no cartão</span>
+                    </p>
+                    <p className="text-sm text-green-700" data-testid="text-pix-price">
+                      <strong>ou {brl(pixPrice)} no PIX</strong> <span className="text-green-700/80">({PIX_DISCOUNT_PCT}% OFF à vista)</span>
+                    </p>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-3 space-y-0.5 pt-3 border-t border-border">
                     {selectedSize && <div>• Metragem {selectedSize.label}: {brl(selectedSize.basePrice)}</div>}
                     {selectedAlbum && selectedAlbum.surcharge !== 0 && <div>• {selectedAlbum.name}: {selectedAlbum.surcharge > 0 ? "+" : ""}{brl(selectedAlbum.surcharge)}</div>}
                     {selectedFoam && selectedFoam.priceAdjustment !== 0 && <div>• {selectedFoam.name}: {selectedFoam.priceAdjustment > 0 ? "+" : ""}{brl(selectedFoam.priceAdjustment)}</div>}

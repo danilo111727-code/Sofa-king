@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { trackWhatsapp } from "@/lib/api";
+import { applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
 
 const WHATSAPP = "5575991495793";
 
@@ -26,13 +27,13 @@ interface PaymentOption {
 const PAYMENT_OPTIONS: PaymentOption[] = [
   {
     id: "pix",
-    label: "PIX à vista",
+    label: `PIX à vista — ${PIX_DISCOUNT_PCT}% OFF`,
     description: "Pagamento instantâneo via QR Code, combinado diretamente pelo WhatsApp.",
     icon: "⚡",
   },
   {
     id: "cartao",
-    label: "Cartão de crédito em até 10x",
+    label: `Cartão de crédito em até ${MAX_INSTALLMENTS}x`,
     description: "Parcelado no cartão, combinado diretamente pelo WhatsApp.",
     icon: "💳",
   },
@@ -44,7 +45,9 @@ export default function Carrinho() {
   const [notes, setNotes] = useState("");
 
   const empty = items.length === 0;
-  const installment = useMemo(() => (subtotal / 10), [subtotal]);
+  const pixTotal = useMemo(() => applyPixDiscount(subtotal), [subtotal]);
+  const installment = useMemo(() => subtotal / MAX_INSTALLMENTS, [subtotal]);
+  const finalTotal = payment === "pix" ? pixTotal : subtotal;
 
   function handleSend() {
     trackWhatsapp({});
@@ -69,12 +72,16 @@ export default function Carrinho() {
       lines.push(`• Subtotal: ${brl(it.unitPrice * it.qty)}`);
       lines.push("");
     });
-    lines.push(`*Total: ${brl(subtotal)}*`);
+    lines.push(`*Subtotal: ${brl(subtotal)}*`);
     lines.push("");
     const paymentLabel = PAYMENT_OPTIONS.find((p) => p.id === payment)!.label;
     lines.push(`*Forma de pagamento:* ${paymentLabel}`);
-    if (payment === "cartao") {
-      lines.push(`  Ex.: em 10x de aprox. ${brl(installment)} (a combinar)`);
+    if (payment === "pix") {
+      lines.push(`  Desconto PIX (${PIX_DISCOUNT_PCT}%): -${brl(subtotal - pixTotal)}`);
+      lines.push(`  *Total à vista no PIX: ${brl(pixTotal)}*`);
+    } else {
+      lines.push(`  Em ${MAX_INSTALLMENTS}x de aprox. ${brl(installment)} (a combinar)`);
+      lines.push(`  *Total: ${brl(subtotal)}*`);
     }
     if (notes.trim()) {
       lines.push("");
@@ -214,9 +221,14 @@ export default function Carrinho() {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm text-foreground">{opt.label}</p>
                             <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{opt.description}</p>
+                            {opt.id === "pix" && payment === "pix" && subtotal > 0 && (
+                              <p className="text-xs text-green-700 font-medium mt-1" data-testid="text-pix-savings">
+                                Você economiza {brl(subtotal - pixTotal)}
+                              </p>
+                            )}
                             {opt.id === "cartao" && payment === "cartao" && subtotal > 0 && (
                               <p className="text-xs text-accent font-medium mt-1">
-                                ~{brl(installment)} / mês em 10x
+                                ~{brl(installment)} / mês em {MAX_INSTALLMENTS}x
                               </p>
                             )}
                           </div>
@@ -239,9 +251,21 @@ export default function Carrinho() {
 
                   <Separator className="my-4" />
 
-                  <div className="flex justify-between items-baseline mb-4">
-                    <span className="font-semibold">Total</span>
-                    <span className="text-2xl font-bold text-accent" data-testid="text-cart-total">{brl(subtotal)}</span>
+                  <div className="mb-4">
+                    <div className="flex justify-between items-baseline">
+                      <span className="font-semibold">Total</span>
+                      <span className="text-2xl font-bold text-accent" data-testid="text-cart-total">{brl(finalTotal)}</span>
+                    </div>
+                    {payment === "pix" && subtotal > 0 && (
+                      <p className="text-xs text-muted-foreground text-right mt-1">
+                        <span className="line-through">{brl(subtotal)}</span> · {PIX_DISCOUNT_PCT}% OFF à vista
+                      </p>
+                    )}
+                    {payment === "cartao" && subtotal > 0 && (
+                      <p className="text-xs text-muted-foreground text-right mt-1">
+                        ou {MAX_INSTALLMENTS}x de {brl(installment)} sem juros
+                      </p>
+                    )}
                   </div>
 
                   <Button
