@@ -36,3 +36,27 @@ id = "T6_2NpmAwqsZH9C7vtD3U"
 uri = "file://attached_assets/sofa_2525_sem_fundo.png"
 type = "image"
 title = "Foto 4 — fixo aberto (cru)"
+
+[[outputs]]
+id = "wYn7zHtpGfVahIaJ8UIXY"
+uri = "file://attached_assets/sofa_2528_branco.jpg"
+type = "image"
+title = "Foto 1 — retrátil aberto (cinza)"
+
+[[outputs]]
+id = "H8g_iILMbGfdwDp0owPHT"
+uri = "file://attached_assets/sofa_2527_branco.jpg"
+type = "image"
+title = "Foto 2 — detalhe lateral (cinza)"
+
+[[outputs]]
+id = "DDHlnmhdrr3XwX4FqbpHr"
+uri = "file://attached_assets/sofa_2526_branco.jpg"
+type = "image"
+title = "Foto 3 — fixo fechado (cru)"
+
+[[outputs]]
+id = "WMdBS40gft81aC-RURYqN"
+uri = "file://attached_assets/sofa_2525_branco.jpg"
+type = "image"
+title = "Foto 4 — fixo aberto (cru)"
