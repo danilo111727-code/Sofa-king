@@ -14,6 +14,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { displayName } from "@/lib/categories";
 import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
+import { DiagramaMedidas } from "@/components/DiagramaMedidas";
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -473,21 +474,22 @@ export default function Produto() {
             </div>
           </div>
 
-          {product.dimensions && (
-            <div className="mt-16 pt-10 border-t border-border">
-              <div className="max-w-4xl mx-auto">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
-                    <Ruler className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-1">Dimensões</h4>
-                    <p className="text-muted-foreground leading-relaxed">{product.dimensions}</p>
-                  </div>
+          <div className="mt-16 pt-10 border-t border-border">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
+                  <Ruler className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground">Dimensões</h4>
+                  {product.dimensions && (
+                    <p className="text-sm text-muted-foreground">{product.dimensions}</p>
+                  )}
                 </div>
               </div>
+              <DiagramaMedidas />
             </div>
-          )}
+          </div>
         </div>
       </main>
 
