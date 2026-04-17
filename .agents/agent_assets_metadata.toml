@@ -12,3 +12,27 @@ id = "r_sXzyWju7U9KGd4JmTST"
 uri = "file://attached_assets/sofa_2519_sem_fundo.png"
 type = "image"
 title = "Sofá retrátil fechado — sem fundo"
+
+[[outputs]]
+id = "jedhlzT0F5L8j6wY8Qv3z"
+uri = "file://attached_assets/sofa_2528_sem_fundo.png"
+type = "image"
+title = "Foto 1 — retrátil aberto (cinza)"
+
+[[outputs]]
+id = "XSLcCfRK7rUh6i-mjPvPi"
+uri = "file://attached_assets/sofa_2527_sem_fundo.png"
+type = "image"
+title = "Foto 2 — detalhe lateral (cinza)"
+
+[[outputs]]
+id = "ZKPX789ghpImjg2qh7I8p"
+uri = "file://attached_assets/sofa_2526_sem_fundo.png"
+type = "image"
+title = "Foto 3 — fixo fechado (cru)"
+
+[[outputs]]
+id = "T6_2NpmAwqsZH9C7vtD3U"
+uri = "file://attached_assets/sofa_2525_sem_fundo.png"
+type = "image"
+title = "Foto 4 — fixo aberto (cru)"
