@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { BestsellerStrip } from "@/components/layout/BestsellerStrip";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useMemo, useRef, type ReactNode } from "react";
 
@@ -127,6 +128,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <BestsellerStrip />
 
         {/* Horizontal scroll row of models */}
         <section className="py-14 md:py-20 bg-background">

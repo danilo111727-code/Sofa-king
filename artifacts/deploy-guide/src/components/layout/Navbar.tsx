@@ -3,7 +3,6 @@ import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { SideDrawer } from "./SideDrawer";
-import { BestsellerStrip } from "./BestsellerStrip";
 import { Show, useUser, useClerk } from "@clerk/react";
 import logoImg from "@assets/sofa-king-logo.png";
 import { useCart } from "@/contexts/CartContext";
@@ -126,7 +125,6 @@ export function Navbar() {
             <span className="px-4">✓ 10 anos de inovação e comprometimento</span>
           </div>
         </div>
-        <BestsellerStrip />
       </header>
     </>
   );
