@@ -42,7 +42,7 @@ function HorizontalScrollRow({ children }: { children: ReactNode }) {
     </div>
   );
 }
-import { fetchProducts, trackView, type Product } from "@/lib/api";
+import { fetchProducts, fetchSiteSettings, trackView, type Product } from "@/lib/api";
 import { CATEGORIES, displayName, getCategory, applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
 
 const VALID_CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
@@ -65,6 +65,7 @@ function useFilters(): { category: string; bestseller: boolean } {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [heroImage, setHeroImage] = useState("/images/hero.png");
   const { category: activeCategory, bestseller: onlyBestsellers } = useFilters();
   const activeCatDef = getCategory(activeCategory);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
@@ -81,7 +82,6 @@ export default function Home() {
     let avail = products.filter((p) => p.disponibilidade);
     if (onlyBestsellers) avail = avail.filter((p) => p.bestseller);
     if (activeCategory) avail = avail.filter((p) => p.category === activeCategory);
-    // Newest first (products.json appends new items at the end).
     return [...avail].reverse();
   }, [products, activeCategory, onlyBestsellers]);
 
@@ -90,6 +90,9 @@ export default function Home() {
       .then(setProducts)
       .catch(() => {})
       .finally(() => setLoading(false));
+    fetchSiteSettings()
+      .then((s) => setHeroImage(s.heroImage))
+      .catch(() => {});
   }, []);
 
   return (
@@ -110,7 +113,7 @@ export default function Home() {
 
           <div className="w-full aspect-[16/10] sm:aspect-[21/9] overflow-hidden bg-secondary/50">
             <img
-              src="/images/hero.png"
+              src={heroImage}
               alt="Sofá minimalista moderno em sala clara e arejada"
               className="w-full h-full object-cover object-center"
               data-testid="img-hero"
