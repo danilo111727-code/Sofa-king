@@ -237,6 +237,25 @@ export async function fetchKnownSizes(): Promise<string[]> {
   return res.json();
 }
 
+// --- Site settings ---
+export interface SiteSettings {
+  heroImage: string;
+}
+
+export async function fetchSiteSettings(): Promise<SiteSettings> {
+  const res = await fetch(`${BASE}/settings`);
+  if (!res.ok) return { heroImage: "/images/hero.png" };
+  return res.json();
+}
+
+export async function updateSiteSettings(data: Partial<SiteSettings>): Promise<SiteSettings> {
+  const res = await fetch(`${BASE}/admin/settings`, {
+    method: "PUT", headers: jsonHeaders, credentials: "include", body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Erro ao salvar configurações");
+  return res.json();
+}
+
 // --- Image upload ---
 export async function uploadImage(file: File): Promise<{ url: string; objectPath: string }> {
   const fd = new FormData();
