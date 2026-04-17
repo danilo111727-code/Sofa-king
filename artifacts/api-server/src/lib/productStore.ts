@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { dbQuery } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = join(__dirname, "../../data/products.json");
@@ -25,26 +26,14 @@ export type ProductCategory =
   | "";
 
 const VALID_CATEGORIES: ProductCategory[] = [
-  "retratil",
-  "cama",
-  "canto",
-  "organicos",
-  "living",
-  "fixo",
-  "chaise",
-  "ilha",
-  "modulos",
-  "",
+  "retratil", "cama", "canto", "organicos", "living",
+  "fixo", "chaise", "ilha", "modulos", "",
 ];
 
 export interface DiagramaAnotacao {
   id: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  label: string;
-  sublabel: string;
+  x1: number; y1: number; x2: number; y2: number;
+  label: string; sublabel: string;
 }
 
 export interface Product {
@@ -69,6 +58,11 @@ export interface Product {
   diagramaAnotacoes?: DiagramaAnotacao[];
 }
 
+const TEST_IDS = new Set([
+  "sofa-teste-retratil", "sofa-teste-carrinho",
+  "sofa-carrinho-teste", "sofa-teste-demo-valores",
+]);
+
 function normalizeSizes(sizes: any): SizeOption[] {
   if (!Array.isArray(sizes)) return [];
   return sizes
@@ -86,9 +80,7 @@ function normalizeImages(images: any, legacyImage: any): string[] {
     const filtered = images.map((x) => String(x || "").trim()).filter((x) => x.length > 0);
     if (filtered.length > 0) return filtered;
   }
-  if (legacyImage && typeof legacyImage === "string" && legacyImage.trim()) {
-    return [legacyImage.trim()];
-  }
+  if (legacyImage && typeof legacyImage === "string" && legacyImage.trim()) return [legacyImage.trim()];
   return [];
 }
 
@@ -103,83 +95,119 @@ function derivedPrice(sizes: SizeOption[], fallback: number): number {
   return Math.min(...positives);
 }
 
-const TEST_IDS = new Set([
-  "sofa-teste-retratil",
-  "sofa-teste-carrinho",
-  "sofa-carrinho-teste",
-  "sofa-teste-demo-valores",
-]);
+function normalizeProduct(p: any): Product {
+  const images = normalizeImages(p.images, p.image);
+  return {
+    ...p,
+    sizes: normalizeSizes(p.sizes),
+    colors: Array.isArray(p.colors) ? p.colors : [],
+    fabrics: Array.isArray(p.fabrics) ? p.fabrics : [],
+    images,
+    image: images[0] || p.image || "",
+    category: normalizeCategory(p.category),
+    bestseller: Boolean(p.bestseller),
+    albumIds: Array.isArray(p.albumIds) ? p.albumIds : undefined,
+    foamIds: Array.isArray(p.foamIds) ? p.foamIds : undefined,
+  };
+}
 
-function load(): Product[] {
+function loadFromJson(): Product[] {
   if (!existsSync(DATA_FILE)) return [];
   try {
     const raw = JSON.parse(readFileSync(DATA_FILE, "utf-8")) as any[];
-    const products = raw
+    return raw
       .filter((p) => !TEST_IDS.has(String(p?.id ?? "")))
-      .map((p) => {
-        const images = normalizeImages(p.images, p.image);
-        return {
-          ...p,
-          sizes: normalizeSizes(p.sizes),
-          colors: Array.isArray(p.colors) ? p.colors : [],
-          fabrics: Array.isArray(p.fabrics) ? p.fabrics : [],
-          images,
-          image: images[0] || p.image || "",
-          category: normalizeCategory(p.category),
-          bestseller: Boolean(p.bestseller),
-          albumIds: Array.isArray(p.albumIds) ? p.albumIds : undefined,
-          foamIds: Array.isArray(p.foamIds) ? p.foamIds : undefined,
-        };
-      }) as Product[];
-    if (products.length < raw.length) {
-      save(products);
-    }
-    return products;
-  } catch {
-    return [];
+      .map(normalizeProduct);
+  } catch { return []; }
+}
+
+let _cache: Product[] | null = null;
+
+function getCache(): Product[] {
+  if (_cache === null) _cache = loadFromJson();
+  return _cache;
+}
+
+async function persistAll(products: Product[]): Promise<void> {
+  const r = await dbQuery(
+    "DELETE FROM products WHERE id = ANY($1::text[])",
+    [TEST_IDS.size > 0 ? [...TEST_IDS] : [""]]
+  );
+  for (const p of products) {
+    await dbQuery(
+      `INSERT INTO products (id, data) VALUES ($1, $2)
+       ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW()`,
+      [p.id, JSON.stringify(p)]
+    );
   }
 }
 
-function save(products: Product[]): void {
-  writeFileSync(DATA_FILE, JSON.stringify(products, null, 2), "utf-8");
+async function persistOne(p: Product): Promise<void> {
+  await dbQuery(
+    `INSERT INTO products (id, data) VALUES ($1, $2)
+     ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW()`,
+    [p.id, JSON.stringify(p)]
+  );
+}
+
+async function deleteOne(id: string): Promise<void> {
+  await dbQuery("DELETE FROM products WHERE id = $1", [id]);
+}
+
+export async function initProductStore(): Promise<void> {
+  try {
+    const result = await dbQuery("SELECT id, data FROM products ORDER BY created_at");
+    if (result && result.rows.length > 0) {
+      _cache = result.rows
+        .map((r) => normalizeProduct(r.data))
+        .filter((p) => !TEST_IDS.has(p.id));
+      console.log(`[productStore] Loaded ${_cache.length} products from database`);
+    } else {
+      const fromJson = loadFromJson();
+      _cache = fromJson;
+      if (fromJson.length > 0) {
+        await persistAll(fromJson);
+        console.log(`[productStore] Migrated ${fromJson.length} products from JSON to database`);
+      }
+    }
+  } catch (err) {
+    console.error("[productStore] DB init failed, using JSON fallback:", err);
+    _cache = loadFromJson();
+  }
 }
 
 export function getAll(): Product[] {
-  return load();
+  return getCache();
 }
 
 export function getById(id: string): Product | undefined {
-  return load().find((p) => p.id === id);
+  return getCache().find((p) => p.id === id);
+}
+
+function slugify(s: string): string {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 export function create(data: Omit<Product, "id">): Product {
-  const products = load();
-  const id = data.name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  const unique = products.some((p) => p.id === id) ? `${id}-${Date.now()}` : id;
+  const products = getCache();
+  const base = slugify(data.name);
+  const id = products.some((p) => p.id === base) ? `${base}-${Date.now()}` : base;
   const sizes = normalizeSizes(data.sizes);
   const images = normalizeImages(data.images, data.image);
   const product: Product = {
-    ...data,
-    id: unique,
-    sizes,
-    images,
+    ...data, id, sizes, images,
     image: images[0] || "",
     category: normalizeCategory(data.category),
     bestseller: Boolean(data.bestseller),
     price: derivedPrice(sizes, Number(data.price) || 0),
   };
   products.push(product);
-  save(products);
+  persistOne(product).catch((e) => console.error("[productStore] persist error:", e));
   return product;
 }
 
 export function update(id: string, data: Partial<Omit<Product, "id">>): Product | null {
-  const products = load();
+  const products = getCache();
   const idx = products.findIndex((p) => p.id === id);
   if (idx === -1) return null;
   const merged = { ...products[idx], ...data };
@@ -189,7 +217,6 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
     merged.images = images;
     merged.image = images[0] || "";
   } else if (data.image !== undefined) {
-    // Legacy: only single "image" provided — replace cover.
     const rest = (products[idx].images || []).slice(1);
     const newImages = normalizeImages([data.image, ...rest], data.image);
     merged.images = newImages;
@@ -199,15 +226,15 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
   if (data.bestseller !== undefined) merged.bestseller = Boolean(data.bestseller);
   merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0);
   products[idx] = merged;
-  save(products);
+  persistOne(merged).catch((e) => console.error("[productStore] persist error:", e));
   return merged;
 }
 
 export function remove(id: string): boolean {
-  const products = load();
+  const products = getCache();
   const idx = products.findIndex((p) => p.id === id);
   if (idx === -1) return false;
   products.splice(idx, 1);
-  save(products);
+  deleteOne(id).catch((e) => console.error("[productStore] delete error:", e));
   return true;
 }
