@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { Link, useSearch } from "wouter";
 import { ArrowRight, Search, X } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -9,18 +9,15 @@ import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
 const VALID_CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
 
 function useFilters(): { category: string; bestseller: boolean } {
-  const [location] = useLocation();
+  const search = useSearch();
   return useMemo(() => {
-    const noHash = location.split("#")[0];
-    const qs = noHash.includes("?") ? noHash.slice(noHash.indexOf("?") + 1) : "";
-    const search = qs || (typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "");
     const params = new URLSearchParams(search);
     const raw = params.get("categoria") ?? "";
     return {
       category: VALID_CATEGORY_IDS.has(raw as any) ? raw : "",
       bestseller: params.get("destaque") === "1",
     };
-  }, [location]);
+  }, [search]);
 }
 
 function normalize(s: string): string {
