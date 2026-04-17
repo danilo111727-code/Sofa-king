@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Heart, ShoppingCart } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BestsellerStrip } from "@/components/layout/BestsellerStrip";
@@ -66,6 +67,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { category: activeCategory, bestseller: onlyBestsellers } = useFilters();
   const activeCatDef = getCategory(activeCategory);
+  const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const path = onlyBestsellers
@@ -152,10 +155,10 @@ export default function Home() {
                   .slice()
                   .reverse()
                   .map((product) => (
-                    <Link
+                    <div
                       key={product.id}
-                      href={`/produto/${product.id}`}
-                      className="group shrink-0 w-[220px] sm:w-[260px] md:w-[300px] snap-start"
+                      className="group shrink-0 w-[220px] sm:w-[260px] md:w-[300px] snap-start cursor-pointer"
+                      onClick={() => navigate(`/produto/${product.id}`)}
                       data-testid={`scroll-card-${product.id}`}
                     >
                       <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-lg">
@@ -177,6 +180,14 @@ export default function Home() {
                               ⭐ Bestseller
                             </span>
                           )}
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
+                            className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                            aria-label="Favoritar"
+                          >
+                            <Heart className={`w-3.5 h-3.5 transition-colors ${isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-foreground/60"}`} />
+                          </button>
                         </div>
                         <div className="p-4">
                           <h3 className="text-base font-serif font-bold text-foreground group-hover:text-primary transition-colors leading-tight mb-1 line-clamp-2 min-h-[2.6rem]">
@@ -194,9 +205,16 @@ export default function Home() {
                           ) : (
                             <span className="text-sm text-muted-foreground">Consultar valor</span>
                           )}
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); navigate(`/produto/${product.id}`); }}
+                            className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+                          >
+                            <ShoppingCart className="w-3.5 h-3.5" /> Adicionar ao carrinho
+                          </button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
               </HorizontalScrollRow>
             )}
