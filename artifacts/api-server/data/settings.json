@@ -1,3 +1,5 @@
 {
-  "heroImage": "/images/hero.png"
+  "heroImage": "/images/hero.png",
+  "pixDiscountPct": 10,
+  "maxInstallments": 10
 }
