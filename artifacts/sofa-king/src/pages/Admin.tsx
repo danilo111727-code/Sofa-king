@@ -19,6 +19,8 @@ import {
   fetchWhatsappEvents,
   fetchClients,
   uploadImage,
+  fetchSiteSettings,
+  updateSiteSettings,
   type Product,
   type Material,
   type Album,
@@ -36,7 +38,7 @@ const goldBtn = "bg-[#c9a96e] hover:bg-[#b8954f] text-[#1a1208] font-semibold px
 const ghostBtn = "px-3 py-1.5 bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg text-sm text-[#c9a96e]";
 const dangerBtn = "px-3 py-1.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900/50 rounded-lg text-sm text-red-400";
 
-type Tab = "produtos" | "materiais" | "clientes" | "estatisticas" | "whatsapp";
+type Tab = "produtos" | "materiais" | "clientes" | "estatisticas" | "whatsapp" | "configuracoes";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -159,6 +161,7 @@ export default function Admin() {
     { key: "clientes", label: "Clientes" },
     { key: "estatisticas", label: "Estatísticas" },
     { key: "whatsapp", label: "WhatsApp" },
+    { key: "configuracoes", label: "Configurações" },
   ];
 
   return (
@@ -208,6 +211,7 @@ export default function Admin() {
         {tab === "clientes" && <ClientesTab />}
         {tab === "estatisticas" && <EstatisticasTab />}
         {tab === "whatsapp" && <WhatsappTab />}
+        {tab === "configuracoes" && <ConfiguracoesTab flash={flash} />}
       </main>
     </div>
   );
@@ -1283,6 +1287,112 @@ function WhatsappTab() {
           ))}
         </div>
       )}
+    </>
+  );
+}
+
+// ======================================================================
+// CONFIGURAÇÕES
+// ======================================================================
+
+function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
+  const [heroImage, setHeroImage] = useState("/images/hero.png");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s) => setHeroImage(s.heroImage))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleUpload(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const { url } = await uploadImage(files[0]);
+      setHeroImage(url);
+      flash("ok", "Imagem carregada! Clique em Salvar para aplicar.");
+    } catch (err: any) {
+      flash("err", err.message ?? "Erro no upload");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await updateSiteSettings({ heroImage });
+      flash("ok", "Capa do home atualizada com sucesso!");
+    } catch (err: any) {
+      flash("err", err.message ?? "Erro ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
+  }
+
+  return (
+    <>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold">Configurações do Site</h1>
+        <p className="text-[#a08060] text-sm mt-0.5">Personalize a aparência do site</p>
+      </div>
+
+      <div className={cardCls}>
+        <h2 className="font-semibold text-white mb-1">Foto de Capa (Hero)</h2>
+        <p className="text-[#a08060] text-sm mb-4">Imagem exibida em destaque na página inicial.</p>
+
+        <div className="space-y-4">
+          <div className="w-full aspect-[21/9] max-h-72 overflow-hidden rounded-xl bg-[#261a0e] border border-[#3d2e1e]">
+            <img
+              src={heroImage}
+              alt="Capa atual do home"
+              className="w-full h-full object-cover object-center"
+              onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.2"; }}
+            />
+          </div>
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleUpload(e.target.files)}
+          />
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              disabled={uploading}
+              onClick={() => fileRef.current?.click()}
+              className={`${ghostBtn} disabled:opacity-50`}
+            >
+              {uploading ? "Enviando..." : "📷 Trocar imagem"}
+            </button>
+            <button
+              type="button"
+              disabled={saving || uploading}
+              onClick={handleSave}
+              className={`${goldBtn} disabled:opacity-50`}
+            >
+              {saving ? "Salvando..." : "✓ Salvar capa"}
+            </button>
+          </div>
+
+          <p className="text-xs text-[#7a6040]">
+            Proporção ideal: <strong className="text-[#a08060]">21:9</strong> (panorâmica). Formatos aceitos: JPG, PNG, WebP.
+          </p>
+        </div>
+      </div>
     </>
   );
 }
