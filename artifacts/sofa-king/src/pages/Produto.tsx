@@ -80,6 +80,8 @@ export default function Produto() {
 
   useEffect(() => { setMainImageIdx(0); }, [product?.id]);
 
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [id]);
+
   useEffect(() => {
     // when album changes, pick its first fabric
     if (selectedAlbum && selectedAlbum.fabrics.length > 0) {
@@ -389,6 +391,28 @@ export default function Produto() {
               )}
 
               <Separator className="my-4" />
+
+              {/* Parcelamento info block */}
+              <div className="rounded-xl border border-border bg-card p-5 mb-4">
+                <h4 className="font-bold text-base text-foreground mb-3 flex items-center gap-2">
+                  <span className="block w-1 h-5 rounded-full bg-accent shrink-0" />
+                  Como funciona o parcelamento do projeto:
+                </h4>
+                <ol className="space-y-3">
+                  <li className="flex gap-3 text-sm text-muted-foreground">
+                    <span className="font-bold text-accent shrink-0">1.</span>
+                    <span><strong className="text-foreground">50% de entrada</strong> para iniciar a produção da sua peça no ateliê.</span>
+                  </li>
+                  <li className="flex gap-3 text-sm text-muted-foreground">
+                    <span className="font-bold text-accent shrink-0">2.</span>
+                    <span>Quando a peça está pronta, fazemos um <strong className="text-foreground">vídeo ao vivo</strong> com você — ou você pode <strong className="text-foreground">conferir pessoalmente no ateliê</strong>.</span>
+                  </li>
+                  <li className="flex gap-3 text-sm text-muted-foreground">
+                    <span className="font-bold text-accent shrink-0">3.</span>
+                    <span>Aprovado, você paga os <strong className="text-foreground">50% restantes antes da entrega</strong>.</span>
+                  </li>
+                </ol>
+              </div>
 
               {/* Price + CTA */}
               {!noSizes && (
