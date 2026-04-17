@@ -1,0 +1,2469 @@
+[
+  {
+    "name": "Sofá Teste Retrátil",
+    "price": 2000,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/placeholder.png",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "2,00 m",
+        "basePrice": 2000
+      },
+      {
+        "label": "2,30 m",
+        "basePrice": 2500
+      }
+    ],
+    "id": "sofa-teste-retratil"
+  },
+  {
+    "name": "Sofá Teste Carrinho",
+    "price": 2000,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/placeholder.png",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "2,00 m",
+        "basePrice": 2000
+      },
+      {
+        "label": "2,30 m",
+        "basePrice": 2500
+      }
+    ],
+    "id": "sofa-teste-carrinho"
+  },
+  {
+    "name": "Sofá Carrinho Teste",
+    "price": 2000,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/placeholder.png",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "2,00 m",
+        "basePrice": 2000
+      },
+      {
+        "label": "2,30 m",
+        "basePrice": 2500
+      }
+    ],
+    "id": "sofa-carrinho-teste"
+  },
+  {
+    "name": "Sofá [TESTE] Demonstração de Valores",
+    "price": 3200,
+    "description": "Produto de teste para visualização — remover antes de publicar de vez.",
+    "longDescription": "Este produto existe só para demonstrar como os preços, parcelas e PIX aparecem ao variar metragem, álbum e espuma. Pode excluir no painel admin quando quiser.",
+    "image": "/images/placeholder.png",
+    "dimensions": "Exemplo: 2,60 m × 0,95 m × 0,85 m",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,80 m",
+        "basePrice": 3200
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 3900
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 4600
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 5400
+      }
+    ],
+    "id": "sofa-teste-demo-valores"
+  },
+  {
+    "name": "Istambul",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_1.jpg",
+    "images": [
+      "/images/stock/sofa_living_1.jpg"
+    ],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-istambul",
+    "bestseller": true
+  },
+  {
+    "name": "Detroit",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-detroit"
+  },
+  {
+    "name": "Brooklyn",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_2.jpg",
+    "images": [
+      "/images/stock/sofa_living_2.jpg"
+    ],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-brooklyn",
+    "bestseller": true
+  },
+  {
+    "name": "Londres",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-londres"
+  },
+  {
+    "name": "França",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-franca"
+  },
+  {
+    "name": "Mole",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-mole"
+  },
+  {
+    "name": "Milano",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-milano"
+  },
+  {
+    "name": "Toronto",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "retratil",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "retratil-toronto"
+  },
+  {
+    "name": "Detroit",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "cama",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "cama-detroit"
+  },
+  {
+    "name": "Brooklyn",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "cama",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "cama-brooklyn"
+  },
+  {
+    "name": "Londres",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "cama",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "cama-londres"
+  },
+  {
+    "name": "Aspen Deck",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "canto",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "canto-aspen-deck"
+  },
+  {
+    "name": "Oslo Living",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_3.jpg",
+    "images": [
+      "/images/stock/sofa_living_3.jpg"
+    ],
+    "category": "canto",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "canto-oslo-living",
+    "bestseller": true
+  },
+  {
+    "name": "Aura",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_4.jpg",
+    "images": [
+      "/images/stock/sofa_living_4.jpg"
+    ],
+    "category": "organicos",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "organicos-aura",
+    "bestseller": true
+  },
+  {
+    "name": "Bloom",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "organicos",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "organicos-bloom"
+  },
+  {
+    "name": "Fluid",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "organicos",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "organicos-fluid"
+  },
+  {
+    "name": "Viena",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-viena"
+  },
+  {
+    "name": "Bilbao",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-bilbao"
+  },
+  {
+    "name": "Brooklyn",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_8.jpg",
+    "images": [
+      "/images/stock/sofa_living_8.jpg"
+    ],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-brooklyn"
+  },
+  {
+    "name": "Cannes",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-cannes"
+  },
+  {
+    "name": "Suíça",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-suica"
+  },
+  {
+    "name": "Texas",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-texas"
+  },
+  {
+    "name": "Gomos",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "living",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "living-gomos"
+  },
+  {
+    "name": "Louvre",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "fixo",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "fixo-louvre"
+  },
+  {
+    "name": "França",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "fixo",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "fixo-franca"
+  },
+  {
+    "name": "Loft",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "fixo",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "fixo-loft"
+  },
+  {
+    "name": "Jakarta",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "fixo",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "fixo-jakarta"
+  },
+  {
+    "name": "Lucerna",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "chaise",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "chaise-lucerna"
+  },
+  {
+    "name": "Malibu",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_5.jpg",
+    "images": [
+      "/images/stock/sofa_living_5.jpg"
+    ],
+    "category": "chaise",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "chaise-malibu",
+    "bestseller": true
+  },
+  {
+    "name": "Flow",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_6.jpg",
+    "images": [
+      "/images/stock/sofa_living_6.jpg"
+    ],
+    "category": "chaise",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "chaise-flow"
+  },
+  {
+    "name": "Aura",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "chaise",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "chaise-aura"
+  },
+  {
+    "name": "Cannes",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "chaise",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "chaise-cannes"
+  },
+  {
+    "name": "Orla",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "/images/stock/sofa_living_7.jpg",
+    "images": [
+      "/images/stock/sofa_living_7.jpg"
+    ],
+    "category": "ilha",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "ilha-orla"
+  },
+  {
+    "name": "Gomos",
+    "price": 0,
+    "description": "",
+    "longDescription": "",
+    "image": "",
+    "images": [],
+    "category": "ilha",
+    "dimensions": "",
+    "colors": [],
+    "fabrics": [],
+    "disponibilidade": true,
+    "prazoEntrega": "A consultar",
+    "sizes": [
+      {
+        "label": "1,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "1,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "2,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,00 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,20 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,40 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,60 m",
+        "basePrice": 0
+      },
+      {
+        "label": "3,80 m",
+        "basePrice": 0
+      },
+      {
+        "label": "4,00 m",
+        "basePrice": 0
+      }
+    ],
+    "id": "ilha-gomos"
+  }
+]

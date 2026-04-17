@@ -1,0 +1,88 @@
+{
+  "materials": [
+    {
+      "id": "esp-d33-selada",
+      "type": "espuma",
+      "name": "Espuma D33 selada",
+      "description": "",
+      "priceAdjustment": 0,
+      "weightSupport": "90–120kg",
+      "comfortLevel": "Firme",
+      "useIndication": "Uso diário",
+      "longTermBehavior": "Amacia nos primeiros meses e depois estabiliza, mantendo estrutura",
+      "active": true,
+      "imageUrl": "/foams/d33-selada.png"
+    },
+    {
+      "id": "esp-d45-selada",
+      "type": "espuma",
+      "name": "Espuma D45 selada",
+      "description": "",
+      "priceAdjustment": 0,
+      "weightSupport": "110–150kg",
+      "comfortLevel": "Firme",
+      "useIndication": "Uso intenso",
+      "longTermBehavior": "Alta durabilidade, quase não deforma",
+      "active": true,
+      "imageUrl": "/foams/d45-selada.png"
+    },
+    {
+      "id": "esp-d33-soft",
+      "type": "espuma",
+      "name": "Espuma D33 + Soft",
+      "description": "",
+      "priceAdjustment": 0,
+      "weightSupport": "100–130kg",
+      "comfortLevel": "Macio + suporte",
+      "useIndication": "Premium",
+      "longTermBehavior": "Amacia levemente e mantém conforto com suporte",
+      "active": true,
+      "imageUrl": "/foams/d33-soft.png"
+    },
+    {
+      "id": "esp-d33-soft-molas",
+      "type": "espuma",
+      "name": "Espuma D33 + Soft + Molas",
+      "description": "",
+      "priceAdjustment": 0,
+      "weightSupport": "130–160kg+",
+      "comfortLevel": "Super macio",
+      "useIndication": "Luxo",
+      "longTermBehavior": "Alta durabilidade com conforto constante",
+      "active": true,
+      "imageUrl": "/foams/d33-soft-molas.png"
+    },
+    {
+      "id": "esp-soft-molas",
+      "type": "espuma",
+      "name": "Espuma Soft + Molas",
+      "description": "",
+      "priceAdjustment": 0,
+      "weightSupport": "90–120kg",
+      "comfortLevel": "Muito macio",
+      "useIndication": "Leve",
+      "longTermBehavior": "Pode perder sustentação com o tempo",
+      "active": true,
+      "imageUrl": "/foams/soft-molas.png"
+    },
+    {
+      "id": "esp-teste-luxo",
+      "type": "espuma",
+      "name": "Espuma Luxo [TESTE]",
+      "description": "",
+      "priceAdjustment": 800,
+      "priceAdjustmentBySize": {
+        "1,80 m": 700,
+        "2,20 m": 800,
+        "2,60 m": 1000,
+        "3,00 m": 1200
+      },
+      "weightSupport": "—",
+      "comfortLevel": "Exemplo",
+      "useIndication": "Demonstração",
+      "longTermBehavior": "Espuma de teste com acréscimo variável por metragem para demonstração.",
+      "active": true,
+      "imageUrl": "/foams/d33-soft-molas.png"
+    }
+  ]
+}
