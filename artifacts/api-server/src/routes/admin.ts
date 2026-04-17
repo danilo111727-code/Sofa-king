@@ -1,6 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
 import { randomUUID } from "crypto";
+import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { join, extname, dirname } from "path";
+import { fileURLToPath } from "url";
 import { clerkClient } from "@clerk/express";
 import { requireAdmin } from "../lib/adminAuth.js";
 import * as events from "../lib/eventStore.js";
@@ -11,6 +14,23 @@ import { objectStorageClient } from "../lib/objectStorage.js";
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const storage = new ObjectStorageService();
+
+function useObjectStorage(): boolean {
+  return !!process.env.PRIVATE_OBJECT_DIR;
+}
+
+function getLocalUploadsDir(): string {
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    join(__dirname, "..", "..", "sofa-king", "dist", "public", "uploads"),
+    join(process.cwd(), "artifacts", "sofa-king", "dist", "public", "uploads"),
+    join(process.cwd(), "uploads"),
+  ];
+  for (const c of candidates) {
+    try { mkdirSync(c, { recursive: true }); return c; } catch { continue; }
+  }
+  return join(process.cwd(), "uploads");
+}
 
 router.get("/admin/stats", requireAdmin, (_req, res) => {
   res.json(events.getStats());
@@ -64,20 +84,33 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
       res.status(400).json({ error: "Formato inválido. Use JPG, PNG, WEBP ou GIF." });
       return;
     }
-    const privateDir = storage.getPrivateObjectDir();
-    // privateDir like "/bucketName/.private"
-    const trimmed = privateDir.startsWith("/") ? privateDir.slice(1) : privateDir;
-    const [bucketName, ...rest] = trimmed.split("/");
-    const objectId = randomUUID();
-    const objectName = `${rest.join("/")}/uploads/${objectId}`;
-    const file = objectStorageClient.bucket(bucketName).file(objectName);
-    await file.save(req.file.buffer, {
-      metadata: { contentType: req.file.mimetype },
-      resumable: false,
-    });
-    const objectPath = `/objects/uploads/${objectId}`;
-    const url = `/api/storage${objectPath}`;
-    res.json({ url, objectPath });
+
+    if (useObjectStorage()) {
+      const privateDir = storage.getPrivateObjectDir();
+      const trimmed = privateDir.startsWith("/") ? privateDir.slice(1) : privateDir;
+      const [bucketName, ...rest] = trimmed.split("/");
+      const objectId = randomUUID();
+      const objectName = `${rest.join("/")}/uploads/${objectId}`;
+      const file = objectStorageClient.bucket(bucketName).file(objectName);
+      await file.save(req.file.buffer, {
+        metadata: { contentType: req.file.mimetype },
+        resumable: false,
+      });
+      const objectPath = `/objects/uploads/${objectId}`;
+      const url = `/api/storage${objectPath}`;
+      res.json({ url, objectPath });
+    } else {
+      const ext = req.file.mimetype === "image/png" ? ".png"
+        : req.file.mimetype === "image/webp" ? ".webp"
+        : req.file.mimetype === "image/gif" ? ".gif"
+        : ".jpg";
+      const objectId = randomUUID();
+      const fileName = `${objectId}${ext}`;
+      const uploadsDir = getLocalUploadsDir();
+      writeFileSync(join(uploadsDir, fileName), req.file.buffer);
+      const url = `/uploads/${fileName}`;
+      res.json({ url, objectPath: url });
+    }
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Erro no upload" });
   }
