@@ -103,7 +103,7 @@ export function Navbar() {
             <img
               src={logoImg}
               alt="Sofá King"
-              className="h-10 sm:h-14 w-auto object-contain"
+              className="h-12 sm:h-14 w-auto object-contain"
             />
           </Link>
 
