@@ -35,5 +35,5 @@ export function useFavorites() {
 
   const isFavorite = useCallback((id: string) => favorites.has(id), [favorites]);
 
-  return { isFavorite, toggle };
+  return { favorites, isFavorite, toggle };
 }

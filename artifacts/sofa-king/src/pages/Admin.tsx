@@ -15,7 +15,6 @@ import {
   createAlbum,
   updateAlbum,
   deleteAlbum,
-  fetchKnownSizes,
   fetchStats,
   fetchWhatsappEvents,
   fetchClients,
@@ -239,6 +238,8 @@ const EMPTY_PRODUTO: ProdutoForm = {
 
 function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [foams, setFoams] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -246,12 +247,46 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [expandedSizes, setExpandedSizes] = useState<Set<number>>(new Set());
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { load(); }, []);
   async function load() {
     setLoading(true);
-    try { setProducts(await fetchProducts()); } finally { setLoading(false); }
+    try {
+      const [prods, als, fos] = await Promise.all([fetchProducts(), fetchAdminAlbums(), fetchAdminMaterials()]);
+      setProducts(prods);
+      setAlbums(als.filter((a) => a.active));
+      setFoams(fos.filter((m) => m.active));
+    } finally { setLoading(false); }
+  }
+
+  function toggleSizeExpand(i: number) {
+    setExpandedSizes((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i); else next.add(i);
+      return next;
+    });
+  }
+  function updateAlbumSurcharge(sizeIdx: number, albumId: string, value: number) {
+    setForm((f) => {
+      const sizes = [...f.sizes];
+      sizes[sizeIdx] = {
+        ...sizes[sizeIdx],
+        albumSurcharges: { ...(sizes[sizeIdx].albumSurcharges ?? {}), [albumId]: value },
+      };
+      return { ...f, sizes };
+    });
+  }
+  function updateFoamSurcharge(sizeIdx: number, foamId: string, value: number) {
+    setForm((f) => {
+      const sizes = [...f.sizes];
+      sizes[sizeIdx] = {
+        ...sizes[sizeIdx],
+        foamSurcharges: { ...(sizes[sizeIdx].foamSurcharges ?? {}), [foamId]: value },
+      };
+      return { ...f, sizes };
+    });
   }
 
   function openNew() { setEditId(null); setForm(EMPTY_PRODUTO); setShowForm(true); }
@@ -354,12 +389,21 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
   function copyFrom(id: string) {
     const p = products.find((x) => x.id === id);
     if (!p) return;
-    setForm((f) => ({ ...f, sizes: p.sizes.map((s) => ({ ...s })) }));
-    flash("ok", `Metragens copiadas de "${p.name}".`);
+    setForm((f) => ({
+      ...f,
+      sizes: p.sizes.map((s) => ({
+        ...s,
+        albumSurcharges: s.albumSurcharges ? { ...s.albumSurcharges } : {},
+        foamSurcharges: s.foamSurcharges ? { ...s.foamSurcharges } : {},
+      })),
+    }));
+    setExpandedSizes(new Set());
+    flash("ok", `Metragens e acréscimos copiados de "${p.name}".`);
   }
   function fillStandardSizes() {
     const labels = ["1,60 m","1,80 m","2,00 m","2,20 m","2,40 m","2,60 m","2,80 m","3,00 m","3,20 m","3,40 m","3,60 m","3,80 m","4,00 m"];
-    setForm((f) => ({ ...f, sizes: labels.map((label) => ({ label, basePrice: 0 })) }));
+    setForm((f) => ({ ...f, sizes: labels.map((label) => ({ label, basePrice: 0, albumSurcharges: {}, foamSurcharges: {} })) }));
+    setExpandedSizes(new Set());
     flash("ok", "Metragens padrão preenchidas — agora é só colocar o preço de cada uma.");
   }
 
@@ -502,7 +546,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                                 CAPA
                               </span>
                             )}
-                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/70 px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/70 px-1.5 py-1">
                               <div className="flex gap-1">
                                 <button
                                   type="button"
@@ -545,37 +589,100 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                       Nenhuma metragem adicionada ainda.
                     </div>
                   )}
-                  {form.sizes.map((s, i) => (
-                    <div key={i} className="flex gap-2 items-center">
-                      <input
-                        className={inputCls}
-                        placeholder='Ex: "2,30 m"'
-                        value={s.label}
-                        onChange={(e) => updateSize(i, { label: e.target.value })}
-                      />
-                      <div className="relative flex-shrink-0 w-40">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
-                        <input
-                          className={`${inputCls} pl-9`}
-                          type="number" min="0" step="0.01"
-                          placeholder="0,00"
-                          value={s.basePrice || ""}
-                          onChange={(e) => updateSize(i, { basePrice: Number(e.target.value) })}
-                        />
+                  {form.sizes.map((s, i) => {
+                    const isExpanded = expandedSizes.has(i);
+                    return (
+                      <div key={i} className="border border-[#2d1f10] rounded-lg overflow-hidden">
+                        <div className="flex gap-2 items-center p-2 bg-[#120d06]">
+                          <input
+                            className={inputCls + " flex-1"}
+                            placeholder='Ex: "2,30 m"'
+                            value={s.label}
+                            onChange={(e) => updateSize(i, { label: e.target.value })}
+                          />
+                          <div className="relative flex-shrink-0 w-36">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                            <input
+                              className={`${inputCls} pl-9`}
+                              type="number" min="0" step="0.01"
+                              placeholder="0,00"
+                              value={s.basePrice || ""}
+                              onChange={(e) => updateSize(i, { basePrice: Number(e.target.value) })}
+                            />
+                          </div>
+                          {(albums.length > 0 || foams.length > 0) && (
+                            <button
+                              type="button"
+                              onClick={() => toggleSizeExpand(i)}
+                              className={`flex-shrink-0 px-2 py-1.5 rounded-lg text-xs border transition-colors ${isExpanded ? "bg-[#c9a96e]/20 border-[#c9a96e]/50 text-[#c9a96e]" : "bg-[#261a0e] border-[#3d2e1e] text-[#a08060] hover:text-[#c9a96e]"}`}
+                              title="Acréscimos por álbum e espuma"
+                            >
+                              {isExpanded ? "▲" : "▼"} Acréscimos
+                            </button>
+                          )}
+                          <button type="button" onClick={() => removeSize(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
+                        </div>
+                        {isExpanded && (
+                          <div className="px-3 py-3 bg-[#0e0a04] border-t border-[#2d1f10] space-y-3">
+                            {albums.length > 0 && (
+                              <div>
+                                <p className="text-xs font-medium text-[#c9a96e] mb-2">Acréscimo por Álbum <span className="text-[#7a6040] font-normal">(0 = incluso)</span></p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {albums.map((al) => (
+                                    <div key={al.id} className="flex items-center gap-2">
+                                      <span className="text-xs text-[#a08060] flex-1 truncate">{al.name}</span>
+                                      <div className="relative w-28 flex-shrink-0">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[#5a4030] text-xs">R$</span>
+                                        <input
+                                          className="bg-[#1a1208] border border-[#3d2e1e] rounded-lg pl-7 pr-2 py-1 text-xs text-white w-full focus:outline-none focus:border-[#c9a96e]/50"
+                                          type="number" min="0" step="0.01"
+                                          placeholder="0"
+                                          value={s.albumSurcharges?.[al.id] ?? 0}
+                                          onChange={(e) => updateAlbumSurcharge(i, al.id, Number(e.target.value))}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {foams.length > 0 && (
+                              <div>
+                                <p className="text-xs font-medium text-[#c9a96e] mb-2">Acréscimo por Espuma <span className="text-[#7a6040] font-normal">(0 = incluso)</span></p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {foams.map((fm) => (
+                                    <div key={fm.id} className="flex items-center gap-2">
+                                      <span className="text-xs text-[#a08060] flex-1 truncate">{fm.name}</span>
+                                      <div className="relative w-28 flex-shrink-0">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[#5a4030] text-xs">R$</span>
+                                        <input
+                                          className="bg-[#1a1208] border border-[#3d2e1e] rounded-lg pl-7 pr-2 py-1 text-xs text-white w-full focus:outline-none focus:border-[#c9a96e]/50"
+                                          type="number" min="0" step="0.01"
+                                          placeholder="0"
+                                          value={s.foamSurcharges?.[fm.id] ?? 0}
+                                          onChange={(e) => updateFoamSurcharge(i, fm.id, Number(e.target.value))}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <button type="button" onClick={() => removeSize(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
-                    </div>
-                  ))}
+                    );
+                  })}
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button type="button" onClick={addSize} className={ghostBtn}>+ Adicionar metragem</button>
-                    <button type="button" onClick={fillStandardSizes} className={ghostBtn}>📐 Preencher metragens padrão (1,60 – 4,00 m)</button>
+                    <button type="button" onClick={fillStandardSizes} className={ghostBtn}>📐 Metragens padrão (1,60 – 4,00 m)</button>
                     {products.length > 0 && (
                       <select
                         onChange={(e) => { if (e.target.value) { copyFrom(e.target.value); e.target.value = ""; } }}
                         defaultValue=""
                         className="bg-[#261a0e] hover:bg-[#3d2e1e] border border-[#3d2e1e] rounded-lg px-3 py-1.5 text-sm text-[#c9a96e] cursor-pointer"
                       >
-                        <option value="">↓ Copiar metragens de outro modelo</option>
+                        <option value="">↓ Copiar de outro modelo (metragens + acréscimos)</option>
                         {products.filter((p) => p.id !== editId && p.sizes.length > 0).map((p) => (
                           <option key={p.id} value={p.id}>{p.name} ({p.sizes.length} metragens)</option>
                         ))}
@@ -583,7 +690,7 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                     )}
                   </div>
                   <p className="text-xs text-[#7a6040]">
-                    O preço final do sofá = <strong>preço da metragem</strong> + acréscimo do álbum escolhido + acréscimo da espuma escolhida.
+                    Preço final = <strong>preço da metragem</strong> + acréscimo do álbum + acréscimo da espuma. Use "▼ Acréscimos" para definir cada combinação.
                   </p>
                 </div>
               </Field>
@@ -682,12 +789,10 @@ function MateriaisTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }
 interface AlbumForm {
   name: string;
   description: string;
-  surcharge: number;
-  surchargeBySize: Record<string, number>;
   fabrics: FabricSample[];
   active: boolean;
 }
-const EMPTY_ALBUM: AlbumForm = { name: "", description: "", surcharge: 0, surchargeBySize: {}, fabrics: [], active: true };
+const EMPTY_ALBUM: AlbumForm = { name: "", description: "", fabrics: [], active: true };
 
 function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [items, setItems] = useState<Album[]>([]);
@@ -698,10 +803,9 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
-  const [knownSizes, setKnownSizes] = useState<string[]>([]);
   const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
-  useEffect(() => { load(); fetchKnownSizes().then(setKnownSizes).catch(() => {}); }, []);
+  useEffect(() => { load(); }, []);
   async function load() {
     setLoading(true);
     try { setItems(await fetchAdminAlbums()); } finally { setLoading(false); }
@@ -713,8 +817,6 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
     setForm({
       name: a.name,
       description: a.description,
-      surcharge: a.surcharge,
-      surchargeBySize: { ...(a.surchargeBySize || {}) },
       fabrics: a.fabrics.map((f) => ({ ...f })),
       active: a.active,
     });
@@ -725,8 +827,9 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
     e.preventDefault();
     setSaving(true);
     try {
-      if (editId) { await updateAlbum(editId, form); flash("ok", "Álbum atualizado!"); }
-      else { await createAlbum(form); flash("ok", "Álbum criado!"); }
+      const payload = { ...form, surcharge: 0, surchargeBySize: {} };
+      if (editId) { await updateAlbum(editId, payload); flash("ok", "Álbum atualizado!"); }
+      else { await createAlbum(payload); flash("ok", "Álbum criado!"); }
       setShowForm(false); await load();
     } catch (err: any) { flash("err", err.message ?? "Erro"); }
     finally { setSaving(false); }
@@ -776,9 +879,6 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-medium text-white">{a.name}</h3>
                     {!a.active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/50 text-red-400 border border-red-800">inativo</span>}
-                    <span className={`text-xs px-2 py-0.5 rounded-full border ${a.surcharge === 0 ? "bg-[#261a0e] text-[#a08060] border-[#3d2e1e]" : a.surcharge > 0 ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-green-900/30 text-green-400 border-green-800/50"}`}>
-                      {a.surcharge > 0 ? "+" : ""}{brl(a.surcharge)}
-                    </span>
                   </div>
                   {a.description && <p className="text-sm text-[#a08060] mt-1">{a.description}</p>}
                   <p className="text-xs text-[#7a6040] mt-1">{a.fabrics.length} cor{a.fabrics.length !== 1 ? "es" : ""} no álbum</p>
@@ -825,22 +925,6 @@ function AlbunsSection({ flash }: { flash: (t: "ok" | "err", s: string) => void 
               </Field>
               <Field label="Descrição">
                 <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Ex: Linhos nacionais respiráveis" />
-              </Field>
-              <Field label="Acréscimo padrão (R$)">
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
-                  <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.surcharge} onChange={(e) => setForm({ ...form, surcharge: Number(e.target.value) })} placeholder="0" />
-                </div>
-                <p className="text-xs text-[#7a6040] mt-1">Usado para qualquer metragem que não tenha valor específico abaixo.</p>
-              </Field>
-              <Field label="Acréscimo por metragem (opcional)">
-                <SurchargeBySizeEditor
-                  knownSizes={knownSizes}
-                  value={form.surchargeBySize}
-                  onChange={(next) => setForm({ ...form, surchargeBySize: next })}
-                  defaultValue={form.surcharge}
-                  helpLabel="Defina um acréscimo específico para cada metragem."
-                />
               </Field>
               <Field label="Cores/tecidos do álbum">
                 <div className="space-y-2">
@@ -912,8 +996,6 @@ interface FoamForm {
   type: "espuma";
   name: string;
   description: string;
-  priceAdjustment: number;
-  priceAdjustmentBySize: Record<string, number>;
   weightSupport: string;
   comfortLevel: string;
   useIndication: string;
@@ -921,7 +1003,7 @@ interface FoamForm {
   imageUrl: string;
   active: boolean;
 }
-const EMPTY_ESP: FoamForm = { type: "espuma", name: "", description: "", priceAdjustment: 0, priceAdjustmentBySize: {}, weightSupport: "", comfortLevel: "", useIndication: "", longTermBehavior: "", imageUrl: "", active: true };
+const EMPTY_ESP: FoamForm = { type: "espuma", name: "", description: "", weightSupport: "", comfortLevel: "", useIndication: "", longTermBehavior: "", imageUrl: "", active: true };
 
 function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [items, setItems] = useState<Material[]>([]);
@@ -931,9 +1013,8 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
   const [form, setForm] = useState<FoamForm>(EMPTY_ESP);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [knownSizes, setKnownSizes] = useState<string[]>([]);
 
-  useEffect(() => { load(); fetchKnownSizes().then(setKnownSizes).catch(() => {}); }, []);
+  useEffect(() => { load(); }, []);
   async function load() {
     setLoading(true);
     try { setItems(await fetchAdminMaterials()); } finally { setLoading(false); }
@@ -946,8 +1027,6 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
       type: "espuma",
       name: m.name,
       description: m.description,
-      priceAdjustment: m.priceAdjustment,
-      priceAdjustmentBySize: { ...(m.priceAdjustmentBySize || {}) },
       weightSupport: m.weightSupport || "",
       comfortLevel: m.comfortLevel || "",
       useIndication: m.useIndication || "",
@@ -962,8 +1041,9 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
     e.preventDefault();
     setSaving(true);
     try {
-      if (editId) { await updateMaterial(editId, form); flash("ok", "Espuma atualizada!"); }
-      else { await createMaterial(form); flash("ok", "Espuma criada!"); }
+      const payload = { ...form, priceAdjustment: 0, priceAdjustmentBySize: {} };
+      if (editId) { await updateMaterial(editId, payload); flash("ok", "Espuma atualizada!"); }
+      else { await createMaterial(payload); flash("ok", "Espuma criada!"); }
       setShowForm(false); await load();
     } catch (err: any) { flash("err", err.message ?? "Erro"); }
     finally { setSaving(false); }
@@ -989,9 +1069,6 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-medium text-white">{m.name}</h3>
                   {!m.active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/50 text-red-400 border border-red-800">inativo</span>}
-                  <span className={`text-xs px-2 py-0.5 rounded-full border ${m.priceAdjustment === 0 ? "bg-[#261a0e] text-[#a08060] border-[#3d2e1e]" : m.priceAdjustment > 0 ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-green-900/30 text-green-400 border-green-800/50"}`}>
-                    {m.priceAdjustment > 0 ? "+" : ""}{brl(m.priceAdjustment)}
-                  </span>
                 </div>
                 <p className="text-sm text-[#a08060] mt-1 truncate">{m.description}</p>
               </div>
@@ -1020,22 +1097,6 @@ function EspumasSection({ flash }: { flash: (t: "ok" | "err", s: string) => void
               </Field>
               <Field label="Descrição">
                 <textarea className={`${inputCls} resize-none`} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-              </Field>
-              <Field label="Acréscimo padrão (R$)">
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
-                  <input className={`${inputCls} pl-9`} type="number" step="0.01" value={form.priceAdjustment} onChange={(e) => setForm({ ...form, priceAdjustment: Number(e.target.value) })} placeholder="0 = padrão" />
-                </div>
-                <p className="text-xs text-[#7a6040] mt-1">Usado para qualquer metragem que não tenha valor específico abaixo.</p>
-              </Field>
-              <Field label="Acréscimo por metragem (opcional)">
-                <SurchargeBySizeEditor
-                  knownSizes={knownSizes}
-                  value={form.priceAdjustmentBySize}
-                  onChange={(next) => setForm({ ...form, priceAdjustmentBySize: next })}
-                  defaultValue={form.priceAdjustment}
-                  helpLabel="Defina um acréscimo específico para cada metragem."
-                />
               </Field>
               <div className="border-t border-[#2d1f10] pt-4">
                 <h3 className="text-sm font-semibold text-white mb-3">Ficha técnica (opcional)</h3>

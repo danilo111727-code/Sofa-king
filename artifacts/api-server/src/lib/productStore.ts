@@ -8,6 +8,8 @@ const DATA_FILE = join(__dirname, "../../data/products.json");
 export interface SizeOption {
   label: string;
   basePrice: number;
+  albumSurcharges?: Record<string, number>;
+  foamSurcharges?: Record<string, number>;
 }
 
 export type ProductCategory =
@@ -61,6 +63,8 @@ function normalizeSizes(sizes: any): SizeOption[] {
     .map((s) => ({
       label: String(s?.label ?? "").trim(),
       basePrice: Number(s?.basePrice) || 0,
+      ...(s?.albumSurcharges && typeof s.albumSurcharges === "object" ? { albumSurcharges: s.albumSurcharges } : {}),
+      ...(s?.foamSurcharges && typeof s.foamSurcharges === "object" ? { foamSurcharges: s.foamSurcharges } : {}),
     }))
     .filter((s) => s.label);
 }

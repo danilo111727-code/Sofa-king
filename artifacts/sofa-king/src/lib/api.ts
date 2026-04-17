@@ -1,6 +1,8 @@
 export interface SizeOption {
   label: string;
   basePrice: number;
+  albumSurcharges?: Record<string, number>;
+  foamSurcharges?: Record<string, number>;
 }
 
 export interface Product {
