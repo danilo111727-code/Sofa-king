@@ -38,3 +38,8 @@ externalPort = 3000
 [[ports]]
 localPort = 23692
 externalPort = 3002
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAILS = "danilo111727@gmail.com"
