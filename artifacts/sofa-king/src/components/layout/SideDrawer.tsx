@@ -1,4 +1,4 @@
-import { X, Search, ChevronDown, ChevronRight, User, LogOut, UserPlus, Settings } from "lucide-react";
+import { X, Search, ChevronDown, ChevronRight, User, LogOut, UserPlus, Settings, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Show, useUser, useClerk } from "@clerk/react";
@@ -178,6 +178,15 @@ export function SideDrawer({ open, onClose }: SideDrawerProps) {
               );
             })}
           </nav>
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <Link href="/favoritos" onClick={onClose} data-testid="link-drawer-favoritos">
+              <button className="w-full flex items-center justify-center gap-2 py-3.5 rounded-md border border-red-200 bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors">
+                <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                Seus Favoritos
+              </button>
+            </Link>
+          </div>
         </div>
       </aside>
     </>

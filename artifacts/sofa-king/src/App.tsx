@@ -11,6 +11,7 @@ import Produto from "@/pages/Produto";
 import Carrinho from "@/pages/Carrinho";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
+import Favoritos from "@/pages/Favoritos";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { CartProvider } from "@/contexts/CartContext";
 
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/carrinho" component={Carrinho} />
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/*?" component={SignUpPage} />
+      <Route path="/favoritos" component={Favoritos} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
