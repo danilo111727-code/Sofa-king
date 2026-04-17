@@ -237,7 +237,7 @@ export default function Home() {
             <div className="text-center mb-10">
               <p className="text-xs tracking-[0.4em] uppercase text-accent mb-4 font-semibold">Vagas abertas</p>
               <h2 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-5" data-testid="text-section-title">
-                {onlyBestsellers ? "⭐ Bestsellers" : activeCatDef ? activeCatDef.label : "Modelos disponíveis agora"}
+                {onlyBestsellers ? "⭐ Bestsellers" : activeCatDef?.label ?? "Modelos disponíveis agora"}
               </h2>
               <div className="w-12 h-[2px] bg-accent mx-auto mb-6" />
               <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -295,7 +295,7 @@ export default function Home() {
               <div className="text-center py-16 border border-dashed border-border rounded-xl max-w-md mx-auto">
                 <p className="text-muted-foreground mb-4">
                   {activeCatDef
-                    ? `Nenhum modelo de ${activeCatDef.label} disponível no momento.`
+                    ? `Nenhum modelo de ${activeCatDef?.label} disponível no momento.`
                     : "Nenhum modelo disponível no momento."}
                 </p>
                 {activeCatDef && (
