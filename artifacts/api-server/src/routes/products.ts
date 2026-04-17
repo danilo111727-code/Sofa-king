@@ -42,7 +42,7 @@ router.get("/products/:id", (req, res) => {
 });
 
 router.post("/products", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller } = req.body;
   if (!name) {
     res.status(400).json({ error: "Nome é obrigatório" });
     return;
