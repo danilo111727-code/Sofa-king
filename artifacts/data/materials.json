@@ -63,7 +63,7 @@
       "useIndication": "Leve",
       "longTermBehavior": "Pode perder sustentação com o tempo",
       "active": true,
-      "imageUrl": ""
+      "imageUrl": "/foams/soft-molas.png"
     },
     {
       "id": "esp-teste-luxo",
