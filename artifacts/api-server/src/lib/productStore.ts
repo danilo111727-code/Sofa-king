@@ -98,7 +98,9 @@ function normalizeCategory(c: any): ProductCategory {
 
 function derivedPrice(sizes: SizeOption[], fallback: number): number {
   if (sizes.length === 0) return fallback;
-  return Math.min(...sizes.map((s) => s.basePrice).filter((n) => n > 0));
+  const positives = sizes.map((s) => s.basePrice).filter((n) => n > 0);
+  if (positives.length === 0) return 0;
+  return Math.min(...positives);
 }
 
 function load(): Product[] {
