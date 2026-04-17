@@ -42,7 +42,7 @@ router.get("/products/:id", (req, res) => {
 });
 
 router.post("/products", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller, diagramaUrl, diagramaAnotacoes } = req.body;
   if (!name) {
     res.status(400).json({ error: "Nome é obrigatório" });
     return;
@@ -61,12 +61,14 @@ router.post("/products", requireAdmin, (req, res) => {
     disponibilidade: disponibilidade !== false && disponibilidade !== "false",
     prazoEntrega: prazoEntrega ?? "A consultar",
     sizes: Array.isArray(sizes) ? sizes : [],
+    ...(diagramaUrl !== undefined && { diagramaUrl }),
+    ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
   });
   res.status(201).json(product);
 });
 
 router.put("/products/:id", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, diagramaUrl, diagramaAnotacoes } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
     ...(price !== undefined && { price: Number(price) }),
@@ -81,6 +83,8 @@ router.put("/products/:id", requireAdmin, (req, res) => {
     ...(disponibilidade !== undefined && { disponibilidade: disponibilidade !== false && disponibilidade !== "false" }),
     ...(prazoEntrega !== undefined && { prazoEntrega }),
     ...(sizes !== undefined && { sizes: Array.isArray(sizes) ? sizes : [] }),
+    ...(diagramaUrl !== undefined && { diagramaUrl }),
+    ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
   });
   if (!updated) {
     res.status(404).json({ error: "Produto não encontrado" });
