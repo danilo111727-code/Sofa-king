@@ -619,34 +619,36 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                     const isExpanded = expandedSizes.has(i);
                     return (
                       <div key={i} className="border border-[#2d1f10] rounded-lg overflow-hidden">
-                        <div className="flex gap-2 items-center p-2 bg-[#120d06]">
+                        <div className="flex flex-col gap-2 p-2 bg-[#120d06]">
                           <input
-                            className={inputCls + " flex-1"}
+                            className={inputCls}
                             placeholder='Ex: "2,30 m"'
                             value={s.label}
                             onChange={(e) => updateSize(i, { label: e.target.value })}
                           />
-                          <div className="relative flex-shrink-0 w-36">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
-                            <input
-                              className={`${inputCls} pl-9`}
-                              type="number" min="0" step="0.01"
-                              placeholder="0,00"
-                              value={s.basePrice || ""}
-                              onChange={(e) => updateSize(i, { basePrice: Number(e.target.value) })}
-                            />
+                          <div className="flex gap-2 items-center">
+                            <div className="relative flex-1">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a4030] text-sm">R$</span>
+                              <input
+                                className={`${inputCls} pl-9`}
+                                type="number" min="0" step="0.01"
+                                placeholder="0,00"
+                                value={s.basePrice || ""}
+                                onChange={(e) => updateSize(i, { basePrice: Number(e.target.value) })}
+                              />
+                            </div>
+                            {(albums.length > 0 || foams.length > 0) && (
+                              <button
+                                type="button"
+                                onClick={() => toggleSizeExpand(i)}
+                                className={`flex-shrink-0 px-2 py-1.5 rounded-lg text-xs border transition-colors ${isExpanded ? "bg-[#c9a96e]/20 border-[#c9a96e]/50 text-[#c9a96e]" : "bg-[#261a0e] border-[#3d2e1e] text-[#a08060] hover:text-[#c9a96e]"}`}
+                                title="Acréscimos por álbum e espuma"
+                              >
+                                {isExpanded ? "▲" : "▼"} Acréscimos
+                              </button>
+                            )}
+                            <button type="button" onClick={() => removeSize(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
                           </div>
-                          {(albums.length > 0 || foams.length > 0) && (
-                            <button
-                              type="button"
-                              onClick={() => toggleSizeExpand(i)}
-                              className={`flex-shrink-0 px-2 py-1.5 rounded-lg text-xs border transition-colors ${isExpanded ? "bg-[#c9a96e]/20 border-[#c9a96e]/50 text-[#c9a96e]" : "bg-[#261a0e] border-[#3d2e1e] text-[#a08060] hover:text-[#c9a96e]"}`}
-                              title="Acréscimos por álbum e espuma"
-                            >
-                              {isExpanded ? "▲" : "▼"} Acréscimos
-                            </button>
-                          )}
-                          <button type="button" onClick={() => removeSize(i)} className={dangerBtn + " flex-shrink-0"}>✕</button>
                         </div>
                         {isExpanded && (
                           <div className="px-3 py-3 bg-[#0e0a04] border-t border-[#2d1f10] space-y-3">
