@@ -1,35 +1,28 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { dbQuery } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "../../data");
 const FILE = join(DATA_DIR, "materials.json");
 
-// Espumas: priceAdjustment is a surcharge in R$ (Reais)
 export interface Material {
   id: string;
   type: "espuma";
   name: string;
   description: string;
   priceAdjustment: number;
-  /** Optional per-size overrides keyed by size label. Falls back to `priceAdjustment`. */
   priceAdjustmentBySize?: Record<string, number>;
-  /** Peso suportado, ex: "90–120kg" */
   weightSupport?: string;
-  /** Nível de conforto, ex: "Firme" */
   comfortLevel?: string;
-  /** Indicação de uso, ex: "Uso diário" */
   useIndication?: string;
-  /** Comportamento a longo prazo */
   longTermBehavior?: string;
   active: boolean;
   imageUrl?: string;
 }
 
-interface File {
-  materials: Material[];
-}
+interface File { materials: Material[]; }
 
 const DEFAULT_DATA: File = {
   materials: [
@@ -39,7 +32,7 @@ const DEFAULT_DATA: File = {
   ],
 };
 
-function load(): File {
+function loadFromFile(): File {
   if (!existsSync(FILE)) {
     if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(FILE, JSON.stringify(DEFAULT_DATA, null, 2), "utf-8");
@@ -47,28 +40,50 @@ function load(): File {
   }
   try {
     const data = JSON.parse(readFileSync(FILE, "utf-8")) as File;
-    // Migrate: drop legacy "tecido" entries (fabrics now live in albums)
-    const filtered = { materials: data.materials.filter((m: any) => m.type === "espuma") };
-    return filtered;
-  } catch {
-    return DEFAULT_DATA;
-  }
+    return { materials: data.materials.filter((m: any) => m.type === "espuma") };
+  } catch { return DEFAULT_DATA; }
 }
 
-function save(data: File): void {
-  writeFileSync(FILE, JSON.stringify(data, null, 2), "utf-8");
+let _cache: Material[] | null = null;
+function getCache(): Material[] {
+  if (_cache === null) _cache = loadFromFile().materials;
+  return _cache;
+}
+
+async function persistOne(m: Material): Promise<void> {
+  await dbQuery(
+    `INSERT INTO materials (id, data) VALUES ($1, $2)
+     ON CONFLICT (id) DO UPDATE SET data = $2`,
+    [m.id, JSON.stringify({ ...m, _type: "espuma" })]
+  );
+}
+
+async function deleteOne(id: string): Promise<void> {
+  await dbQuery("DELETE FROM materials WHERE id = $1", [id]);
+}
+
+export async function initMaterialStore(): Promise<void> {
+  try {
+    const result = await dbQuery("SELECT id, data FROM materials WHERE data->>'_type' = 'espuma' ORDER BY created_at");
+    if (result && result.rows.length > 0) {
+      _cache = result.rows.map((r) => { const { _type, ...rest } = r.data; return rest as Material; });
+      console.log(`[materialStore] Loaded ${_cache.length} materials from database`);
+    } else {
+      const fromFile = loadFromFile().materials;
+      _cache = fromFile;
+      for (const m of fromFile) {
+        await persistOne(m);
+      }
+      console.log(`[materialStore] Migrated ${fromFile.length} materials from JSON to database`);
+    }
+  } catch (err) {
+    console.error("[materialStore] DB init failed, using file fallback:", err);
+    _cache = loadFromFile().materials;
+  }
 }
 
 function slug(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
-export function getAll(): Material[] {
-  return load().materials;
-}
-
-export function getActive(): Material[] {
-  return load().materials.filter((m) => m.active);
 }
 
 function normalizeBySize(input: Record<string, number> | null | undefined): Record<string, number> | undefined {
@@ -81,44 +96,40 @@ function normalizeBySize(input: Record<string, number> | null | undefined): Reco
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+export function getAll(): Material[] { return getCache(); }
+export function getActive(): Material[] { return getCache().filter((m) => m.active); }
+
 export function resolveFoamAdjustment(m: Material, sizeLabel: string): number {
   const v = m.priceAdjustmentBySize?.[sizeLabel];
   return typeof v === "number" && Number.isFinite(v) ? v : m.priceAdjustment;
 }
 
 export function create(data: Omit<Material, "id">): Material {
-  const d = load();
+  const materials = getCache();
   const baseId = `esp-${slug(data.name)}`;
-  const id = d.materials.some((m) => m.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
-  const m: Material = {
-    id,
-    ...data,
-    type: "espuma",
-    priceAdjustmentBySize: normalizeBySize(data.priceAdjustmentBySize),
-  };
-  d.materials.push(m);
-  save(d);
+  const id = materials.some((m) => m.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
+  const m: Material = { id, ...data, type: "espuma", priceAdjustmentBySize: normalizeBySize(data.priceAdjustmentBySize) };
+  materials.push(m);
+  persistOne(m).catch((e) => console.error("[materialStore] persist error:", e));
   return m;
 }
 
 export function update(id: string, data: Partial<Omit<Material, "id">>): Material | null {
-  const d = load();
-  const idx = d.materials.findIndex((m) => m.id === id);
+  const materials = getCache();
+  const idx = materials.findIndex((m) => m.id === id);
   if (idx === -1) return null;
-  const next = { ...d.materials[idx], ...data, type: "espuma" as const };
-  if (data.priceAdjustmentBySize !== undefined) {
-    next.priceAdjustmentBySize = normalizeBySize(data.priceAdjustmentBySize);
-  }
-  d.materials[idx] = next;
-  save(d);
-  return d.materials[idx];
+  const next = { ...materials[idx], ...data, type: "espuma" as const };
+  if (data.priceAdjustmentBySize !== undefined) next.priceAdjustmentBySize = normalizeBySize(data.priceAdjustmentBySize);
+  materials[idx] = next;
+  persistOne(next).catch((e) => console.error("[materialStore] persist error:", e));
+  return next;
 }
 
 export function remove(id: string): boolean {
-  const d = load();
-  const idx = d.materials.findIndex((m) => m.id === id);
+  const materials = getCache();
+  const idx = materials.findIndex((m) => m.id === id);
   if (idx === -1) return false;
-  d.materials.splice(idx, 1);
-  save(d);
+  materials.splice(idx, 1);
+  deleteOne(id).catch((e) => console.error("[materialStore] delete error:", e));
   return true;
 }
