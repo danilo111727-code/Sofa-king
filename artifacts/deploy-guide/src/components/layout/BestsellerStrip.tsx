@@ -26,7 +26,7 @@ export function BestsellerStrip() {
             className="shrink-0 flex flex-col items-center text-center group w-[120px] sm:w-[150px]"
             data-testid={`bestseller-item-${p.id}`}
           >
-            <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] rounded-2xl overflow-hidden bg-muted/40 border border-border/50 group-hover:border-primary/40 transition-colors shadow-sm">
+            <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] overflow-hidden bg-muted/40 border border-border/50 group-hover:border-primary/40 transition-colors shadow-sm">
               {p.image ? (
                 <img
                   src={p.image}
