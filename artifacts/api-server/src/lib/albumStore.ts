@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
+import { dbQuery } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "../../data");
@@ -18,15 +19,12 @@ export interface Album {
   name: string;
   description: string;
   surcharge: number;
-  /** Optional per-size overrides keyed by size label (e.g. "2,20 m"). Falls back to `surcharge`. */
   surchargeBySize?: Record<string, number>;
   fabrics: FabricSample[];
   active: boolean;
 }
 
-interface AlbumFile {
-  albums: Album[];
-}
+interface AlbumFile { albums: Album[]; }
 
 const DEFAULT_DATA: AlbumFile = {
   albums: [
@@ -45,7 +43,7 @@ const DEFAULT_DATA: AlbumFile = {
   ],
 };
 
-function load(): AlbumFile {
+function loadFromFile(): AlbumFile {
   if (!existsSync(FILE)) {
     if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(FILE, JSON.stringify(DEFAULT_DATA, null, 2), "utf-8");
@@ -53,88 +51,94 @@ function load(): AlbumFile {
   }
   try {
     return JSON.parse(readFileSync(FILE, "utf-8")) as AlbumFile;
-  } catch {
-    return DEFAULT_DATA;
+  } catch { return DEFAULT_DATA; }
+}
+
+let _cache: Album[] | null = null;
+
+function getCache(): Album[] {
+  if (_cache === null) _cache = loadFromFile().albums;
+  return _cache;
+}
+
+async function persistAll(albums: Album[]): Promise<void> {
+  await dbQuery("DELETE FROM materials WHERE id LIKE 'album-%'");
+  for (const a of albums) {
+    await dbQuery(
+      `INSERT INTO materials (id, data) VALUES ($1, $2)
+       ON CONFLICT (id) DO UPDATE SET data = $2`,
+      [a.id, JSON.stringify({ ...a, _type: "album" })]
+    );
   }
 }
 
-function save(data: AlbumFile): void {
-  writeFileSync(FILE, JSON.stringify(data, null, 2), "utf-8");
+async function persistOne(a: Album): Promise<void> {
+  await dbQuery(
+    `INSERT INTO materials (id, data) VALUES ($1, $2)
+     ON CONFLICT (id) DO UPDATE SET data = $2`,
+    [a.id, JSON.stringify({ ...a, _type: "album" })]
+  );
 }
 
-function slug(s: string): string {
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+async function deleteOne(id: string): Promise<void> {
+  await dbQuery("DELETE FROM materials WHERE id = $1", [id]);
 }
 
-function normalizeBySize(input: Record<string, number> | null | undefined): Record<string, number> | undefined {
-  if (!input || typeof input !== "object") return undefined;
-  const out: Record<string, number> = {};
-  for (const [k, v] of Object.entries(input)) {
-    const n = Number(v);
-    if (Number.isFinite(n)) out[k] = n;
+export async function initAlbumStore(): Promise<void> {
+  try {
+    const result = await dbQuery("SELECT id, data FROM materials WHERE data->>'_type' = 'album' ORDER BY created_at");
+    if (result && result.rows.length > 0) {
+      _cache = result.rows.map((r) => {
+        const { _type, ...rest } = r.data;
+        return rest as Album;
+      });
+      console.log(`[albumStore] Loaded ${_cache.length} albums from database`);
+    } else {
+      const fromFile = loadFromFile().albums;
+      _cache = fromFile;
+      if (fromFile.length > 0) {
+        await persistAll(fromFile);
+        console.log(`[albumStore] Migrated ${fromFile.length} albums from JSON to database`);
+      }
+    }
+  } catch (err) {
+    console.error("[albumStore] DB init failed, using file fallback:", err);
+    _cache = loadFromFile().albums;
   }
-  return Object.keys(out).length > 0 ? out : undefined;
 }
+
+export function getAll(): Album[] { return getCache(); }
+export function getActive(): Album[] { return getCache().filter((a) => a.active); }
 
 export function resolveAlbumSurcharge(album: Album, sizeLabel: string): number {
   const v = album.surchargeBySize?.[sizeLabel];
   return typeof v === "number" && Number.isFinite(v) ? v : album.surcharge;
 }
 
-export function getAll(): Album[] {
-  return load().albums;
-}
-export function getActive(): Album[] {
-  return load().albums.filter((a) => a.active);
-}
-export function getById(id: string): Album | undefined {
-  return load().albums.find((a) => a.id === id);
-}
-
 export function create(data: Omit<Album, "id">): Album {
-  const d = load();
-  const base = `album-${slug(data.name)}`;
-  const id = d.albums.some((a) => a.id === base) ? `${base}-${Date.now()}` : base;
-  const normalized: Album = {
-    ...data,
-    id,
-    surchargeBySize: normalizeBySize(data.surchargeBySize),
-    fabrics: (data.fabrics || []).map((f) => ({
-      id: f.id || randomUUID(),
-      name: f.name,
-      imageUrl: f.imageUrl || "",
-    })),
-  };
-  d.albums.push(normalized);
-  save(d);
-  return normalized;
+  const albums = getCache();
+  const id = `album-${randomUUID().slice(0, 8)}`;
+  const album: Album = { ...data, id };
+  albums.push(album);
+  persistOne(album).catch((e) => console.error("[albumStore] persist error:", e));
+  return album;
 }
 
 export function update(id: string, data: Partial<Omit<Album, "id">>): Album | null {
-  const d = load();
-  const idx = d.albums.findIndex((a) => a.id === id);
+  const albums = getCache();
+  const idx = albums.findIndex((a) => a.id === id);
   if (idx === -1) return null;
-  const next = { ...d.albums[idx], ...data };
-  if (data.surchargeBySize !== undefined) {
-    next.surchargeBySize = normalizeBySize(data.surchargeBySize);
-  }
-  if (data.fabrics) {
-    next.fabrics = data.fabrics.map((f) => ({
-      id: f.id || randomUUID(),
-      name: f.name,
-      imageUrl: f.imageUrl || "",
-    }));
-  }
-  d.albums[idx] = next;
-  save(d);
+  const next = { ...albums[idx], ...data };
+  albums[idx] = next;
+  persistOne(next).catch((e) => console.error("[albumStore] persist error:", e));
   return next;
 }
 
 export function remove(id: string): boolean {
-  const d = load();
-  const idx = d.albums.findIndex((a) => a.id === id);
+  const albums = getCache();
+  const idx = albums.findIndex((a) => a.id === id);
   if (idx === -1) return false;
-  d.albums.splice(idx, 1);
-  save(d);
+  albums.splice(idx, 1);
+  deleteOne(id).catch((e) => console.error("[albumStore] delete error:", e));
   return true;
 }

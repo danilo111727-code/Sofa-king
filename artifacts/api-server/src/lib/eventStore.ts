@@ -1,10 +1,4 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, "../../data");
-const EVENTS_FILE = join(DATA_DIR, "events.json");
+import { dbQuery } from "./db.js";
 
 export interface Event {
   id: string;
@@ -16,51 +10,51 @@ export interface Event {
   ts: number;
 }
 
-interface EventsFile {
-  events: Event[];
+let _cache: Event[] | null = null;
+function getCache(): Event[] {
+  if (_cache === null) _cache = [];
+  return _cache;
 }
 
-function load(): EventsFile {
-  if (!existsSync(EVENTS_FILE)) return { events: [] };
+export async function initEventStore(): Promise<void> {
   try {
-    return JSON.parse(readFileSync(EVENTS_FILE, "utf-8")) as EventsFile;
-  } catch {
-    return { events: [] };
+    const result = await dbQuery("SELECT id, data FROM events ORDER BY created_at DESC LIMIT 5000");
+    if (result) {
+      _cache = result.rows.map((r) => r.data as Event);
+      console.log(`[eventStore] Loaded ${_cache.length} events from database`);
+    }
+  } catch (err) {
+    console.error("[eventStore] DB init failed:", err);
+    _cache = [];
   }
-}
-
-function save(data: EventsFile): void {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  // Cap at 5000 most recent events
-  if (data.events.length > 5000) {
-    data.events = data.events.slice(-5000);
-  }
-  writeFileSync(EVENTS_FILE, JSON.stringify(data), "utf-8");
 }
 
 export function track(ev: Omit<Event, "id" | "ts">): Event {
-  const data = load();
+  const events = getCache();
   const event: Event = {
     id: Math.random().toString(36).slice(2, 11),
     ts: Date.now(),
     ...ev,
   };
-  data.events.push(event);
-  save(data);
+  events.push(event);
+  if (events.length > 5000) events.splice(0, events.length - 5000);
+  dbQuery(
+    "INSERT INTO events (id, data) VALUES ($1, $2) ON CONFLICT (id) DO NOTHING",
+    [event.id, JSON.stringify(event)]
+  ).catch((e) => console.error("[eventStore] persist error:", e));
   return event;
 }
 
 export function getAll(): Event[] {
-  return load().events;
+  return getCache();
 }
 
 export function getStats() {
-  const events = load().events;
+  const events = getCache();
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
   const last7 = events.filter((e) => now - e.ts < 7 * day);
   const last30 = events.filter((e) => now - e.ts < 30 * day);
-
   const views = events.filter((e) => e.type === "view");
   const whatsapps = events.filter((e) => e.type === "whatsapp");
 
@@ -102,6 +96,6 @@ export function getStats() {
 }
 
 export function getWhatsappEvents(limit = 100): Event[] {
-  const events = load().events.filter((e) => e.type === "whatsapp");
+  const events = getCache().filter((e) => e.type === "whatsapp");
   return events.slice(-limit).reverse();
 }
