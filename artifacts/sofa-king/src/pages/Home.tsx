@@ -43,7 +43,8 @@ function HorizontalScrollRow({ children }: { children: ReactNode }) {
   );
 }
 import { fetchProducts, fetchSiteSettings, trackView, type Product } from "@/lib/api";
-import { CATEGORIES, displayName, getCategory, applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
+import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
+import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
 
 const VALID_CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
 
@@ -69,6 +70,7 @@ export default function Home() {
   const { category: activeCategory, bestseller: onlyBestsellers } = useFilters();
   const activeCatDef = getCategory(activeCategory);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  const { pixDiscountPct, maxInstallments } = useSiteSettings();
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -198,11 +200,11 @@ export default function Home() {
                           </h3>
                           {product.price > 0 ? (
                             <div className="space-y-0.5 mt-1">
-                              <p className="text-sm font-semibold text-foreground">
-                                {MAX_INSTALLMENTS}x de R$ {(product.price / MAX_INSTALLMENTS).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              <p className="text-sm font-bold text-green-700">
+                                PIX R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </p>
-                              <p className="text-xs text-accent font-medium">
-                                PIX à vista R$ {applyPixDiscount(product.price).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-muted-foreground font-normal">({PIX_DISCOUNT_PCT}% OFF)</span>
+                              <p className="text-xs text-muted-foreground">
+                                Cartão: {maxInstallments}x de R$ {(applyCardMarkup(product.price, pixDiscountPct) / maxInstallments).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </p>
                             </div>
                           ) : (
