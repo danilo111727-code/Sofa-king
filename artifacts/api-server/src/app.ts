@@ -2,6 +2,9 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
+import { existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -37,5 +40,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(clerkMiddleware());
 
 app.use("/api", router);
+
+if (process.env.NODE_ENV === "production") {
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const frontendDist = join(__dirname, "..", "..", "sofa-king", "dist", "public");
+  if (existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    app.get("/{*path}", (_req, res) => {
+      res.sendFile(join(frontendDist, "index.html"));
+    });
+    logger.info({ frontendDist }, "Serving frontend static files");
+  } else {
+    logger.warn({ frontendDist }, "Frontend dist not found — skipping static file serving");
+  }
+}
 
 export default app;
