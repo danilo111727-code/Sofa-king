@@ -27,15 +27,6 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
           <marker id="vw-arr-e" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto">
             <polygon points="0,0 0,5 5,2.5" fill="#1a1a1a" />
           </marker>
-          <filter id="txt-outline" x="-10%" y="-10%" width="120%" height="120%">
-            <feMorphology in="SourceAlpha" operator="dilate" radius="0.4" result="expanded" />
-            <feFlood floodColor="white" floodOpacity="0.9" result="color" />
-            <feComposite in="color" in2="expanded" operator="in" result="outline" />
-            <feMerge>
-              <feMergeNode in="outline" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
 
         {anotacoes.map((ann) => {
@@ -54,7 +45,6 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
                   x={mx} y={my - 1}
                   textAnchor="middle" fontSize="3.2" fill="#1a1a1a"
                   fontWeight="700" fontFamily="system-ui, sans-serif"
-                  filter="url(#txt-outline)"
                 >
                   {ann.label}
                 </text>
@@ -64,7 +54,6 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
                   x={mx} y={my + 3}
                   textAnchor="middle" fontSize="2.3" fill="#333"
                   fontFamily="system-ui, sans-serif"
-                  filter="url(#txt-outline)"
                 >
                   {ann.sublabel}
                 </text>
