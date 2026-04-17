@@ -83,7 +83,7 @@ export function Navbar() {
     <>
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 grid grid-cols-3 items-center gap-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 grid grid-cols-3 items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -103,7 +103,7 @@ export function Navbar() {
             <img
               src={logoImg}
               alt="Sofá King"
-              className="h-12 sm:h-14 w-auto object-contain"
+              className="h-16 sm:h-20 w-auto object-contain"
             />
           </Link>
 
