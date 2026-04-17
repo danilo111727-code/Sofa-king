@@ -1,6 +1,7 @@
 import { useParams, Link, useLocation } from "wouter";
 import { ChevronRight, ArrowLeft, Ruler, Info, Check, ShieldCheck, ShoppingCart, ChevronDown, X } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -39,6 +40,8 @@ export default function Produto() {
   const [foamSheetOpen, setFoamSheetOpen] = useState(false);
   const [sizeSheetOpen, setSizeSheetOpen] = useState(false);
   const [mainImageIdx, setMainImageIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIdx, setLightboxIdx] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -93,6 +96,23 @@ export default function Produto() {
     }
     return base;
   }, [product]);
+
+  const lightboxImages = useMemo(
+    () => galleryImages.filter((u) => u !== DIAGRAMA_SENTINEL),
+    [galleryImages]
+  );
+
+  const openLightbox = useCallback(
+    (galleryIdx: number) => {
+      const img = galleryImages[galleryIdx];
+      if (!img || img === DIAGRAMA_SENTINEL) return;
+      const lbIdx = lightboxImages.indexOf(img);
+      if (lbIdx === -1) return;
+      setLightboxIdx(lbIdx);
+      setLightboxOpen(true);
+    },
+    [galleryImages, lightboxImages]
+  );
 
   useEffect(() => { setMainImageIdx(0); }, [product?.id]);
 
@@ -187,15 +207,28 @@ export default function Produto() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             {/* Image Gallery */}
             <div className="space-y-3">
-              <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border" data-testid="img-product-main">
+              <div
+                className={`aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border relative group ${
+                  galleryImages[mainImageIdx] !== DIAGRAMA_SENTINEL ? "cursor-zoom-in" : ""
+                }`}
+                data-testid="img-product-main"
+                onClick={() => openLightbox(mainImageIdx)}
+              >
                 {galleryImages[mainImageIdx] === DIAGRAMA_SENTINEL && product.diagramaUrl && product.diagramaAnotacoes ? (
                   <DiagramaViewer imageUrl={product.diagramaUrl} anotacoes={product.diagramaAnotacoes} />
                 ) : (
-                  <img
-                    src={galleryImages[mainImageIdx] || product.image}
-                    alt={fullName}
-                    className="w-full h-full object-cover object-center"
-                  />
+                  <>
+                    <img
+                      src={galleryImages[mainImageIdx] || product.image}
+                      alt={fullName}
+                      className="w-full h-full object-cover object-center transition-transform duration-200 group-hover:scale-[1.02]"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <div className="bg-black/40 text-white text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+                        Toque para ampliar
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
               {galleryImages.length > 1 && (
@@ -631,6 +664,17 @@ export default function Produto() {
       )}
 
       <Footer />
+
+      {lightboxOpen && lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          currentIndex={lightboxIdx}
+          altBase={fullName}
+          onClose={() => setLightboxOpen(false)}
+          onNext={() => setLightboxIdx((i) => Math.min(i + 1, lightboxImages.length - 1))}
+          onPrev={() => setLightboxIdx((i) => Math.max(i - 1, 0))}
+        />
+      )}
     </div>
   );
 }
