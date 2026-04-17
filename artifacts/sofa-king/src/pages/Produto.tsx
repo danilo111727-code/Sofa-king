@@ -14,7 +14,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { displayName } from "@/lib/categories";
 import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
-import { DiagramaMedidas } from "@/components/DiagramaMedidas";
+import { DiagramaViewer } from "@/components/DiagramaViewer";
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -81,10 +81,16 @@ export default function Produto() {
   const cardPrice = useMemo(() => applyCardMarkup(finalPrice, pixDiscountPct), [finalPrice, pixDiscountPct]);
   const installmentPrice = useMemo(() => cardPrice / maxInstallments, [cardPrice, maxInstallments]);
   const fullName = product ? displayName(product.name, product.category) : "";
+  const DIAGRAMA_SENTINEL = "__diagrama__";
   const galleryImages = useMemo(() => {
     if (!product) return [];
-    if (product.images && product.images.length > 0) return product.images;
-    return product.image ? [product.image] : [];
+    const base = product.images && product.images.length > 0
+      ? product.images
+      : product.image ? [product.image] : [];
+    if (product.diagramaUrl && product.diagramaAnotacoes && product.diagramaAnotacoes.length > 0) {
+      return [...base, DIAGRAMA_SENTINEL];
+    }
+    return base;
   }, [product]);
 
   useEffect(() => { setMainImageIdx(0); }, [product?.id]);
@@ -180,13 +186,16 @@ export default function Produto() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             {/* Image Gallery */}
             <div className="space-y-3">
-              <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border">
-                <img
-                  src={galleryImages[mainImageIdx] || product.image}
-                  alt={fullName}
-                  className="w-full h-full object-cover object-center"
-                  data-testid="img-product-main"
-                />
+              <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border" data-testid="img-product-main">
+                {galleryImages[mainImageIdx] === DIAGRAMA_SENTINEL && product.diagramaUrl && product.diagramaAnotacoes ? (
+                  <DiagramaViewer imageUrl={product.diagramaUrl} anotacoes={product.diagramaAnotacoes} />
+                ) : (
+                  <img
+                    src={galleryImages[mainImageIdx] || product.image}
+                    alt={fullName}
+                    className="w-full h-full object-cover object-center"
+                  />
+                )}
               </div>
               {galleryImages.length > 1 && (
                 <div className="grid grid-cols-5 gap-2" data-testid="product-thumbnails">
@@ -200,7 +209,13 @@ export default function Produto() {
                       data-testid={`thumbnail-${i}`}
                       aria-label={`Ver foto ${i + 1}`}
                     >
-                      <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                      {url === DIAGRAMA_SENTINEL ? (
+                        <div className="w-full h-full bg-secondary flex items-center justify-center">
+                          <Ruler className="w-5 h-5 text-primary" />
+                        </div>
+                      ) : (
+                        <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                      )}
                     </button>
                   ))}
                 </div>
@@ -474,22 +489,6 @@ export default function Produto() {
             </div>
           </div>
 
-          <div className="mt-16 pt-10 border-t border-border">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 text-primary">
-                  <Ruler className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">Dimensões</h4>
-                  {product.dimensions && (
-                    <p className="text-sm text-muted-foreground">{product.dimensions}</p>
-                  )}
-                </div>
-              </div>
-              <DiagramaMedidas />
-            </div>
-          </div>
         </div>
       </main>
 
