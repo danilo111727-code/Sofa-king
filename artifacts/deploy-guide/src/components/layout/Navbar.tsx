@@ -83,7 +83,7 @@ export function Navbar() {
     <>
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-28 sm:h-32 grid grid-cols-[auto_1fr_auto] items-center gap-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-28 sm:h-32 grid grid-cols-3 items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
