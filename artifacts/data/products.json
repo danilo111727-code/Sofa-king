@@ -104,9 +104,12 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "/images/stock/sofa_living_1.jpg",
+    "image": "/images/retratil-istambul-1.jpg",
     "images": [
-      "/images/stock/sofa_living_1.jpg"
+      "/images/retratil-istambul-1.jpg",
+      "/images/retratil-istambul-2.jpg",
+      "/images/retratil-istambul-3.jpg",
+      "/images/retratil-istambul-4.jpg"
     ],
     "category": "retratil",
     "dimensions": "",
