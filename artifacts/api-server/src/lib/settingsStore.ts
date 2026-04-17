@@ -7,10 +7,14 @@ const DATA_FILE = join(__dirname, "../../data/settings.json");
 
 export interface SiteSettings {
   heroImage: string;
+  pixDiscountPct: number;
+  maxInstallments: number;
 }
 
 const DEFAULTS: SiteSettings = {
   heroImage: "/images/hero.png",
+  pixDiscountPct: 10,
+  maxInstallments: 10,
 };
 
 function read(): SiteSettings {
