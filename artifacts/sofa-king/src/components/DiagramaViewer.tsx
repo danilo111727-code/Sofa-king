@@ -21,12 +21,15 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <marker id="vw-arr-s" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-            <path d="M8,2 L2,4 L8,6" fill="none" stroke="#1a1a1a" strokeWidth="1.2" />
+          <marker id="vw-arr-s" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <polygon points="6,1 6,5 1,3" fill="#c9a96e" />
           </marker>
-          <marker id="vw-arr-e" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-            <path d="M2,2 L8,4 L2,6" fill="none" stroke="#1a1a1a" strokeWidth="1.2" />
+          <marker id="vw-arr-e" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <polygon points="0,1 0,5 5,3" fill="#c9a96e" />
           </marker>
+          <filter id="vw-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0.3" stdDeviation="0.5" floodColor="#000" floodOpacity="0.5" />
+          </filter>
         </defs>
 
         {anotacoes.map((ann) => {
@@ -34,13 +37,13 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
           const my = (ann.y1 + ann.y2) / 2;
           const chars = Math.max(ann.label.length, (ann.sublabel || "").length);
           const lw = chars * 1.5 + 4;
-          const lh = ann.sublabel ? 7 : 4.5;
+          const lh = ann.sublabel ? 7 : 5;
 
           return (
             <g key={ann.id}>
               <line
                 x1={ann.x1} y1={ann.y1} x2={ann.x2} y2={ann.y2}
-                stroke="#1a1a1a" strokeWidth="0.8" strokeDasharray="2,1.2"
+                stroke="#c9a96e" strokeWidth="0.6"
                 markerStart="url(#vw-arr-s)" markerEnd="url(#vw-arr-e)"
               />
               {(ann.label || ann.sublabel) && (
@@ -48,12 +51,15 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
                   <rect
                     x={mx - lw / 2} y={my - lh / 2}
                     width={lw} height={lh}
-                    rx="1" fill="white" fillOpacity="0.92"
+                    rx="1.2"
+                    fill="#1a1208" fillOpacity="0.82"
+                    stroke="#c9a96e" strokeWidth="0.3" strokeOpacity="0.7"
+                    filter="url(#vw-shadow)"
                   />
                   {ann.label && (
                     <text
-                      x={mx} y={my + (ann.sublabel ? -0.5 : 0.8)}
-                      textAnchor="middle" fontSize="3" fill="#1a1a1a"
+                      x={mx} y={my + (ann.sublabel ? -0.6 : 1)}
+                      textAnchor="middle" fontSize="3" fill="#f0dca8"
                       fontWeight="700" fontFamily="system-ui, sans-serif"
                     >
                       {ann.label}
@@ -62,7 +68,7 @@ export function DiagramaViewer({ imageUrl, anotacoes }: Props) {
                   {ann.sublabel && (
                     <text
                       x={mx} y={my + 3.2}
-                      textAnchor="middle" fontSize="2.2" fill="#555"
+                      textAnchor="middle" fontSize="2.2" fill="#c9a96e"
                       fontFamily="system-ui, sans-serif"
                     >
                       {ann.sublabel}
