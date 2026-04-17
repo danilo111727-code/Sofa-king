@@ -95,24 +95,24 @@ export default function Home() {
 
       <main className="flex-grow pb-20 sm:pb-8">
         {/* Hero Section */}
-        <section className="bg-secondary/30 pt-8 pb-2 sm:pt-12 sm:pb-6">
+        <section className="bg-secondary/30 pt-5 pb-3 sm:pt-10 sm:pb-6">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
-              <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-accent mb-3 font-semibold" data-testid="text-hero-tagline">
+              <p className="text-[10px] sm:text-sm tracking-[0.35em] uppercase text-accent mb-1.5 sm:mb-3 font-semibold" data-testid="text-hero-tagline">
                 Sofá King · Ateliê de Estofados Planejados
               </p>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] text-foreground" data-testid="text-hero-title">
-                Não fazemos sofás em série.<br />
+              <h1 className="text-xl sm:text-4xl md:text-6xl font-serif font-bold tracking-tight leading-[1.15] text-foreground" data-testid="text-hero-title">
+                Não fazemos sofás em série.{" "}
                 <em className="italic font-normal">Fazemos o seu sofá.</em>
               </h1>
-              <p className="mt-4 text-base sm:text-lg text-foreground/80">
+              <p className="mt-1.5 sm:mt-3 text-xs sm:text-base text-foreground/80">
                 10 anos de inovação e comprometimento com o cliente.
               </p>
             </div>
           </div>
 
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-10">
-            <div className="w-full aspect-[4/3] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-secondary/50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-3 sm:mt-8">
+            <div className="w-full aspect-[16/10] sm:aspect-[16/9] rounded-xl overflow-hidden bg-secondary/50">
               <img
                 src="/images/hero.png"
                 alt="Sofá minimalista moderno em sala clara e arejada"
@@ -121,12 +121,12 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-6 flex justify-center sm:justify-start">
+            <div className="mt-3 sm:mt-5 flex justify-center sm:justify-start">
               <Link href="/modelos" data-testid="button-hero-cta">
                 <Button
-                  size="lg"
+                  size="default"
                   variant="outline"
-                  className="bg-background hover:bg-background/80 border-border font-medium h-12 px-6 rounded-full text-base"
+                  className="bg-background hover:bg-background/80 border-border font-medium h-10 px-5 rounded-full text-sm"
                 >
                   Explorar catálogo <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
