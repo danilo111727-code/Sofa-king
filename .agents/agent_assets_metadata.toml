@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "StWt-mN7I2uagZsn3tjz9"
+uri = "file://attached_assets/sofa_2520_sem_fundo.png"
+type = "image"
+title = "Sofá retrátil aberto — sem fundo"
+
+[[outputs]]
+id = "r_sXzyWju7U9KGd4JmTST"
+uri = "file://attached_assets/sofa_2519_sem_fundo.png"
+type = "image"
+title = "Sofá retrátil fechado — sem fundo"
