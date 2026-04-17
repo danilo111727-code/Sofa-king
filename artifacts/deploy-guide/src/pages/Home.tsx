@@ -95,36 +95,41 @@ export default function Home() {
 
       <main className="flex-grow pb-20 sm:pb-8">
         {/* Hero Section */}
-        <section className="relative w-full aspect-[3/4] sm:aspect-auto sm:h-[85vh] sm:min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="/images/hero.png"
-              alt="Sofá minimalista moderno em sala clara e arejada"
-              className="w-full h-full object-cover object-[center_75%] sm:object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        <section className="bg-secondary/30 pt-8 pb-2 sm:pt-12 sm:pb-6">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] text-foreground" data-testid="text-hero-title">
+                Sofás feitos <em className="italic font-normal">sob medida.</em>
+              </h1>
+              <p className="mt-3 text-base sm:text-lg text-foreground/80">
+                Para quem valoriza exclusividade.
+              </p>
+              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+                10 anos criando peças únicas.
+              </p>
+            </div>
           </div>
 
-          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pb-10 md:pb-24">
-            <div className="max-w-2xl text-white">
-              <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-white/80 mb-5 font-semibold" data-testid="text-hero-tagline">
-                Sofá King · Ateliê de Estofados Planejados
-              </p>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] mb-6 text-white drop-shadow-lg" data-testid="text-hero-title">
-                Não fazemos sofás em série.<br />
-                <em className="italic font-normal">Fazemos o seu sofá.</em>
-              </h1>
-              <p className="text-base md:text-lg text-white/85 mb-10 max-w-lg leading-relaxed">
-                10 anos de inovação e comprometimento com o cliente.
-              </p>
-              <Button
-                size="lg"
-                className="bg-white text-primary hover:bg-white/90 font-semibold h-14 px-8 rounded-md text-base"
-                data-testid="button-hero-cta"
-                onClick={() => window.dispatchEvent(new Event("open-side-drawer"))}
-              >
-                Conheça nossas peças <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-10">
+            <div className="w-full aspect-[4/3] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-secondary/50">
+              <img
+                src="/images/hero.png"
+                alt="Sofá minimalista moderno em sala clara e arejada"
+                className="w-full h-full object-cover object-center"
+                data-testid="img-hero"
+              />
+            </div>
+
+            <div className="mt-6 flex justify-center sm:justify-start">
+              <Link href="/modelos" data-testid="button-hero-cta">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-background hover:bg-background/80 border-border font-medium h-12 px-6 rounded-full text-base"
+                >
+                  Explorar catálogo <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
