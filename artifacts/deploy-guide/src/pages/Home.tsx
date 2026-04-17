@@ -42,7 +42,7 @@ function HorizontalScrollRow({ children }: { children: ReactNode }) {
   );
 }
 import { fetchProducts, trackView, type Product } from "@/lib/api";
-import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
+import { CATEGORIES, displayName, getCategory, applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
 
 const VALID_CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
 
@@ -193,9 +193,14 @@ export default function Home() {
                             {displayName(product.name, product.category)}
                           </h3>
                           {product.price > 0 ? (
-                            <span className="text-sm font-medium text-accent">
-                              R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                            </span>
+                            <div className="space-y-0.5 mt-1">
+                              <p className="text-sm font-semibold text-foreground">
+                                {MAX_INSTALLMENTS}x de R$ {(product.price / MAX_INSTALLMENTS).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </p>
+                              <p className="text-xs text-accent font-medium">
+                                PIX à vista R$ {applyPixDiscount(product.price).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-muted-foreground font-normal">({PIX_DISCOUNT_PCT}% OFF)</span>
+                              </p>
+                            </div>
                           ) : (
                             <span className="text-sm text-muted-foreground">Consultar valor</span>
                           )}
