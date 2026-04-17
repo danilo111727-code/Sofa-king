@@ -98,14 +98,15 @@ export default function Home() {
         <section className="bg-secondary/30 pt-8 pb-2 sm:pt-12 sm:pb-6">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] text-foreground" data-testid="text-hero-title">
-                Sofás feitos <em className="italic font-normal">sob medida.</em>
-              </h1>
-              <p className="mt-3 text-base sm:text-lg text-foreground/80">
-                Para quem valoriza exclusividade.
+              <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-accent mb-3 font-semibold" data-testid="text-hero-tagline">
+                Sofá King · Ateliê de Estofados Planejados
               </p>
-              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                10 anos criando peças únicas.
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight leading-[1.1] text-foreground" data-testid="text-hero-title">
+                Não fazemos sofás em série.<br />
+                <em className="italic font-normal">Fazemos o seu sofá.</em>
+              </h1>
+              <p className="mt-4 text-base sm:text-lg text-foreground/80">
+                10 anos de inovação e comprometimento com o cliente.
               </p>
             </div>
           </div>
