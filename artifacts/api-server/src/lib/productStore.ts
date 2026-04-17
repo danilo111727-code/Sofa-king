@@ -37,6 +37,16 @@ const VALID_CATEGORIES: ProductCategory[] = [
   "",
 ];
 
+export interface DiagramaAnotacao {
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  label: string;
+  sublabel: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -55,6 +65,8 @@ export interface Product {
   bestseller: boolean;
   albumIds?: string[];
   foamIds?: string[];
+  diagramaUrl?: string;
+  diagramaAnotacoes?: DiagramaAnotacao[];
 }
 
 function normalizeSizes(sizes: any): SizeOption[] {
