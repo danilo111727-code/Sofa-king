@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { displayName, applyPixDiscount, PIX_DISCOUNT_PCT, MAX_INSTALLMENTS } from "@/lib/categories";
+import { displayName } from "@/lib/categories";
+import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
 
 function brl(v: number): string {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -52,6 +53,7 @@ export default function Produto() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const { pixDiscountPct, maxInstallments } = useSiteSettings();
   const selectedSize = product?.sizes[sizeIdx];
   const selectedAlbum = albums[albumIdx];
   const selectedFoam = foams[foamIdx];
@@ -74,8 +76,9 @@ export default function Produto() {
     return base + albumSurcharge + foamAdjustment;
   }, [selectedSize, albumSurcharge, foamAdjustment]);
 
-  const pixPrice = useMemo(() => applyPixDiscount(finalPrice), [finalPrice]);
-  const installmentPrice = useMemo(() => finalPrice / MAX_INSTALLMENTS, [finalPrice]);
+  const pixPrice = finalPrice;
+  const cardPrice = useMemo(() => applyCardMarkup(finalPrice, pixDiscountPct), [finalPrice, pixDiscountPct]);
+  const installmentPrice = useMemo(() => cardPrice / maxInstallments, [cardPrice, maxInstallments]);
   const fullName = product ? displayName(product.name, product.category) : "";
   const galleryImages = useMemo(() => {
     if (!product) return [];
@@ -227,16 +230,15 @@ export default function Produto() {
               {/* Price highlight — mostra o preço total e condições de pagamento antes das seleções */}
               {!noSizes && (
                 <div className="rounded-xl border border-border bg-gradient-to-br from-secondary/40 to-secondary/10 p-4 sm:p-5 mb-5" data-testid="price-highlight">
-                  <p className="text-3xl sm:text-4xl font-bold text-accent leading-none" data-testid="text-price-highlight">
-                    {brl(finalPrice)}
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">PIX / À vista</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-green-700 leading-none" data-testid="text-price-highlight">
+                    {brl(pixPrice)}
                   </p>
                   <div className="mt-2 space-y-0.5">
-                    <p className="text-sm text-foreground">
-                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong>{" "}
+                    <p className="text-sm text-muted-foreground">
+                      No cartão: <strong className="text-foreground">{maxInstallments}x de {brl(installmentPrice)}</strong>{" "}
                       <span className="text-muted-foreground">sem juros</span>
-                    </p>
-                    <p className="text-sm text-green-700">
-                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista: {brl(pixPrice)}</strong>
+                      <span className="text-muted-foreground ml-1">({brl(cardPrice)} total)</span>
                     </p>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-2">
@@ -422,16 +424,17 @@ export default function Produto() {
               {/* Price + CTA */}
               {!noSizes && (
                 <div className="rounded-xl bg-secondary/30 border border-border p-5 mb-4">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Total</p>
-                  <p className="text-4xl font-bold text-accent mt-1" data-testid="text-product-detail-price">
-                    {brl(finalPrice)}
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">PIX / À vista</p>
+                  <p className="text-4xl font-bold text-green-700 mt-1" data-testid="text-product-detail-price">
+                    {brl(pixPrice)}
                   </p>
                   <div className="mt-2 space-y-1">
-                    <p className="text-sm text-foreground" data-testid="text-installment">
-                      <strong>{MAX_INSTALLMENTS}x de {brl(installmentPrice)}</strong> <span className="text-muted-foreground">sem juros</span>
+                    <p className="text-sm text-muted-foreground" data-testid="text-installment">
+                      No cartão: <strong className="text-foreground">{maxInstallments}x de {brl(installmentPrice)}</strong>{" "}
+                      <span className="text-muted-foreground">sem juros</span>
                     </p>
-                    <p className="text-sm text-green-700" data-testid="text-pix-price">
-                      ou <strong>{PIX_DISCOUNT_PCT}% OFF à vista: {brl(pixPrice)}</strong>
+                    <p className="text-xs text-muted-foreground" data-testid="text-pix-price">
+                      Total no cartão: {brl(cardPrice)}
                     </p>
                   </div>
                   <div className="text-xs text-muted-foreground mt-3 space-y-0.5 pt-3 border-t border-border">
@@ -580,8 +583,9 @@ export default function Produto() {
                 const sizeAlbumSurcharge = resolveAlbumSurcharge(selectedAlbum, s.label);
                 const sizeFoamAdj = resolveFoamAdjustment(selectedFoam, s.label);
                 const sizeTotal = s.basePrice + sizeAlbumSurcharge + sizeFoamAdj;
-                const sizeInstallment = sizeTotal / MAX_INSTALLMENTS;
-                const sizePix = applyPixDiscount(sizeTotal);
+                const sizePix = sizeTotal;
+                const sizeCard = applyCardMarkup(sizeTotal, pixDiscountPct);
+                const sizeInstallment = sizeCard / maxInstallments;
                 const active = sizeIdx === i;
                 return (
                   <button
@@ -601,7 +605,7 @@ export default function Produto() {
                       <div className="min-w-0">
                         <div className="font-semibold truncate">{s.label}</div>
                         <div className={`text-[11px] ${active ? "opacity-90" : "text-muted-foreground"}`}>
-                          {MAX_INSTALLMENTS}x {brl(sizeInstallment)} · PIX {brl(sizePix)}
+                          PIX {brl(sizePix)} · {maxInstallments}x {brl(sizeInstallment)}
                         </div>
                       </div>
                     </div>

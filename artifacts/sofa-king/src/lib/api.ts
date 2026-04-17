@@ -240,11 +240,13 @@ export async function fetchKnownSizes(): Promise<string[]> {
 // --- Site settings ---
 export interface SiteSettings {
   heroImage: string;
+  pixDiscountPct: number;
+  maxInstallments: number;
 }
 
 export async function fetchSiteSettings(): Promise<SiteSettings> {
   const res = await fetch(`${BASE}/settings`);
-  if (!res.ok) return { heroImage: "/images/hero.png" };
+  if (!res.ok) return { heroImage: "/images/hero.png", pixDiscountPct: 10, maxInstallments: 10 };
   return res.json();
 }
 

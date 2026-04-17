@@ -1297,6 +1297,8 @@ function WhatsappTab() {
 
 function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
   const [heroImage, setHeroImage] = useState("/images/hero.png");
+  const [pixDiscountPct, setPixDiscountPct] = useState(10);
+  const [maxInstallments, setMaxInstallments] = useState(10);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -1304,7 +1306,11 @@ function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => vo
 
   useEffect(() => {
     fetchSiteSettings()
-      .then((s) => setHeroImage(s.heroImage))
+      .then((s) => {
+        setHeroImage(s.heroImage);
+        setPixDiscountPct(s.pixDiscountPct ?? 10);
+        setMaxInstallments(s.maxInstallments ?? 10);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -1327,14 +1333,20 @@ function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => vo
   async function handleSave() {
     setSaving(true);
     try {
-      await updateSiteSettings({ heroImage });
-      flash("ok", "Capa do home atualizada com sucesso!");
+      await updateSiteSettings({ heroImage, pixDiscountPct, maxInstallments });
+      flash("ok", "Configurações salvas com sucesso!");
     } catch (err: any) {
       flash("err", err.message ?? "Erro ao salvar");
     } finally {
       setSaving(false);
     }
   }
+
+  const examplePix = 1000;
+  const exampleCard = pixDiscountPct > 0 && pixDiscountPct < 100
+    ? examplePix / (1 - pixDiscountPct / 100)
+    : examplePix;
+  const exampleInstallment = exampleCard / (maxInstallments || 1);
 
   if (loading) {
     return <div className="text-center text-[#a08060] py-16">Carregando...</div>;
@@ -1344,9 +1356,71 @@ function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => vo
     <>
       <div className="mb-6">
         <h1 className="text-xl font-semibold">Configurações do Site</h1>
-        <p className="text-[#a08060] text-sm mt-0.5">Personalize a aparência do site</p>
+        <p className="text-[#a08060] text-sm mt-0.5">Personalize a aparência e preços do site</p>
       </div>
 
+      {/* Precificação */}
+      <div className={`${cardCls} mb-6`}>
+        <h2 className="font-semibold text-white mb-1">Precificação</h2>
+        <p className="text-[#a08060] text-sm mb-4">
+          No admin, cadastre sempre o preço <strong className="text-white">à vista (PIX)</strong>.
+          O site calculará automaticamente o preço no cartão com o acréscimo abaixo.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-[#c8a87a] mb-1">
+              Desconto PIX (%)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={99}
+              step={0.5}
+              value={pixDiscountPct}
+              onChange={(e) => setPixDiscountPct(Number(e.target.value))}
+              className="w-full rounded-md bg-[#1e1208] border border-[#3d2e1e] text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a87a]"
+            />
+            <p className="text-xs text-[#7a6040] mt-1">
+              Percentual de desconto que o cliente recebe ao pagar no PIX em relação ao cartão.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#c8a87a] mb-1">
+              Parcelas máximas no cartão
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={24}
+              step={1}
+              value={maxInstallments}
+              onChange={(e) => setMaxInstallments(Math.max(1, Math.round(Number(e.target.value))))}
+              className="w-full rounded-md bg-[#1e1208] border border-[#3d2e1e] text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a87a]"
+            />
+            <p className="text-xs text-[#7a6040] mt-1">
+              Número máximo de parcelas exibidas no site.
+            </p>
+          </div>
+        </div>
+
+        {/* Preview de exemplo */}
+        <div className="mt-4 rounded-lg bg-[#1a1005] border border-[#3d2e1e] p-4">
+          <p className="text-xs text-[#7a6040] uppercase tracking-wider mb-2">Exemplo com produto de R$ 1.000,00 à vista</p>
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-green-400">
+              PIX / À vista: R$ {examplePix.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </p>
+            <p className="text-sm text-[#a08060]">
+              Cartão: {maxInstallments}x de R$ {exampleInstallment.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} sem juros
+              <span className="text-[#7a6040] ml-1">(total R$ {exampleCard.toLocaleString("pt-BR", { minimumFractionDigits: 2 })})</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero */}
       <div className={cardCls}>
         <h2 className="font-semibold text-white mb-1">Foto de Capa (Hero)</h2>
         <p className="text-[#a08060] text-sm mb-4">Imagem exibida em destaque na página inicial.</p>
@@ -1378,20 +1452,23 @@ function ConfiguracoesTab({ flash }: { flash: (t: "ok" | "err", s: string) => vo
             >
               {uploading ? "Enviando..." : "📷 Trocar imagem"}
             </button>
-            <button
-              type="button"
-              disabled={saving || uploading}
-              onClick={handleSave}
-              className={`${goldBtn} disabled:opacity-50`}
-            >
-              {saving ? "Salvando..." : "✓ Salvar capa"}
-            </button>
           </div>
 
           <p className="text-xs text-[#7a6040]">
             Proporção ideal: <strong className="text-[#a08060]">21:9</strong> (panorâmica). Formatos aceitos: JPG, PNG, WebP.
           </p>
         </div>
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <button
+          type="button"
+          disabled={saving || uploading}
+          onClick={handleSave}
+          className={`${goldBtn} disabled:opacity-50`}
+        >
+          {saving ? "Salvando..." : "✓ Salvar configurações"}
+        </button>
       </div>
     </>
   );
