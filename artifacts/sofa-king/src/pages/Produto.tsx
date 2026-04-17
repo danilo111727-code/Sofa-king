@@ -16,8 +16,9 @@ import { displayName } from "@/lib/categories";
 import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
 import { DiagramaViewer } from "@/components/DiagramaViewer";
 
-function brl(v: number): string {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+function brl(v: number | null | undefined): string {
+  const n = (v == null || !isFinite(v as number)) ? 0 : (v as number);
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 export default function Produto() {
