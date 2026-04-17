@@ -50,8 +50,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function brl(v: number): string {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+function brl(v: number | null | undefined): string {
+  const n = (v == null || !isFinite(v as number)) ? 0 : (v as number);
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 /** Per-size surcharge editor. Empty input = use default (baseLabel) value. */
@@ -262,10 +263,11 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
     setLoading(true);
     try {
       const [prods, als, fos] = await Promise.all([fetchProducts(), fetchAdminAlbums(), fetchAdminMaterials()]);
-      setProducts(prods);
+      setProducts(prods.map((p) => ({ ...p, price: (p.price == null || !isFinite(p.price)) ? 0 : p.price })));
       setAlbums(als.filter((a) => a.active));
       setFoams(fos.filter((m) => m.active));
-    } finally { setLoading(false); }
+    } catch { /* silently ignore load errors — form stays open */ }
+    finally { setLoading(false); }
   }
 
   function toggleSizeExpand(i: number) {
