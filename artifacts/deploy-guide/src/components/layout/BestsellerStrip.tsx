@@ -17,24 +17,32 @@ export function BestsellerStrip() {
   const loop = [...items, ...items, ...items];
 
   return (
-    <div className="bg-secondary/40 border-t border-border/50 border-b border-border/50 py-2.5 overflow-hidden" data-testid="bestseller-strip">
-      <div className="flex items-center gap-2 whitespace-nowrap animate-marquee">
-        <span className="px-3 text-[10px] font-bold tracking-[0.25em] uppercase text-primary shrink-0">⭐ Bestsellers</span>
+    <div className="bg-background border-t border-border/50 border-b border-border/50 py-5 overflow-hidden" data-testid="bestseller-strip">
+      <div className="flex items-end gap-8 sm:gap-12 whitespace-nowrap animate-marquee">
         {loop.map((p, i) => (
           <Link
             key={`${p.id}-${i}`}
             href={`/produto/${p.id}`}
-            className="shrink-0 flex items-center gap-2 px-3 py-1 rounded-full bg-background border border-border/60 hover:border-primary/60 transition-colors"
+            className="shrink-0 flex flex-col items-center text-center group w-[120px] sm:w-[150px]"
             data-testid={`bestseller-item-${p.id}`}
           >
-            {p.image && (
-              <span className="w-7 h-7 rounded-full overflow-hidden bg-muted/40 shrink-0">
-                <img src={p.image} alt="" className="w-full h-full object-cover" loading="lazy" />
-              </span>
-            )}
-            <span className="text-xs font-medium text-foreground">
+            <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] rounded-full overflow-hidden bg-muted/40 border border-border/50 group-hover:border-primary/40 transition-colors shadow-sm">
+              {p.image ? (
+                <img
+                  src={p.image}
+                  alt={displayName(p.name, p.category)}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 text-[10px]">
+                  Sem foto
+                </div>
+              )}
+            </div>
+            <div className="mt-3 text-sm sm:text-base font-medium text-foreground group-hover:text-primary leading-tight whitespace-normal line-clamp-2">
               {displayName(p.name, p.category)}
-            </span>
+            </div>
           </Link>
         ))}
       </div>

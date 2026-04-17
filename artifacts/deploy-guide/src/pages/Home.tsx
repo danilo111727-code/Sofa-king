@@ -94,12 +94,12 @@ export default function Home() {
 
       <main className="flex-grow pb-20 sm:pb-8">
         {/* Hero Section */}
-        <section className="relative w-full h-[52vh] min-h-[420px] md:h-[85vh] md:min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
+        <section className="relative w-full aspect-[3/4] sm:aspect-auto sm:h-[85vh] sm:min-h-[620px] flex items-end overflow-hidden bg-secondary/40">
           <div className="absolute inset-0 z-0">
             <img
               src="/images/hero.png"
               alt="Sofá minimalista moderno em sala clara e arejada"
-              className="w-full h-full object-cover object-[center_65%] md:object-center"
+              className="w-full h-full object-cover object-[center_75%] sm:object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
@@ -141,9 +141,9 @@ export default function Home() {
             </div>
 
             {loading ? (
-              <div className="flex gap-4 overflow-hidden justify-center">
+              <div className="flex gap-4 overflow-hidden">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="shrink-0 w-24 h-28 bg-muted/30 rounded-lg animate-pulse" />
+                  <div key={i} className="shrink-0 w-[260px] md:w-[300px] h-[280px] bg-muted/30 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -156,28 +156,41 @@ export default function Home() {
                     <Link
                       key={product.id}
                       href={`/produto/${product.id}`}
-                      className="group shrink-0 w-[96px] sm:w-[112px] snap-start flex flex-col items-center text-center"
+                      className="group shrink-0 w-[220px] sm:w-[260px] md:w-[300px] snap-start"
                       data-testid={`scroll-card-${product.id}`}
                     >
-                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-muted/30 border border-border/60 group-hover:border-primary/40 transition-colors shadow-sm">
-                        {product.image ? (
-                          <img
-                            src={product.image}
-                            alt={displayName(product.name, product.category)}
-                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 text-[10px]">
-                            Sem foto
-                          </div>
-                        )}
-                        {product.bestseller && (
-                          <span className="absolute -top-1 -right-1 text-[9px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-bold shadow">⭐</span>
-                        )}
-                      </div>
-                      <div className="mt-2 text-[12px] sm:text-xs font-medium text-foreground group-hover:text-primary leading-tight line-clamp-2 min-h-[2.2rem]">
-                        {displayName(product.name, product.category)}
+                      <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-lg">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt={displayName(product.name, product.category)}
+                              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 text-xs">
+                              Sem foto
+                            </div>
+                          )}
+                          {product.bestseller && (
+                            <span className="absolute top-2 left-2 text-[10px] font-bold tracking-wider uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                              ⭐ Bestseller
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-base font-serif font-bold text-foreground group-hover:text-primary transition-colors leading-tight mb-1 line-clamp-2 min-h-[2.6rem]">
+                            {displayName(product.name, product.category)}
+                          </h3>
+                          {product.price > 0 ? (
+                            <span className="text-sm font-medium text-accent">
+                              R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">Consultar valor</span>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   ))}
