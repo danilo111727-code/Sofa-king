@@ -31,6 +31,7 @@ import {
   type Client,
 } from "@/lib/api";
 import { CATEGORIES, displayName, type ProductCategory } from "@/lib/categories";
+import { DiagramaEditor } from "@/components/DiagramaEditor";
 
 const inputCls = "w-full bg-[#1a1208] border border-[#3d2e1e] rounded-lg px-3 py-2.5 text-white text-sm placeholder-[#5a4030] focus:outline-none focus:border-[#c9a96e] transition-colors";
 const cardCls = "bg-[#1a1208] border border-[#2d1f10] rounded-xl p-4";
@@ -232,12 +233,14 @@ interface ProdutoForm {
   disponibilidade: boolean;
   bestseller: boolean;
   sizes: SizeOption[];
+  diagramaUrl: string;
+  diagramaAnotacoes: import("@/lib/api").DiagramaAnotacao[];
 }
 
 const EMPTY_PRODUTO: ProdutoForm = {
   name: "", category: "", description: "", longDescription: "", images: [],
   dimensions: "", prazoEntrega: "", disponibilidade: true, bestseller: false,
-  sizes: [],
+  sizes: [], diagramaUrl: "", diagramaAnotacoes: [],
 };
 
 function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void }) {
@@ -307,6 +310,8 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
       disponibilidade: p.disponibilidade,
       bestseller: Boolean((p as any).bestseller),
       sizes: p.sizes && p.sizes.length ? p.sizes : [],
+      diagramaUrl: p.diagramaUrl ?? "",
+      diagramaAnotacoes: p.diagramaAnotacoes ?? [],
     });
     setShowForm(true);
   }
@@ -335,6 +340,8 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
         colors: [],
         fabrics: [],
         price: Math.min(...form.sizes.map((s) => s.basePrice).filter((n) => n > 0)) || 0,
+        diagramaUrl: form.diagramaUrl || undefined,
+        diagramaAnotacoes: form.diagramaAnotacoes.length > 0 ? form.diagramaAnotacoes : undefined,
       };
       if (editId) { await updateProduct(editId, payload); flash("ok", "Produto atualizado!"); }
       else { await createProduct(payload); flash("ok", "Produto criado!"); }
@@ -583,6 +590,19 @@ function ProdutosTab({ flash }: { flash: (t: "ok" | "err", s: string) => void })
                     </div>
                   )}
                 </div>
+              </Field>
+
+              {/* DIAGRAMA DE MEDIDAS */}
+              <Field label="Diagrama de Medidas (opcional)">
+                <p className="text-xs text-[#7a6040] mb-2">
+                  Suba uma foto e adicione setas para indicar as medidas. O diagrama aparece na galeria de fotos do produto.
+                </p>
+                <DiagramaEditor
+                  imageUrl={form.diagramaUrl}
+                  anotacoes={form.diagramaAnotacoes}
+                  onImageChange={(url) => setForm((f) => ({ ...f, diagramaUrl: url }))}
+                  onChange={(ann) => setForm((f) => ({ ...f, diagramaAnotacoes: ann }))}
+                />
               </Field>
 
               {/* SIZES TABLE */}
