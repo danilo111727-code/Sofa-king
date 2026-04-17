@@ -5,6 +5,16 @@ export interface SizeOption {
   foamSurcharges?: Record<string, number>;
 }
 
+export interface DiagramaAnotacao {
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  label: string;
+  sublabel: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -21,6 +31,8 @@ export interface Product {
   prazoEntrega: string;
   sizes: SizeOption[];
   bestseller?: boolean;
+  diagramaUrl?: string;
+  diagramaAnotacoes?: DiagramaAnotacao[];
 }
 
 export interface Material {
