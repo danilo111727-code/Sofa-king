@@ -145,9 +145,10 @@
     "price": 0,
     "description": "",
     "longDescription": "",
-    "image": "/images/stock/sofa_living_2.jpg",
+    "image": "/images/retratil-brooklyn-fechado.png",
     "images": [
-      "/images/stock/sofa_living_2.jpg"
+      "/images/retratil-brooklyn-fechado.png",
+      "/images/retratil-brooklyn-aberto.png"
     ],
     "category": "retratil",
     "dimensions": "",
