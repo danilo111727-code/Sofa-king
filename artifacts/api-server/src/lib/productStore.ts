@@ -51,6 +51,8 @@ export interface Product {
   prazoEntrega: string;
   sizes: SizeOption[];
   bestseller: boolean;
+  albumIds?: string[];
+  foamIds?: string[];
 }
 
 function normalizeSizes(sizes: any): SizeOption[] {
@@ -98,6 +100,8 @@ function load(): Product[] {
         image: images[0] || p.image || "",
         category: normalizeCategory(p.category),
         bestseller: Boolean(p.bestseller),
+        albumIds: Array.isArray(p.albumIds) ? p.albumIds : undefined,
+        foamIds: Array.isArray(p.foamIds) ? p.foamIds : undefined,
       };
     }) as Product[];
   } catch {
