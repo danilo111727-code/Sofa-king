@@ -56,14 +56,19 @@ export default function Produto() {
   const selectedAlbum = albums[albumIdx];
   const selectedFoam = foams[foamIdx];
 
-  const albumSurcharge = useMemo(
-    () => (selectedSize ? resolveAlbumSurcharge(selectedAlbum, selectedSize.label) : 0),
-    [selectedAlbum, selectedSize],
-  );
-  const foamAdjustment = useMemo(
-    () => (selectedSize ? resolveFoamAdjustment(selectedFoam, selectedSize.label) : 0),
-    [selectedFoam, selectedSize],
-  );
+  const albumSurcharge = useMemo(() => {
+    if (!selectedSize || !selectedAlbum) return 0;
+    const fromProduct = selectedSize.albumSurcharges?.[selectedAlbum.id];
+    if (fromProduct !== undefined) return fromProduct;
+    return resolveAlbumSurcharge(selectedAlbum, selectedSize.label);
+  }, [selectedAlbum, selectedSize]);
+
+  const foamAdjustment = useMemo(() => {
+    if (!selectedSize || !selectedFoam) return 0;
+    const fromProduct = selectedSize.foamSurcharges?.[selectedFoam.id];
+    if (fromProduct !== undefined) return fromProduct;
+    return resolveFoamAdjustment(selectedFoam, selectedSize.label);
+  }, [selectedFoam, selectedSize]);
   const finalPrice = useMemo(() => {
     const base = selectedSize?.basePrice ?? 0;
     return base + albumSurcharge + foamAdjustment;
