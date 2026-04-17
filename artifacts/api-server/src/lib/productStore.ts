@@ -103,25 +103,38 @@ function derivedPrice(sizes: SizeOption[], fallback: number): number {
   return Math.min(...positives);
 }
 
+const TEST_IDS = new Set([
+  "sofa-teste-retratil",
+  "sofa-teste-carrinho",
+  "sofa-carrinho-teste",
+  "sofa-teste-demo-valores",
+]);
+
 function load(): Product[] {
   if (!existsSync(DATA_FILE)) return [];
   try {
     const raw = JSON.parse(readFileSync(DATA_FILE, "utf-8")) as any[];
-    return raw.map((p) => {
-      const images = normalizeImages(p.images, p.image);
-      return {
-        ...p,
-        sizes: normalizeSizes(p.sizes),
-        colors: Array.isArray(p.colors) ? p.colors : [],
-        fabrics: Array.isArray(p.fabrics) ? p.fabrics : [],
-        images,
-        image: images[0] || p.image || "",
-        category: normalizeCategory(p.category),
-        bestseller: Boolean(p.bestseller),
-        albumIds: Array.isArray(p.albumIds) ? p.albumIds : undefined,
-        foamIds: Array.isArray(p.foamIds) ? p.foamIds : undefined,
-      };
-    }) as Product[];
+    const products = raw
+      .filter((p) => !TEST_IDS.has(String(p?.id ?? "")))
+      .map((p) => {
+        const images = normalizeImages(p.images, p.image);
+        return {
+          ...p,
+          sizes: normalizeSizes(p.sizes),
+          colors: Array.isArray(p.colors) ? p.colors : [],
+          fabrics: Array.isArray(p.fabrics) ? p.fabrics : [],
+          images,
+          image: images[0] || p.image || "",
+          category: normalizeCategory(p.category),
+          bestseller: Boolean(p.bestseller),
+          albumIds: Array.isArray(p.albumIds) ? p.albumIds : undefined,
+          foamIds: Array.isArray(p.foamIds) ? p.foamIds : undefined,
+        };
+      }) as Product[];
+    if (products.length < raw.length) {
+      save(products);
+    }
+    return products;
   } catch {
     return [];
   }
