@@ -6,6 +6,7 @@ import materialsRouter from "./materials.js";
 import albumsRouter from "./albums.js";
 import adminRouter from "./admin.js";
 import storageRouter from "./storage.js";
+import settingsRouter from "./settings.js";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(materialsRouter);
 router.use(albumsRouter);
 router.use(adminRouter);
 router.use(storageRouter);
+router.use(settingsRouter);
 
 export default router;
