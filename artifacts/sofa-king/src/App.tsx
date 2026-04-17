@@ -14,6 +14,7 @@ import AdminLogin from "@/pages/AdminLogin";
 import Favoritos from "@/pages/Favoritos";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { CartProvider } from "@/contexts/CartContext";
+import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 
 const queryClient = new QueryClient();
 
@@ -105,13 +106,15 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
-        <CartProvider>
-          <TooltipProvider>
-            <Router />
-            <WhatsAppOnPublic />
-            <Toaster />
-          </TooltipProvider>
-        </CartProvider>
+        <SiteSettingsProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Router />
+              <WhatsAppOnPublic />
+              <Toaster />
+            </TooltipProvider>
+          </CartProvider>
+        </SiteSettingsProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );
