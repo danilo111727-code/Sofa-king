@@ -3,17 +3,21 @@ import { Link } from "wouter";
   import { Button } from "@/components/ui/button";
   import { useState, useEffect } from "react";
   import { SideDrawer } from "./SideDrawer";
+  import { Show, useUser, useClerk } from "@clerk/react";
   import logoImg from "@assets/sofa-king-logo.png";
   import { useCart } from "@/contexts/CartContext";
 
   const hasClerk = !!(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
-  function AuthButtonsClerk() {
-    const { Show, useUser, useClerk } = require("@clerk/react");
+  function AuthButtons() {
     const { user } = useUser();
     const { signOut } = useClerk();
     const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
-    const firstName = user?.firstName || user?.username || user?.primaryEmailAddress?.emailAddress?.split("@")[0] || "Conta";
+    const firstName =
+      user?.firstName ||
+      user?.username ||
+      user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
+      "Conta";
 
     return (
       <>
@@ -110,7 +114,7 @@ import { Link } from "wouter";
             </Link>
 
             <div className="flex items-center gap-1 sm:gap-2 justify-self-end">
-              {hasClerk && <AuthButtonsClerk />}
+              {hasClerk && <AuthButtons />}
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" data-testid="button-search">
                 <Search className="h-5 w-5" />
               </Button>
