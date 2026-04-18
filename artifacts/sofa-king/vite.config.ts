@@ -7,28 +7,13 @@ import { defineConfig } from "vite";
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const isDev = process.env.NODE_ENV !== "production";
-
   export default defineConfig({
     base: process.env.BASE_PATH || "/",
-    plugins: [
-      react(),
-      tailwindcss(),
-      ...(isDev && process.env.REPL_ID !== undefined
-        ? [
-            (await import("@replit/vite-plugin-runtime-error-modal")).default(),
-            await import("@replit/vite-plugin-cartographer").then((m) =>
-              m.cartographer({ root: path.resolve(__dirname, "..") }),
-            ),
-            await import("@replit/vite-plugin-dev-banner").then((m) =>
-              m.devBanner(),
-            ),
-          ]
-        : []),
-    ],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),
+        "@assets": path.resolve(__dirname, "src/assets"),
       },
       dedupe: ["react", "react-dom"],
     },
