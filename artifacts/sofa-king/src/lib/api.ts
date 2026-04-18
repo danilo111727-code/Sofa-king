@@ -108,7 +108,7 @@ export interface WhatsappEvent {
   ts: number;
 }
 
-const BASE = "/api";
+const BASE = (import.meta.env.VITE_API_URL ?? "") + "/api";
 const jsonHeaders: HeadersInit = { "Content-Type": "application/json" };
 
 export async function fetchProducts(): Promise<Product[]> {
