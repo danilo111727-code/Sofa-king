@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { useUser, useClerk } from "@clerk/react";
 import {
   fetchProducts,
   fetchAdminStatus,
@@ -132,14 +131,17 @@ export default function Admin() {
     fetchAdminStatus().then((s) => setIsAdmin(s.isAdmin));
   }, []);
 
-  async function handleLogout() { await signOut({ redirectUrl: "/" }); }
+  async function handleLogout() {
+      await fetch((import.meta.env.VITE_API_URL ?? "") + "/api/admin/logout", { method: "POST", credentials: "include" }).catch(() => {});
+      navigate("/admin/login");
+    }
 
   if (isAdmin === null) {
     return <div className="min-h-screen bg-[#120d06] text-[#a08060] flex items-center justify-center">Verificando acesso...</div>;
   }
 
   if (isAdmin === false) {
-    const email = user?.primaryEmailAddress?.emailAddress;
+    const email = adminEmail;
     return (
       <div className="min-h-screen bg-[#120d06] text-white flex items-center justify-center px-4">
         <div className="max-w-md text-center bg-[#1a1208] border border-[#3d2e1e] rounded-2xl p-8">
