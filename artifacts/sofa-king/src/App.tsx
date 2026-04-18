@@ -95,17 +95,10 @@ function WhatsAppOnPublic() {
 }
 
 function ClerkProviderWithRoutes() {
-  const [, setLocation] = useLocation();
+    const [, setLocation] = useLocation();
 
-  return (
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
-      routerPush={(to) => setLocation(stripBase(to))}
-      routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
-    >
+    const inner = (
       <QueryClientProvider client={queryClient}>
-        <ClerkQueryClientCacheInvalidator />
         <SiteSettingsProvider>
           <CartProvider>
             <TooltipProvider>
@@ -116,11 +109,34 @@ function ClerkProviderWithRoutes() {
           </CartProvider>
         </SiteSettingsProvider>
       </QueryClientProvider>
-    </ClerkProvider>
-  );
-}
+    );
 
-function App() {
+    if (!clerkPubKey) return inner;
+
+    return (
+      <ClerkProvider
+        publishableKey={clerkPubKey}
+        proxyUrl={clerkProxyUrl}
+        routerPush={(to) => setLocation(stripBase(to))}
+        routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
+      >
+        <QueryClientProvider client={queryClient}>
+          <ClerkQueryClientCacheInvalidator />
+          <SiteSettingsProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Router />
+                <WhatsAppOnPublic />
+                <Toaster />
+              </TooltipProvider>
+            </CartProvider>
+          </SiteSettingsProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
+    );
+  }
+
+  function App() {
   return (
     <WouterRouter base={basePath}>
       <ClerkProviderWithRoutes />
