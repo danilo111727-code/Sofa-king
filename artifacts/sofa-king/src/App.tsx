@@ -1,7 +1,7 @@
-import { Component, useEffect, useRef, useState } from "react";
+import { Component, useEffect, useRef } from "react";
   import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
   import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-  import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from "@clerk/react";
+  import { ClerkProvider, SignIn, SignUp, useClerk } from "@clerk/react";
   import { Toaster } from "@/components/ui/toaster";
   import { TooltipProvider } from "@/components/ui/tooltip";
   import NotFound from "@/pages/not-found";
@@ -81,20 +81,6 @@ import { Component, useEffect, useRef, useState } from "react";
     return null;
   }
 
-  // Renders children after Clerk loads OR after 4s timeout — never blank
-  function ClerkSafeContent({ children }: { children: React.ReactNode }) {
-    const { isLoaded } = useAuth();
-    const [timedOut, setTimedOut] = useState(false);
-
-    useEffect(() => {
-      const t = setTimeout(() => setTimedOut(true), 4000);
-      return () => clearTimeout(t);
-    }, []);
-
-    if (!isLoaded && !timedOut) return null;
-    return <>{children}</>;
-  }
-
   function Router() {
     return (
       <Switch>
@@ -152,11 +138,9 @@ import { Component, useEffect, useRef, useState } from "react";
             <SiteSettingsProvider>
               <CartProvider>
                 <TooltipProvider>
-                  <ClerkSafeContent>
-                    <Router />
-                    <WhatsAppOnPublic />
-                    <Toaster />
-                  </ClerkSafeContent>
+                  <Router />
+                  <WhatsAppOnPublic />
+                  <Toaster />
                 </TooltipProvider>
               </CartProvider>
             </SiteSettingsProvider>
