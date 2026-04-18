@@ -1,4 +1,10 @@
-import app from "./app";
+// Compatibility: map VITE_CLERK_PUBLISHABLE_KEY → CLERK_PUBLISHABLE_KEY for backend
+  // Replit sets the publishable key with VITE_ prefix, but Clerk Express needs it without
+  if (!process.env.CLERK_PUBLISHABLE_KEY && process.env.VITE_CLERK_PUBLISHABLE_KEY) {
+    process.env.CLERK_PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY;
+  }
+
+  import app from "./app";
 import { logger } from "./lib/logger";
 import { initProductStore } from "./lib/productStore";
 import { initAlbumStore } from "./lib/albumStore";
