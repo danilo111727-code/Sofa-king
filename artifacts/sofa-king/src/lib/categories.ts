@@ -16,6 +16,9 @@ export interface ProductCategory {
     { id: "modulos",   label: "Módulos",          suffix: "Módulos" },
   ];
 
+  export const PIX_DISCOUNT_PCT = 10;
+  export const MAX_INSTALLMENTS = 10;
+
   export function getCategory(id: string): ProductCategory | null {
     return id ? CATEGORIES.find(c => c.id === id) ?? null : null;
   }
@@ -27,5 +30,9 @@ export interface ProductCategory {
     return trimmed.toLowerCase().endsWith(cat.suffix.toLowerCase())
       ? trimmed
       : `${trimmed} ${cat.suffix}`;
+  }
+
+  export function applyPixDiscount(price: number, discountPct = PIX_DISCOUNT_PCT): number {
+    return price * (1 - discountPct / 100);
   }
   
