@@ -29,7 +29,7 @@ function stripBase(path: string): string {
 }
 
 if (!clerkPubKey) {
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY");
+  console.warn("VITE_CLERK_PUBLISHABLE_KEY não configurado — autenticação de usuário desabilitada.");
 }
 
 function SignInPage() {
