@@ -2,16 +2,19 @@
   set -e
 
   echo "==> Node: $(node --version)"
-  echo "==> pnpm: $(pnpm --version)"
+  echo "==> npm: $(npm --version)"
 
-  echo "==> Instalando dependências..."
-  pnpm install --no-frozen-lockfile
+  # Use npx to invoke pnpm 10.26.1 directly (avoids global install / Corepack issues)
+  PNPM="npx --yes pnpm@10.26.1"
+
+  echo "==> Instalando dependências com pnpm@10.26.1..."
+  $PNPM install --no-frozen-lockfile
 
   echo "==> Construindo o frontend (sofa-king)..."
-  NODE_ENV=production BASE_PATH=/ pnpm --filter @workspace/sofa-king build
+  NODE_ENV=production BASE_PATH=/ $PNPM --filter @workspace/sofa-king build
 
   echo "==> Construindo o servidor API..."
-  pnpm --filter @workspace/api-server build
+  $PNPM --filter @workspace/api-server build
 
   echo "==> Build concluído!"
   
