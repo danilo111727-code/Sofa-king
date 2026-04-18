@@ -11,11 +11,6 @@ import express, { type Express } from "express";
 
   const app: Express = express();
 
-  // DEBUG: Raw ping before any middleware
-  app.get("/ping", (_req, res) => {
-    res.json({ pong: true, time: new Date().toISOString(), env: process.env.NODE_ENV });
-  });
-
   app.use(
     pinoHttp({
       logger,
@@ -60,12 +55,10 @@ import express, { type Express } from "express";
     }
   }
 
-  // Global error handler - reveal actual error for debugging
+  // Global error handler
   app.use((err: any, _req: any, res: any, _next: any) => {
-    const msg = err?.message || String(err);
-    const stack = err?.stack?.slice(0, 800) || "";
-    logger.error({ err }, "Express error handler caught error");
-    res.status(err?.status || 500).json({ error: msg, stack });
+    logger.error({ err }, "Unhandled Express error");
+    res.status(err?.status || 500).json({ error: err?.message || "Internal Server Error" });
   });
 
   export default app;
