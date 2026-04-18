@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
-set -e
+  set -e
 
-echo "==> Instalando dependências..."
-pnpm install --frozen-lockfile=false
+  echo "==> Node version: $(node --version)"
+  echo "==> NPM version: $(npm --version)"
 
-echo "==> Construindo o frontend..."
-NODE_ENV=production BASE_PATH=/ pnpm --filter @workspace/sofa-king build
+  echo "==> Instalando pnpm..."
+  npm install -g pnpm@10
 
-echo "==> Construindo o servidor API..."
-pnpm --filter @workspace/api-server build
+  echo "==> pnpm version: $(pnpm --version)"
 
-echo "==> Build concluído!"
+  echo "==> Instalando dependências..."
+  pnpm install --no-frozen-lockfile
+
+  echo "==> Listando pacotes do workspace..."
+  pnpm list -r --depth 0 || true
+
+  echo "==> Construindo o frontend..."
+  NODE_ENV=production BASE_PATH=/ pnpm --filter @workspace/sofa-king build
+
+  echo "==> Construindo o servidor API..."
+  pnpm --filter @workspace/api-server build
+
+  echo "==> Build concluído!"
+  
