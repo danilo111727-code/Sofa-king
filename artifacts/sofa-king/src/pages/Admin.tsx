@@ -116,8 +116,6 @@ function SurchargeBySizeEditor({
 
 export default function Admin() {
   const [, navigate] = useLocation();
-  const { signOut } = useClerk();
-  const { user } = useUser();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>("produtos");
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
