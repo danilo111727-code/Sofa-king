@@ -5,6 +5,7 @@ import { writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { clerkClient, getAuth } from "@clerk/express";
+import { dbQuery } from "../lib/db.js";
 import { requireAdmin, isAdminRequest } from "../lib/adminAuth.js";
 import * as events from "../lib/eventStore.js";
 import * as productStore from "../lib/productStore.js";
