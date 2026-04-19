@@ -153,15 +153,17 @@ async function persistAll(products: Product[]): Promise<void> {
 }
 
 async function persistOne(p: Product): Promise<void> {
-  await dbQuery(
+  const result = await dbQuery(
     `INSERT INTO products (id, data) VALUES ($1, $2)
      ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW()`,
     [p.id, JSON.stringify(p)]
   );
+  if (result === null) saveToJson(getCache());
 }
 
 async function deleteOne(id: string): Promise<void> {
-  await dbQuery("DELETE FROM products WHERE id = $1", [id]);
+  const result = await dbQuery("DELETE FROM products WHERE id = $1", [id]);
+  if (result === null) saveToJson(getCache());
 }
 
 export async function initProductStore(): Promise<void> {
