@@ -69,14 +69,4 @@ router.delete("/admin/materials/:id", requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-
-  router.post("/maintenance/fix-foams", (req, res) => {
-    const t = req.headers["x-maint-token"];
-    if (t !== process.env.MAINT_TOKEN) { res.status(403).json({ error: "forbidden" }); return; }
-    store.update("esp-d33-soft", { weightSupport: "90–120kg" });
-    store.update("esp-d33-soft-molas", { weightSupport: "110–150kg" });
-    store.remove("esp-teste-luxo");
-    res.json({ ok: true, foams: store.getAll().map(f => ({ id: f.id, name: f.name, w: f.weightSupport, active: f.active })) });
-  });
-
-  export default router;
+export default router;
