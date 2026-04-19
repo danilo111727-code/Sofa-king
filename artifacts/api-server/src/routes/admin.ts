@@ -193,7 +193,7 @@ router.post("/admin/migrate-categories", async (req: any, res) => {
     }
     try {
       const result = await dbQuery(
-        "UPDATE produtos SET categoria = 'sofa-cama' WHERE categoria = 'cama' RETURNING id, nome, categoria"
+        `UPDATE products SET data = jsonb_set(data, '{category}', '"sofa-cama"') WHERE data->>'category' = 'cama' RETURNING id, data->>'category' AS category, data->>'name' AS name`
       );
       res.json({ updated: result?.rowCount ?? 0, rows: result?.rows ?? [] });
     } catch (e: any) {
