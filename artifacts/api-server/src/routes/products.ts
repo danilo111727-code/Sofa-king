@@ -29,24 +29,6 @@ import { Router } from "express";
   }
 
   
-  // TEMP DEBUG: check data source
-  router.get("/debug/data-source", (req, res) => {
-    const token = req.headers["x-debug-token"];
-    if (token !== process.env.MAINT_TOKEN) { res.status(403).json({}); return; }
-    const { join, dirname } = require("path");
-    const { fileURLToPath } = require("url");
-    const { existsSync } = require("fs");
-    const dataFile = join(dirname(fileURLToPath(import.meta.url)), "../../data/products.json");
-    res.json({
-      hasDatabase: !!process.env.DATABASE_URL,
-      dataFile,
-      dataFileExists: existsSync(dataFile),
-      nodeEnv: process.env.NODE_ENV,
-      productCount: store.getAll().length,
-      istambulBasePrice: store.getAll().find(p => p.id === "retratil-istambul")?.sizes?.[0]?.basePrice
-    });
-  });
-  
 router.get("/products", (_req, res) => {
     res.json(store.getAll());
   });
