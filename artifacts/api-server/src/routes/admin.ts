@@ -30,17 +30,13 @@ router.get("/admin/debug", async (req: any, res) => {
   });
 
   router.get("/admin/me", async (req: any, res) => {
-    try {
-      const { userId } = getAuth(req);
-      if (!userId) { res.json({ isAdmin: false, signedIn: false }); return; }
-      const isAdmin = await isAdminRequest(req);
-      const user = await clerkClient.users.getUser(userId);
-      const email = user.emailAddresses[0]?.emailAddress;
-      res.json({ isAdmin, signedIn: true, email });
-    } catch {
-      res.json({ isAdmin: false, signedIn: false });
-    }
-  });
+      try {
+        const info = await getAdminInfo(req);
+        res.json({ isAdmin: info.isAdmin, signedIn: info.signedIn, email: info.email, method: info.method });
+      } catch (e) {
+        res.json({ isAdmin: false, signedIn: false });
+      }
+    });
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const storage = new ObjectStorageService();
