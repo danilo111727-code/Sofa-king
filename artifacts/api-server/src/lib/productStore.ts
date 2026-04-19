@@ -14,22 +14,30 @@ export interface SizeOption {
 }
 
 export type ProductCategory =
-  | "retratil"
-  | "cama"
-  | "canto"
-  | "organicos"
-  | "living"
-  | "fixo"
-  | "chaise"
-  | "ilha"
-  | "modulos"
-  | "";
-
+    | "retratil"
+    | "sofa-cama"
+    | "canto"
+    | "organicos"
+    | "living"
+    | "fixo"
+    | "chaise"
+    | "ilha"
+    | "modulos"
+    | "cama"
+    | "cabeceira"
+    | "box"
+    | "poltronas"
+    | "puffs"
+    | "almofadas"
+    | "";
+  
 const VALID_CATEGORIES: ProductCategory[] = [
-  "retratil", "cama", "canto", "organicos", "living",
-  "fixo", "chaise", "ilha", "modulos", "",
-];
-
+    "retratil", "sofa-cama", "canto", "organicos", "living",
+    "fixo", "chaise", "ilha", "modulos",
+    "cama", "cabeceira", "box",
+    "poltronas", "puffs", "almofadas", "",
+  ];
+  
 export interface DiagramaAnotacao {
   id: string;
   x1: number; y1: number; x2: number; y2: number;
