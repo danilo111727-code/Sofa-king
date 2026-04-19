@@ -4,14 +4,27 @@ import { randomUUID } from "crypto";
 import { writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { clerkClient } from "@clerk/express";
-import { requireAdmin } from "../lib/adminAuth.js";
+import { clerkClient, getAuth } from "@clerk/express";
+import { requireAdmin, isAdminRequest } from "../lib/adminAuth.js";
 import * as events from "../lib/eventStore.js";
 import * as productStore from "../lib/productStore.js";
 import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
 const router = Router();
+router.get("/admin/me", async (req: any, res) => {
+    try {
+      const { userId } = getAuth(req);
+      if (!userId) { res.json({ isAdmin: false, signedIn: false }); return; }
+      const isAdmin = await isAdminRequest(req);
+      const user = await clerkClient.users.getUser(userId);
+      const email = user.emailAddresses[0]?.emailAddress;
+      res.json({ isAdmin, signedIn: true, email });
+    } catch {
+      res.json({ isAdmin: false, signedIn: false });
+    }
+  });
+
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const storage = new ObjectStorageService();
 
