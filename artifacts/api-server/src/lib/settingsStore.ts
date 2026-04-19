@@ -10,12 +10,16 @@ export interface SiteSettings {
   heroImage: string;
   pixDiscountPct: number;
   maxInstallments: number;
+  vagas: number;
+  prazoEntregaDias: number;
 }
 
 const DEFAULTS: SiteSettings = {
   heroImage: "/images/hero.png",
   pixDiscountPct: 10,
   maxInstallments: 10,
+  vagas: 8,
+  prazoEntregaDias: 30,
 };
 
 function loadFromFile(): SiteSettings {
