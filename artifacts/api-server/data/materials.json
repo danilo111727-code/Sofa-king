@@ -32,7 +32,7 @@
       "name": "Espuma D33 + Soft",
       "description": "",
       "priceAdjustment": 0,
-      "weightSupport": "100–130kg",
+      "weightSupport": "90–120kg",
       "comfortLevel": "Macio + suporte",
       "useIndication": "Premium",
       "longTermBehavior": "Amacia levemente e mantém conforto com suporte",
@@ -45,7 +45,7 @@
       "name": "Espuma D33 + Soft + Molas",
       "description": "",
       "priceAdjustment": 0,
-      "weightSupport": "130–160kg+",
+      "weightSupport": "110–150kg",
       "comfortLevel": "Super macio",
       "useIndication": "Luxo",
       "longTermBehavior": "Alta durabilidade com conforto constante",
@@ -64,25 +64,6 @@
       "longTermBehavior": "Pode perder sustentação com o tempo",
       "active": true,
       "imageUrl": "/foams/soft-molas.png"
-    },
-    {
-      "id": "esp-teste-luxo",
-      "type": "espuma",
-      "name": "Espuma Luxo [TESTE]",
-      "description": "",
-      "priceAdjustment": 800,
-      "priceAdjustmentBySize": {
-        "1,80 m": 700,
-        "2,20 m": 800,
-        "2,60 m": 1000,
-        "3,00 m": 1200
-      },
-      "weightSupport": "—",
-      "comfortLevel": "Exemplo",
-      "useIndication": "Demonstração",
-      "longTermBehavior": "Espuma de teste com acréscimo variável por metragem para demonstração.",
-      "active": true,
-      "imageUrl": "/foams/d33-soft-molas.png"
     }
   ]
 }
