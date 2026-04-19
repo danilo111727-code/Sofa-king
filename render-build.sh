@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-  set -e
+set -e
 
-  echo "==> Node: $(node --version)"
-  echo "==> pnpm: $(pnpm --version)"
+echo "==> Instalando dependências..."
+pnpm install --frozen-lockfile=false
 
-  echo "==> Instalando dependências do backend..."
-  pnpm install --no-frozen-lockfile
+echo "==> Construindo o frontend..."
+NODE_ENV=production BASE_PATH=/ pnpm --filter @workspace/sofa-king build
 
-  echo "==> Construindo o servidor API..."
-  pnpm --filter @workspace/api-server build
+echo "==> Construindo o servidor API..."
+pnpm --filter @workspace/api-server build
 
-  echo "==> Build concluído!"
-  
+echo "==> Build concluído!"

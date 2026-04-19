@@ -1,0 +1,34 @@
+{
+  "albums": [
+    {
+      "id": "album-lisboa",
+      "name": "Álbum Lisboa",
+      "description": "Linhos nacionais — toque natural e respirável.",
+      "surcharge": 0,
+      "fabrics": [
+        { "id": "linho-cru", "name": "Linho Cru", "imageUrl": "" },
+        { "id": "linho-grafite", "name": "Linho Grafite", "imageUrl": "" },
+        { "id": "linho-marinho", "name": "Linho Marinho", "imageUrl": "" }
+      ],
+      "active": true
+    },
+    {
+      "id": "album-veludo-teste",
+      "name": "Álbum Veludo [TESTE]",
+      "description": "Álbum de demonstração — veludo importado com acréscimo variável por metragem.",
+      "surcharge": 600,
+      "surchargeBySize": {
+        "1,80 m": 500,
+        "2,20 m": 600,
+        "2,60 m": 750,
+        "3,00 m": 900
+      },
+      "fabrics": [
+        { "id": "veludo-teste-verde", "name": "Veludo Verde Musgo [TESTE]", "imageUrl": "" },
+        { "id": "veludo-teste-terracota", "name": "Veludo Terracota [TESTE]", "imageUrl": "" },
+        { "id": "veludo-teste-azul", "name": "Veludo Azul Petróleo [TESTE]", "imageUrl": "" }
+      ],
+      "active": true
+    }
+  ]
+}
