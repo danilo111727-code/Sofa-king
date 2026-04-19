@@ -28,26 +28,6 @@ import { Router } from "express";
     }
   }
 
-  // TEMP MAINTENANCE: bulk update product sizes (token-protected)
-  router.post("/products/:id/maint-sizes", (req, res) => {
-    const token = req.headers["x-maint-token"] || req.query.token;
-    if (!token || token !== process.env.MAINT_TOKEN) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
-    const { sizes } = req.body;
-    if (!Array.isArray(sizes)) {
-      res.status(400).json({ error: "sizes array required" });
-      return;
-    }
-    const updated = store.update(req.params.id, { sizes });
-    if (!updated) {
-      res.status(404).json({ error: "Produto não encontrado" });
-      return;
-    }
-    res.json(updated);
-  });
-
   router.get("/products", (_req, res) => {
     res.json(store.getAll());
   });
