@@ -37,6 +37,10 @@ import express, { type Express } from "express";
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+    // Serve static files (product images, hero, etc.) from public/
+    const publicDir = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
+    app.use(express.static(publicDir));
+
   app.use(clerkMiddleware());
 
   app.use("/api", router);
