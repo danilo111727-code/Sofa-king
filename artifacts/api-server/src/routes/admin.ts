@@ -1,15 +1,16 @@
 import { Router } from "express";
 import multer from "multer";
 import { randomUUID } from "crypto";
-import { writeFileSync, mkdirSync, existsSync } from "fs";
-import { join, extname, dirname } from "path";
+import { writeFileSync, mkdirSync } from "fs";
+import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { clerkClient } from "@clerk/express";
 import { requireAdmin } from "../lib/adminAuth.js";
 import * as events from "../lib/eventStore.js";
 import * as productStore from "../lib/productStore.js";
-import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage.js";
+import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -17,6 +18,10 @@ const storage = new ObjectStorageService();
 
 function useObjectStorage(): boolean {
   return !!process.env.PRIVATE_OBJECT_DIR;
+}
+
+function useCloudinary(): boolean {
+  return !!process.env.CLOUDINARY_URL;
 }
 
 function getLocalUploadsDir(): string {
@@ -36,7 +41,6 @@ router.get("/admin/stats", requireAdmin, (_req, res) => {
   res.json(events.getStats());
 });
 
-// Union of all size labels currently used across products (preserves first-seen order).
 router.get("/admin/known-sizes", requireAdmin, (_req, res) => {
   const seen: string[] = [];
   const set = new Set<string>();
@@ -71,7 +75,6 @@ router.get("/admin/clients", requireAdmin, async (_req, res) => {
   }
 });
 
-// Upload image directly to object storage (private dir) and return the URL to serve it
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (req: any, res) => {
@@ -99,6 +102,18 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
       const objectPath = `/objects/uploads/${objectId}`;
       const url = `/api/storage${objectPath}`;
       res.json({ url, objectPath });
+    } else if (useCloudinary()) {
+      const result = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "sofa-king", resource_type: "image" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      });
+      res.json({ url: result.secure_url, objectPath: result.secure_url });
     } else {
       const ext = req.file.mimetype === "image/png" ? ".png"
         : req.file.mimetype === "image/webp" ? ".webp"
