@@ -109,6 +109,12 @@ export interface WhatsappEvent {
 }
 
 const BASE = (import.meta.env.VITE_API_URL ?? "") + "/api";
+  const API_ORIGIN = import.meta.env.VITE_API_URL ?? "";
+  export function getImageUrl(path: string | undefined | null): string {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    return `${API_ORIGIN}${path}`;
+  }
 const jsonHeaders: HeadersInit = { "Content-Type": "application/json" };
 
 export async function fetchProducts(): Promise<Product[]> {
