@@ -10,7 +10,6 @@ import * as events from "../lib/eventStore.js";
 import * as productStore from "../lib/productStore.js";
 import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
-import { v2 as cloudinary } from "cloudinary";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -20,8 +19,8 @@ function useObjectStorage(): boolean {
   return !!process.env.PRIVATE_OBJECT_DIR;
 }
 
-function useCloudinary(): boolean {
-  return !!process.env.CLOUDINARY_URL;
+function useGitHubStorage(): boolean {
+  return !!(process.env.GITHUB_TOKEN && process.env.GITHUB_FRONTEND_REPO);
 }
 
 function getLocalUploadsDir(): string {
@@ -35,6 +34,38 @@ function getLocalUploadsDir(): string {
     try { mkdirSync(c, { recursive: true }); return c; } catch { continue; }
   }
   return join(process.cwd(), "uploads");
+}
+
+async function uploadToGitHub(buffer: Buffer, mimeType: string): Promise<string> {
+  const ext = mimeType === "image/png" ? ".png"
+    : mimeType === "image/webp" ? ".webp"
+    : mimeType === "image/gif" ? ".gif"
+    : ".jpg";
+  const fileName = `${randomUUID()}${ext}`;
+  const token = process.env.GITHUB_TOKEN!;
+  const repo = process.env.GITHUB_FRONTEND_REPO!;
+  const filePath = `public/images/uploads/${fileName}`;
+  const content = buffer.toString("base64");
+
+  const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "User-Agent": "sofa-king-backend",
+    },
+    body: JSON.stringify({
+      message: `upload: add product image ${fileName}`,
+      content,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`GitHub upload failed (${response.status}): ${err}`);
+  }
+
+  return `/images/uploads/${fileName}`;
 }
 
 router.get("/admin/stats", requireAdmin, (_req, res) => {
@@ -102,18 +133,9 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
       const objectPath = `/objects/uploads/${objectId}`;
       const url = `/api/storage${objectPath}`;
       res.json({ url, objectPath });
-    } else if (useCloudinary()) {
-      const result = await new Promise<any>((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "sofa-king", resource_type: "image" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        uploadStream.end(req.file.buffer);
-      });
-      res.json({ url: result.secure_url, objectPath: result.secure_url });
+    } else if (useGitHubStorage()) {
+      const url = await uploadToGitHub(req.file.buffer, req.file.mimetype);
+      res.json({ url, objectPath: url });
     } else {
       const ext = req.file.mimetype === "image/png" ? ".png"
         : req.file.mimetype === "image/webp" ? ".webp"
