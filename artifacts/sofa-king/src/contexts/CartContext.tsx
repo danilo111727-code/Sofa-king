@@ -1,74 +1,77 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-  const CART_KEY = "sk_cart_v1";
+export interface CartItem {
+  id: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  size: { label: string; basePrice: number };
+  album: { id: string; name: string; surcharge: number } | null;
+  fabric: { id: string; name: string; imageUrl: string } | null;
+  foam: { id: string; name: string; priceAdjustment: number } | null;
+  unitPrice: number;
+  qty: number;
+}
 
-  export interface CartItemSize { label: string; basePrice: number; }
-  export interface CartItemAlbum { name: string; surcharge: number; }
-  export interface CartItemFabric { name: string; }
-  export interface CartItemFoam { name: string; priceAdjustment: number; }
+interface CartContextValue {
+  items: CartItem[];
+  count: number;
+  subtotal: number;
+  add: (item: Omit<CartItem, "id" | "qty">, qty?: number) => void;
+  remove: (id: string) => void;
+  setQty: (id: string, qty: number) => void;
+  clear: () => void;
+}
 
-  export interface CartItem {
-    id: string;
-    productId: string;
-    productName: string;
-    productImage: string;
-    size: CartItemSize;
-    album?: CartItemAlbum;
-    fabric?: CartItemFabric;
-    foam?: CartItemFoam;
-    unitPrice: number;
-    qty: number;
+const CartContext = createContext<CartContextValue | null>(null);
+const STORAGE_KEY = "sk_cart_v1";
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as CartItem[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch { /* noop */ }
+  }, [items]);
+
+  const count = items.reduce((n, i) => n + i.qty, 0);
+  const subtotal = items.reduce((s, i) => s + i.unitPrice * i.qty, 0);
+
+  function add(item: Omit<CartItem, "id" | "qty">, qty = 1) {
+    setItems((prev) => [
+      ...prev,
+      { ...item, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, qty },
+    ]);
   }
 
-  export type CartItemInput = Omit<CartItem, "id" | "qty">;
-
-  interface CartContextType {
-    items: CartItem[];
-    count: number;
-    subtotal: number;
-    add: (item: CartItemInput, qty?: number) => void;
-    remove: (id: string) => void;
-    setQty: (id: string, qty: number) => void;
-    clear: () => void;
+  function remove(id: string) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
-  const CartContext = createContext<CartContextType | null>(null);
-
-  export function CartProvider({ children }: { children: ReactNode }) {
-    const [items, setItems] = useState<CartItem[]>(() => {
-      if (typeof window === "undefined") return [];
-      try {
-        const stored = localStorage.getItem(CART_KEY);
-        return stored ? JSON.parse(stored) : [];
-      } catch { return []; }
-    });
-
-    useEffect(() => {
-      try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch {}
-    }, [items]);
-
-    const count = items.reduce((acc, item) => acc + item.qty, 0);
-    const subtotal = items.reduce((acc, item) => acc + item.unitPrice * item.qty, 0);
-
-    function add(item: CartItemInput, qty = 1) {
-      setItems(prev => [...prev, { ...item, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, qty }]);
-    }
-    function remove(id: string) { setItems(prev => prev.filter(i => i.id !== id)); }
-    function setQty(id: string, qty: number) {
-      setItems(prev => prev.map(i => i.id === id ? { ...i, qty: Math.max(1, Math.min(99, qty)) } : i));
-    }
-    function clear() { setItems([]); }
-
-    return (
-      <CartContext.Provider value={{ items, count, subtotal, add, remove, setQty, clear }}>
-        {children}
-      </CartContext.Provider>
+  function setQty(id: string, qty: number) {
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, qty: Math.max(1, Math.min(99, qty)) } : i)),
     );
   }
 
-  export function useCart(): CartContextType {
-    const ctx = useContext(CartContext);
-    if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
-    return ctx;
-  }
-  
+  function clear() { setItems([]); }
+
+  return (
+    <CartContext.Provider value={{ items, count, subtotal, add, remove, setQty, clear }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export function useCart(): CartContextValue {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
+  return ctx;
+}
