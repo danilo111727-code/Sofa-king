@@ -192,12 +192,19 @@ router.post("/admin/migrate-categories", async (req: any, res) => {
       return;
     }
     try {
+      const count = await dbQuery("SELECT COUNT(*) as total FROM products");
+      const sample = await dbQuery("SELECT id, data->>'category' as cat FROM products LIMIT 5");
       const result = await dbQuery(
         `UPDATE products SET data = jsonb_set(data, '{category}', '"sofa-cama"') WHERE data->>'category' = 'cama' RETURNING id, data->>'category' AS category, data->>'name' AS name`
       );
-      res.json({ updated: result?.rowCount ?? 0, rows: result?.rows ?? [] });
+      res.json({
+        totalInDb: count?.rows[0]?.total ?? 0,
+        sample: sample?.rows ?? [],
+        updated: result?.rowCount ?? 0,
+        rows: result?.rows ?? []
+      });
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      res.status(500).json({ error: e.message, stack: e.stack?.substring(0, 200) });
     }
   });
 
