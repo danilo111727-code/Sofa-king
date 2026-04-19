@@ -3,7 +3,7 @@ import { ArrowRight, Search, X, Heart, ShoppingCart } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useEffect, useState, useMemo } from "react";
-import { fetchProducts, trackView, type Product } from "@/lib/api";
+import { fetchProducts, trackView, type Product , getImageUrl } from "@/lib/api";
 import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
 import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -192,7 +192,7 @@ export default function Modelos() {
                     <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
                       {product.image ? (
                         <img
-                          src={product.image}
+                          src={getImageUrl(product.image)}
                           alt={displayName(product.name, product.category)}
                           className="w-full h-full object-cover object-center transition-transform duration-700 group-hover/card:scale-105"
                           loading="lazy"
