@@ -150,11 +150,29 @@ import { Component, useEffect, useRef } from "react";
     );
   }
 
+  class GlobalErrorBoundary extends Component<{ children: React.ReactNode }, { error: Error | null }> {
+    constructor(props: any) { super(props); this.state = { error: null }; }
+    static getDerivedStateFromError(error: Error) { return { error }; }
+    render() {
+      if (this.state.error) {
+        return (
+          <div style={{ padding: 40, fontFamily: "monospace", background: "#fff" }}>
+            <h2 style={{ color: "red" }}>Erro na aplicação</h2>
+            <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{this.state.error.message}\n\n{this.state.error.stack}</pre>
+          </div>
+        );
+      }
+      return this.props.children;
+    }
+  }
+
   function App() {
     return (
-      <WouterRouter base={basePath}>
-        <ClerkProviderWithRoutes />
-      </WouterRouter>
+      <GlobalErrorBoundary>
+        <WouterRouter base={basePath}>
+          <ClerkProviderWithRoutes />
+        </WouterRouter>
+      </GlobalErrorBoundary>
     );
   }
 
