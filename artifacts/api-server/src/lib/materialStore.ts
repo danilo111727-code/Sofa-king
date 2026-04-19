@@ -63,24 +63,29 @@ async function deleteOne(id: string): Promise<void> {
 }
 
 export async function initMaterialStore(): Promise<void> {
-  try {
-    const result = await dbQuery("SELECT id, data FROM materials WHERE data->>'_type' = 'espuma' ORDER BY created_at");
-    if (result && result.rows.length > 0) {
-      _cache = result.rows.map((r) => { const { _type, ...rest } = r.data; return rest as Material; });
-      console.log(`[materialStore] Loaded ${_cache.length} materials from database`);
-    } else {
-      const fromFile = loadFromFile().materials;
-      _cache = fromFile;
-      for (const m of fromFile) {
-        await persistOne(m);
+    try {
+      const forceReseed = process.env.RESEED_MATERIALS === "1";
+      const result = await dbQuery("SELECT id, data FROM materials WHERE data->>'_type' = 'espuma' ORDER BY created_at");
+      if (result && result.rows.length > 0 && !forceReseed) {
+        _cache = result.rows.map((r) => { const { _type, ...rest } = r.data; return rest as Material; });
+        console.log(`[materialStore] Loaded ${_cache.length} materials from database`);
+      } else {
+        if (forceReseed) {
+          await dbQuery("DELETE FROM materials WHERE data->>'_type' = 'espuma'");
+          console.log("[materialStore] Force reseed: cleared existing materials");
+        }
+        const fromFile = loadFromFile().materials;
+        _cache = fromFile;
+        for (const m of fromFile) {
+          await persistOne(m);
+        }
+        console.log(`[materialStore] Seeded ${fromFile.length} materials from JSON to database`);
       }
-      console.log(`[materialStore] Migrated ${fromFile.length} materials from JSON to database`);
+    } catch (err) {
+      console.error("[materialStore] DB init failed, using file fallback:", err);
+      _cache = loadFromFile().materials;
     }
-  } catch (err) {
-    console.error("[materialStore] DB init failed, using file fallback:", err);
-    _cache = loadFromFile().materials;
   }
-}
 
 function slug(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
