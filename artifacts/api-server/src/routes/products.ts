@@ -60,6 +60,7 @@ router.post("/products", requireAdmin, (req, res) => {
     fabrics: Array.isArray(fabrics) ? fabrics : (fabrics ? String(fabrics).split(",").map((s: string) => s.trim()) : []),
     disponibilidade: disponibilidade !== false && disponibilidade !== "false",
     prazoEntrega: prazoEntrega ?? "A consultar",
+    bestseller: bestseller === true || bestseller === "true",
     sizes: Array.isArray(sizes) ? sizes : [],
     ...(diagramaUrl !== undefined && { diagramaUrl }),
     ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
@@ -68,7 +69,7 @@ router.post("/products", requireAdmin, (req, res) => {
 });
 
 router.put("/products/:id", requireAdmin, (req, res) => {
-  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, diagramaUrl, diagramaAnotacoes } = req.body;
+  const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, bestseller, sizes, diagramaUrl, diagramaAnotacoes } = req.body;
   const updated = store.update(req.params.id, {
     ...(name !== undefined && { name }),
     ...(price !== undefined && { price: Number(price) }),
@@ -83,6 +84,7 @@ router.put("/products/:id", requireAdmin, (req, res) => {
     ...(disponibilidade !== undefined && { disponibilidade: disponibilidade !== false && disponibilidade !== "false" }),
     ...(prazoEntrega !== undefined && { prazoEntrega }),
     ...(sizes !== undefined && { sizes: Array.isArray(sizes) ? sizes : [] }),
+    ...(bestseller !== undefined && { bestseller: bestseller === true || bestseller === "true" }),
     ...(diagramaUrl !== undefined && { diagramaUrl }),
     ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
   });
