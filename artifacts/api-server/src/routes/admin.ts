@@ -30,9 +30,26 @@ router.get("/admin/debug", async (req: any, res) => {
   });
 
   router.get("/admin/me", async (req: any, res) => {
-      try {
-        const info = await getAdminInfo(req);
-        res.json({ isAdmin: info.isAdmin, signedIn: info.signedIn, email: info.email, method: info.method });
+    try {
+      const info = await getAdminInfo(req);
+      res.json({
+        isAdmin: info.isAdmin,
+        signedIn: info.signedIn,
+        email: info.email ?? null,
+        method: info.method ?? "unknown",
+        adminEmailsConfigured: !!process.env.ADMIN_EMAILS,
+        hasAuthHeader: !!req.headers["authorization"],
+        authPrefix: (req.headers["authorization"] as string | undefined)?.substring(0, 25) ?? null,
+      });
+    } catch (e: any) {
+      res.json({
+        isAdmin: false,
+        signedIn: false,
+        method: "outer-catch",
+        error: e?.message?.substring(0, 200) ?? String(e).substring(0, 200),
+      });
+    }
+  })
       } catch (e) {
         res.json({ isAdmin: false, signedIn: false });
       }
