@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import { dbQuery } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_FILE = join(__dirname, "../../data/products.json");
+const DATA_FILE = join(__dirname, "../data/products.json");
 
 export interface SizeOption {
   label: string;
@@ -123,7 +123,15 @@ function loadFromJson(): Product[] {
   } catch { return []; }
 }
 
-let _cache: Product[] | null = null;
+
+  function saveToJson(products: Product[]): void {
+    try {
+      writeFileSync(DATA_FILE, JSON.stringify(products, null, 2), "utf-8");
+    } catch (e) {
+      console.error("[productStore] JSON save error:", e);
+    }
+  }
+  let _cache: Product[] | null = null;
 
 function getCache(): Product[] {
   if (_cache === null) _cache = loadFromJson();
