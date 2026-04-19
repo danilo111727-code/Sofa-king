@@ -42,7 +42,7 @@ function HorizontalScrollRow({ children }: { children: ReactNode }) {
     </div>
   );
 }
-import { fetchProducts, fetchSiteSettings, trackView, type Product } from "@/lib/api";
+import { fetchProducts, fetchSiteSettings, trackView, type Product , getImageUrl } from "@/lib/api";
 import { CATEGORIES, displayName, getCategory } from "@/lib/categories";
 import { useSiteSettings, applyCardMarkup } from "@/contexts/SiteSettingsContext";
 
@@ -115,7 +115,7 @@ export default function Home() {
 
           <div className="w-full aspect-[16/10] sm:aspect-[21/9] overflow-hidden bg-secondary/50">
             <img
-              src={heroImage}
+              src={getImageUrl(heroImage)}
               alt="Sofá minimalista moderno em sala clara e arejada"
               className="w-full h-full object-cover object-center"
               data-testid="img-hero"
@@ -170,7 +170,7 @@ export default function Home() {
                         <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
                           {product.image ? (
                             <img
-                              src={product.image}
+                              src={getImageUrl(product.image)}
                               alt={displayName(product.name, product.category)}
                               className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                               loading="lazy"
@@ -316,7 +316,7 @@ export default function Home() {
                     <div className="flex flex-col h-full bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/20 transition-all duration-500 hover:shadow-xl">
                       <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
                         <img
-                          src={product.image}
+                          src={getImageUrl(product.image)}
                           alt={displayName(product.name, product.category)}
                           className="w-full h-full object-cover object-center transition-transform duration-700 group-hover/card:scale-105"
                         />
