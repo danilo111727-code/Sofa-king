@@ -50,6 +50,8 @@ export interface Product {
   fabrics: string[];
   disponibilidade: boolean;
   prazoEntrega: string;
+  prazoEntregaDias?: number;
+  vagas?: number;
   sizes: SizeOption[];
   bestseller: boolean;
   albumIds?: string[];
