@@ -186,16 +186,16 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
 });
 
   // One-time migration: move sofá-camas from categoria='cama' to 'sofa-cama'
-  router.post("/migrate-categories", async (req: any, res) => {
+router.post("/admin/migrate-categories", async (req: any, res) => {
     if (req.headers["x-migrate-secret"] !== "sofa-king-migrate-2025") {
       res.status(403).json({ error: "forbidden" });
       return;
     }
     try {
-      const result = await pool.query(
-        `UPDATE produtos SET categoria = 'sofa-cama' WHERE categoria = 'cama' RETURNING id, nome, categoria`
+      const result = await dbQuery(
+        "UPDATE produtos SET categoria = 'sofa-cama' WHERE categoria = 'cama' RETURNING id, nome, categoria"
       );
-      res.json({ updated: result.rowCount, rows: result.rows });
+      res.json({ updated: result?.rowCount ?? 0, rows: result?.rows ?? [] });
     } catch (e: any) {
       res.status(500).json({ error: e.message });
     }
