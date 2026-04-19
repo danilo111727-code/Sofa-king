@@ -65,7 +65,8 @@ async function uploadToGitHub(buffer: Buffer, mimeType: string): Promise<string>
     throw new Error(`GitHub upload failed (${response.status}): ${err}`);
   }
 
-  return `/images/uploads/${fileName}`;
+  // Return GitHub raw URL — available in seconds without waiting for Vercel redeploy
+  return `https://raw.githubusercontent.com/${repo}/main/${filePath}`;
 }
 
 router.get("/admin/stats", requireAdmin, (_req, res) => {
