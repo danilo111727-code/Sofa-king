@@ -8,7 +8,7 @@ import {
   fetchProduct, fetchAlbums, fetchMaterials, trackView,
   resolveAlbumSurcharge, resolveFoamAdjustment,
   type Product, type Album, type Material, type FabricSample,
-, getImageUrl } from "@/lib/api";
+  getImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
