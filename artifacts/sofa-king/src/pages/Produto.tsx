@@ -8,7 +8,7 @@ import {
   fetchProduct, fetchAlbums, fetchMaterials, trackView,
   resolveAlbumSurcharge, resolveFoamAdjustment,
   type Product, type Album, type Material, type FabricSample,
-} from "@/lib/api";
+, getImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -219,7 +219,7 @@ export default function Produto() {
                 ) : (
                   <>
                     <img
-                      src={galleryImages[mainImageIdx] || product.image}
+                      src={getImageUrl(galleryImages[mainImageIdx] || product.image)}
                       alt={fullName}
                       className="w-full h-full object-cover object-center transition-transform duration-200 group-hover:scale-[1.02]"
                     />
@@ -387,7 +387,7 @@ export default function Produto() {
                             data-testid={`button-fabric-${f.id}`}
                           >
                             {f.imageUrl ? (
-                              <img src={f.imageUrl} alt={f.name} className="w-8 h-8 rounded object-cover" />
+                              <img src={getImageUrl(f.imageUrl)} alt={f.name} className="w-8 h-8 rounded object-cover" />
                             ) : (
                               <div className="w-8 h-8 rounded bg-secondary border border-border" />
                             )}
@@ -422,7 +422,7 @@ export default function Produto() {
                       >
                         {f.imageUrl && (
                           <div className="w-full aspect-[4/3] rounded bg-white/60 overflow-hidden mb-2 border border-border/50">
-                            <img src={f.imageUrl} alt={f.name} className="w-full h-full object-contain" loading="lazy" />
+                            <img src={getImageUrl(f.imageUrl)} alt={f.name} className="w-full h-full object-contain" loading="lazy" />
                           </div>
                         )}
                         <div className="font-semibold leading-tight">{f.name}</div>
