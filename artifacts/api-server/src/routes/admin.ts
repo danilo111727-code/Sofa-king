@@ -12,7 +12,24 @@ import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
 const router = Router();
-router.get("/admin/me", async (req: any, res) => {
+router.get("/admin/debug", async (req: any, res) => {
+    try {
+      const auth = getAuth(req);
+      const hasAuthHeader = !!req.headers["authorization"];
+      const authHeaderPrefix = req.headers["authorization"]?.substring(0, 20) ?? null;
+      res.json({
+        userId: auth.userId ?? null,
+        sessionId: auth.sessionId ?? null,
+        hasAuthHeader,
+        authHeaderPrefix,
+        clerkMiddlewareActive: true,
+      });
+    } catch (e: any) {
+      res.json({ error: e.message, clerkMiddlewareActive: false });
+    }
+  });
+
+  router.get("/admin/me", async (req: any, res) => {
     try {
       const { userId } = getAuth(req);
       if (!userId) { res.json({ isAdmin: false, signedIn: false }); return; }
