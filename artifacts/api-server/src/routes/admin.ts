@@ -43,6 +43,7 @@ router.get("/admin/debug", async (req: any, res) => {
   router.get("/admin/me", async (req: any, res) => {
       try {
         const info = await getAdminInfo(req);
+        console.log("[/admin/me]", JSON.stringify({ method: info.method, isAdmin: info.isAdmin, signedIn: info.signedIn, email: info.email, hasAuth: !!req.headers["authorization"], origin: req.headers["origin"] }));
         res.json({
           isAdmin: info.isAdmin,
           signedIn: info.signedIn,
