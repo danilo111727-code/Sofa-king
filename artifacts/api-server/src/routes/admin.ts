@@ -12,6 +12,17 @@ import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
 const router = Router();
+
+  router.get("/admin/version-check-c20d8be", (req: any, res) => {
+    res.json({
+      deployedCommit: "c20d8be-PROBE",
+      timestamp: new Date().toISOString(),
+      nodeEnv: process.env.NODE_ENV,
+      hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
+      adminEmails: process.env.ADMIN_EMAILS ?? null,
+      hasAuthHeader: !!req.headers["authorization"],
+    });
+  });
 router.get("/admin/debug", async (req: any, res) => {
     try {
       const auth = getAuth(req);
