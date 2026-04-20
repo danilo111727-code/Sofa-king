@@ -12,17 +12,6 @@ import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
 const router = Router();
-
-  router.get("/admin/version-check-c20d8be", (req: any, res) => {
-    res.json({
-      deployedCommit: "c20d8be-PROBE",
-      timestamp: new Date().toISOString(),
-      nodeEnv: process.env.NODE_ENV,
-      hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
-      adminEmails: process.env.ADMIN_EMAILS ?? null,
-      hasAuthHeader: !!req.headers["authorization"],
-    });
-  });
 router.get("/admin/debug", async (req: any, res) => {
     try {
       const auth = getAuth(req);
@@ -43,7 +32,6 @@ router.get("/admin/debug", async (req: any, res) => {
   router.get("/admin/me", async (req: any, res) => {
       try {
         const info = await getAdminInfo(req);
-        console.log("[/admin/me]", JSON.stringify({ method: info.method, isAdmin: info.isAdmin, signedIn: info.signedIn, email: info.email, hasAuth: !!req.headers["authorization"], origin: req.headers["origin"] }));
         res.json({
           isAdmin: info.isAdmin,
           signedIn: info.signedIn,
