@@ -105,21 +105,6 @@ router.get("/products", (_req, res) => {
     res.json({ success: true });
   });
 
-  router.get("/admin/me", async (req, res) => {
-    try {
-      const { userId } = getAuth(req);
-      if (!userId) {
-        res.json({ isAdmin: false, signedIn: false });
-        return;
-      }
-      const user = await clerkClient.users.getUser(userId);
-      const emails = user.emailAddresses.map((e) => e.emailAddress.toLowerCase());
-      const isAdmin = emails.some((e) => ADMIN_EMAILS.includes(e));
-      res.json({ isAdmin, signedIn: true, email: user.emailAddresses[0]?.emailAddress });
-    } catch {
-      res.json({ isAdmin: false, signedIn: false });
-    }
-  });
 
   export default router;
   
