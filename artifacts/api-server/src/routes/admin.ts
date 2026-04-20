@@ -157,25 +157,25 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
       const objectId = randomUUID();
       const objectName = `${rest.join("/")}/uploads/${objectId}`;
       const file = objectStorageClient.bucket(bucketName).file(objectName);
-      await file.save(req.file.buffer, {
-        metadata: { contentType: req.file.mimetype },
+      await file.save(fileBuffer, {
+        metadata: { contentType: fileMime },
         resumable: false,
       });
       const objectPath = `/objects/uploads/${objectId}`;
       const url = `/api/storage${objectPath}`;
       res.json({ url, objectPath });
     } else if (useGitHubStorage()) {
-      const url = await uploadToGitHub(req.file.buffer, req.file.mimetype);
+      const url = await uploadToGitHub(fileBuffer, fileMime);
       res.json({ url, objectPath: url });
     } else {
-      const ext = req.file.mimetype === "image/png" ? ".png"
-        : req.file.mimetype === "image/webp" ? ".webp"
-        : req.file.mimetype === "image/gif" ? ".gif"
+      const ext = fileMime === "image/png" ? ".png"
+        : fileMime === "image/webp" ? ".webp"
+        : fileMime === "image/gif" ? ".gif"
         : ".jpg";
       const objectId = randomUUID();
       const fileName = `${objectId}${ext}`;
       const uploadsDir = getLocalUploadsDir();
-      writeFileSync(join(uploadsDir, fileName), req.file.buffer);
+      writeFileSync(join(uploadsDir, fileName), fileBuffer);
       const url = `/uploads/${fileName}`;
       res.json({ url, objectPath: url });
     }
