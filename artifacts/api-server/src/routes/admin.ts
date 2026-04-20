@@ -36,18 +36,9 @@ router.get("/admin/debug", async (req: any, res) => {
           isAdmin: info.isAdmin,
           signedIn: info.signedIn,
           email: info.email ?? null,
-          method: info.method ?? "unknown",
-          adminEmailsConfigured: !!process.env.ADMIN_EMAILS,
-          hasAuthHeader: !!req.headers["authorization"],
-          authPrefix: (req.headers["authorization"] as string | undefined)?.substring(0, 25) ?? null,
         });
-      } catch (e: any) {
-        res.json({
-          isAdmin: false,
-          signedIn: false,
-          method: "outer-catch",
-          error: e?.message?.substring(0, 200) ?? String(e).substring(0, 200),
-        });
+      } catch {
+        res.json({ isAdmin: false, signedIn: false });
       }
     });
 
