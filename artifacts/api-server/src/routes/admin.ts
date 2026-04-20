@@ -150,7 +150,23 @@ router.post("/admin/upload-image", requireAdmin, upload.single("file"), async (r
       return;
     }
 
-    if (useObjectStorage()) {
+      let fileBuffer: Buffer = req.file.buffer;
+      let fileMime: string = req.file.mimetype;
+      if (fileMime !== "image/gif") {
+        try {
+          const sharp = (await import("sharp")).default;
+          fileBuffer = await sharp(req.file.buffer, { failOn: "none" })
+            .rotate()
+            .resize({ width: 1920, height: 1920, fit: "inside", withoutEnlargement: true })
+            .jpeg({ quality: 85, mozjpeg: true })
+            .toBuffer();
+          fileMime = "image/jpeg";
+        } catch (e) {
+          console.warn("[upload] sharp resize failed, using original:", e);
+        }
+      }
+
+      if (useObjectStorage()) {
       const privateDir = storage.getPrivateObjectDir();
       const trimmed = privateDir.startsWith("/") ? privateDir.slice(1) : privateDir;
       const [bucketName, ...rest] = trimmed.split("/");
