@@ -8,6 +8,7 @@ const DATA_FILE = join(__dirname, "../../data/settings.json");
 
 export interface SiteSettings {
   heroImage: string;
+  heroImages: string[];
   pixDiscountPct: number;
   maxInstallments: number;
   vagas: number;
@@ -16,6 +17,7 @@ export interface SiteSettings {
 
 const DEFAULTS: SiteSettings = {
   heroImage: "/images/hero.png",
+  heroImages: [],
   pixDiscountPct: 10,
   maxInstallments: 10,
   vagas: 8,
@@ -47,10 +49,10 @@ export async function initSettingsStore(): Promise<void> {
   try {
     const result = await dbQuery("SELECT value FROM site_settings WHERE key = 'main'");
     if (result && result.rows.length > 0) {
-      _cache = { ...DEFAULTS, ...result.rows[0].value };
+      _cache = normalize({ ...DEFAULTS, ...result.rows[0].value });
       console.log("[settingsStore] Loaded settings from database");
     } else {
-      const fromFile = loadFromFile();
+      const fromFile = normalize(loadFromFile());
       _cache = fromFile;
       await persistSettings(fromFile);
       console.log("[settingsStore] Migrated settings from JSON to database");
@@ -61,13 +63,20 @@ export async function initSettingsStore(): Promise<void> {
   }
 }
 
-export function getSettings(): SiteSettings {
+function normalize(s: SiteSettings): SiteSettings {
+    const imgs = Array.isArray(s.heroImages) ? s.heroImages.filter(x => typeof x === "string" && x.length > 0) : [];
+    if (imgs.length > 0) return { ...s, heroImages: imgs, heroImage: imgs[0] };
+    if (s.heroImage) return { ...s, heroImages: [s.heroImage] };
+    return { ...s, heroImages: [] };
+  }
+
+  export function getSettings(): SiteSettings {
   return getCache();
 }
 
 export function updateSettings(patch: Partial<SiteSettings>): SiteSettings {
   const current = getCache();
-  const updated = { ...current, ...patch };
+  const updated = normalize({ ...current, ...patch });
   _cache = updated;
   persistSettings(updated).catch((e) => console.error("[settingsStore] persist error:", e));
   return updated;
