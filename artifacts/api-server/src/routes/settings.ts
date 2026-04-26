@@ -9,7 +9,7 @@ router.get("/settings", (_req, res) => {
 });
 
 router.put("/admin/settings", requireAdmin, (req, res) => {
-  const { heroImage, heroImages, pixDiscountPct, maxInstallments, vagas, prazoEntregaDias } = req.body;
+  const { heroImage, heroImages, pixDiscountPct, maxInstallments, vagas, prazoEntregaDias, categories } = req.body;
   const updated = store.updateSettings({
     ...(heroImage !== undefined && { heroImage: String(heroImage) }),
     ...(Array.isArray(heroImages) && { heroImages: heroImages.filter((x: any) => typeof x === "string" && x.length > 0).slice(0, 10) }),
@@ -17,6 +17,7 @@ router.put("/admin/settings", requireAdmin, (req, res) => {
     ...(maxInstallments !== undefined && { maxInstallments: Math.max(1, Math.round(Number(maxInstallments))) }),
     ...(vagas !== undefined && { vagas: Math.max(0, Math.round(Number(vagas))) }),
     ...(prazoEntregaDias !== undefined && { prazoEntregaDias: Math.max(1, Math.round(Number(prazoEntregaDias))) }),
+    ...(Array.isArray(categories) && { categories: store.normalizeCategories(categories) }),
   });
   res.json(updated);
 });

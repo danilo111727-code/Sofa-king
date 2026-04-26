@@ -6,6 +6,12 @@ import { dbQuery } from "./db.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = join(__dirname, "../../data/settings.json");
 
+export interface CategoryDef {
+  id: string;
+  label: string;
+  suffix: string;
+}
+
 export interface SiteSettings {
   heroImage: string;
   heroImages: string[];
@@ -13,7 +19,26 @@ export interface SiteSettings {
   maxInstallments: number;
   vagas: number;
   prazoEntregaDias: number;
+  categories: CategoryDef[];
 }
+
+const DEFAULT_CATEGORIES: CategoryDef[] = [
+  { id: "retratil",  label: "Sofá Retrátil",  suffix: "Retrátil" },
+  { id: "sofa-cama", label: "Sofá-cama",       suffix: "Cama" },
+  { id: "canto",     label: "Sofá de Canto",   suffix: "de Canto" },
+  { id: "organicos", label: "Sofá Orgânico",   suffix: "Orgânico" },
+  { id: "living",    label: "Sofá Living",      suffix: "Living" },
+  { id: "fixo",      label: "Sofá Fixo",        suffix: "Fixo" },
+  { id: "chaise",    label: "Sofá Chaise",      suffix: "Chaise" },
+  { id: "ilha",      label: "Sofá Ilha",        suffix: "Ilha" },
+  { id: "modulos",   label: "Módulos",          suffix: "Módulos" },
+  { id: "poltronas", label: "Poltronas",        suffix: "Poltrona" },
+  { id: "puffs",     label: "Puffs",            suffix: "Puff" },
+  { id: "almofadas", label: "Almofadas",        suffix: "Almofada" },
+  { id: "cama",      label: "Cama",             suffix: "Cama" },
+  { id: "cabeceira", label: "Cabeceira",        suffix: "Cabeceira" },
+  { id: "box",       label: "Box",              suffix: "Box" },
+];
 
 const DEFAULTS: SiteSettings = {
   heroImage: "/images/hero.png",
@@ -22,6 +47,7 @@ const DEFAULTS: SiteSettings = {
   maxInstallments: 10,
   vagas: 8,
   prazoEntregaDias: 30,
+  categories: DEFAULT_CATEGORIES,
 };
 
 function loadFromFile(): SiteSettings {
@@ -64,13 +90,32 @@ export async function initSettingsStore(): Promise<void> {
 }
 
 function normalize(s: SiteSettings): SiteSettings {
-    const imgs = Array.isArray(s.heroImages) ? s.heroImages.filter(x => typeof x === "string" && x.length > 0) : [];
-    if (imgs.length > 0) return { ...s, heroImages: imgs, heroImage: imgs[0] };
-    if (s.heroImage) return { ...s, heroImages: [s.heroImage] };
-    return { ...s, heroImages: [] };
-  }
+  const imgs = Array.isArray(s.heroImages) ? s.heroImages.filter(x => typeof x === "string" && x.length > 0) : [];
+  const cats = normalizeCategories(s.categories);
+  const base: SiteSettings = { ...s, categories: cats };
+  if (imgs.length > 0) return { ...base, heroImages: imgs, heroImage: imgs[0] };
+  if (s.heroImage) return { ...base, heroImages: [s.heroImage] };
+  return { ...base, heroImages: [] };
+}
 
-  export function getSettings(): SiteSettings {
+export function normalizeCategories(input: any): CategoryDef[] {
+  if (!Array.isArray(input) || input.length === 0) return DEFAULT_CATEGORIES;
+  const seen = new Set<string>();
+  const out: CategoryDef[] = [];
+  for (const raw of input) {
+    if (!raw || typeof raw !== "object") continue;
+    const id = String(raw.id ?? "").trim();
+    const label = String(raw.label ?? "").trim();
+    const suffix = String(raw.suffix ?? "").trim();
+    if (!id || !label) continue;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, label, suffix });
+  }
+  return out.length > 0 ? out : DEFAULT_CATEGORIES;
+}
+
+export function getSettings(): SiteSettings {
   return getCache();
 }
 
