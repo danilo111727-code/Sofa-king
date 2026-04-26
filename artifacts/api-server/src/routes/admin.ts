@@ -85,7 +85,7 @@ async function uploadToGitHub(buffer: Buffer, mimeType: string): Promise<string>
       "User-Agent": "sofa-king-backend",
     },
     body: JSON.stringify({
-      message: `upload: add product image ${fileName}`,
+      message: `upload: add product image ${fileName} [skip ci]`,
       content,
     }),
   });
