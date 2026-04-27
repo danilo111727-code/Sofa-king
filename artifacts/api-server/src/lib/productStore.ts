@@ -66,6 +66,8 @@ export interface Product {
   foamIds?: string[];
   diagramaUrl?: string;
   diagramaAnotacoes?: DiagramaAnotacao[];
+  /** Optional %: positive markup, negative discount. Applies ONLY to size basePrice. */
+  priceAdjustmentPercent?: number;
 }
 
 const TEST_IDS = new Set([

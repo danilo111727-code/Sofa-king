@@ -43,7 +43,7 @@ router.get("/products", (_req, res) => {
   });
 
   router.post("/products", requireAdmin, (req, res) => {
-    const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller, diagramaUrl, diagramaAnotacoes } = req.body;
+    const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller, diagramaUrl, diagramaAnotacoes, priceAdjustmentPercent } = req.body;
     if (!name) {
       res.status(400).json({ error: "Nome é obrigatório" });
       return;
@@ -65,12 +65,13 @@ router.get("/products", (_req, res) => {
       sizes: Array.isArray(sizes) ? sizes : [],
       ...(diagramaUrl !== undefined && { diagramaUrl }),
       ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
+      ...(priceAdjustmentPercent !== undefined && priceAdjustmentPercent !== null && priceAdjustmentPercent !== "" && { priceAdjustmentPercent: Number(priceAdjustmentPercent) || 0 }),
     });
     res.status(201).json(product);
   });
 
   router.put("/products/:id", requireAdmin, (req, res) => {
-    const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, bestseller, sizes, diagramaUrl, diagramaAnotacoes } = req.body;
+    const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, bestseller, sizes, diagramaUrl, diagramaAnotacoes, priceAdjustmentPercent } = req.body;
     const updated = store.update(req.params.id, {
       ...(name !== undefined && { name }),
       ...(price !== undefined && { price: Number(price) }),
@@ -88,6 +89,7 @@ router.get("/products", (_req, res) => {
       ...(bestseller !== undefined && { bestseller: bestseller === true || bestseller === "true" }),
       ...(diagramaUrl !== undefined && { diagramaUrl }),
       ...(diagramaAnotacoes !== undefined && { diagramaAnotacoes: Array.isArray(diagramaAnotacoes) ? diagramaAnotacoes : [] }),
+      ...(priceAdjustmentPercent !== undefined && { priceAdjustmentPercent: (priceAdjustmentPercent === null || priceAdjustmentPercent === "" || !Number.isFinite(Number(priceAdjustmentPercent))) ? 0 : Number(priceAdjustmentPercent) }),
     });
     if (!updated) {
       res.status(404).json({ error: "Produto não encontrado" });
