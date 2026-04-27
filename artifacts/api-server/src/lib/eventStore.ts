@@ -1,5 +1,28 @@
 import { dbQuery } from "./db.js";
 
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  sizeLabel?: string;
+  basePrice?: number;
+  albumName?: string | null;
+  fabricName?: string | null;
+  foamName?: string | null;
+  qty: number;
+  unitPrice: number;
+}
+
+export interface OrderSnapshot {
+  items: OrderItem[];
+  subtotal: number;
+  payment: "pix" | "cartao";
+  paymentTotal: number;
+  installments?: number;
+  notes?: string;
+  customerName?: string;
+  customerEmail?: string;
+}
+
 export interface Event {
   id: string;
   type: "view" | "whatsapp";
@@ -7,6 +30,8 @@ export interface Event {
   productName?: string;
   path?: string;
   userEmail?: string;
+  /** Snapshot do carrinho quando o evento veio do checkout do carrinho. */
+  order?: OrderSnapshot;
   ts: number;
 }
 

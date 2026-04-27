@@ -10,8 +10,13 @@ router.post("/events/view", (req, res) => {
 });
 
 router.post("/events/whatsapp", (req, res) => {
-  const { productId, productName } = req.body || {};
-  events.track({ type: "whatsapp", productId, productName });
+  const { productId, productName, order } = req.body || {};
+  events.track({
+    type: "whatsapp",
+    productId,
+    productName,
+    ...(order && typeof order === "object" ? { order } : {}),
+  });
   res.json({ ok: true });
 });
 
