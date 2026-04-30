@@ -179,17 +179,23 @@ async function deleteOne(id: string): Promise<void> {
 export async function initProductStore(): Promise<void> {
   try {
     const result = await dbQuery("SELECT id, data FROM products ORDER BY created_at");
-    if (result && result.rows.length > 0) {
+    if (result === null) {
+      // DB connection failed — use JSON as read-only fallback, never overwrite DB
+      console.error("[productStore] DB unavailable at startup, using JSON fallback (read-only — DB will NOT be overwritten)");
+      _cache = loadFromJson();
+    } else if (result.rows.length > 0) {
+      // DB has data — load normally
       _cache = result.rows
         .map((r) => normalizeProduct(r.data))
         .filter((p) => !TEST_IDS.has(p.id));
       console.log(`[productStore] Loaded ${_cache.length} products from database`);
     } else {
+      // DB is genuinely empty (zero rows) — seed from JSON only on first run
       const fromJson = loadFromJson();
       _cache = fromJson;
       if (fromJson.length > 0) {
         await persistAll(fromJson);
-        console.log(`[productStore] Migrated ${fromJson.length} products from JSON to database`);
+        console.log(`[productStore] Seeded ${fromJson.length} products from JSON (DB was empty)`);
       }
     }
   } catch (err) {
