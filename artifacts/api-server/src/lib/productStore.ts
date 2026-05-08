@@ -70,6 +70,8 @@ export interface Product {
   priceAdjustmentPercent?: number;
   /** Label da metragem exibida nos cards do catálogo. Vazio = menor preço. */
   displaySizeLabel?: string;
+  /** Design exclusivo do ateliê — exibe selo "Design Autoral" nos cards. */
+  designAutoral?: boolean;
 }
 
 const TEST_IDS = new Set([
