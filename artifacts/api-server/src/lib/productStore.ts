@@ -68,6 +68,8 @@ export interface Product {
   diagramaAnotacoes?: DiagramaAnotacao[];
   /** Optional %: positive markup, negative discount. Applies ONLY to size basePrice. */
   priceAdjustmentPercent?: number;
+  /** Label da metragem exibida nos cards do catálogo. Vazio = menor preço. */
+  displaySizeLabel?: string;
 }
 
 const TEST_IDS = new Set([
@@ -100,8 +102,12 @@ function normalizeCategory(c: any): ProductCategory {
   return VALID_CATEGORIES.includes(c) ? (c as ProductCategory) : "";
 }
 
-function derivedPrice(sizes: SizeOption[], fallback: number): number {
+function derivedPrice(sizes: SizeOption[], fallback: number, displaySizeLabel?: string): number {
   if (sizes.length === 0) return fallback;
+  if (displaySizeLabel) {
+    const chosen = sizes.find((s) => s.label === displaySizeLabel);
+    if (chosen && chosen.basePrice > 0) return chosen.basePrice;
+  }
   const positives = sizes.map((s) => s.basePrice).filter((n) => n > 0);
   if (positives.length === 0) return 0;
   return Math.min(...positives);
@@ -227,7 +233,7 @@ export function create(data: Omit<Product, "id">): Product {
     image: images[0] || "",
     category: normalizeCategory(data.category),
     bestseller: Boolean(data.bestseller),
-    price: derivedPrice(sizes, Number(data.price) || 0),
+    price: derivedPrice(sizes, Number(data.price) || 0, data.displaySizeLabel),
   };
   products.push(product);
   persistOne(product).catch((e) => console.error("[productStore] persist error:", e));
@@ -252,7 +258,7 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
   }
   if (data.category !== undefined) merged.category = normalizeCategory(data.category);
   if (data.bestseller !== undefined) merged.bestseller = Boolean(data.bestseller);
-  merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0);
+  merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0, merged.displaySizeLabel);
   products[idx] = merged;
   persistOne(merged).catch((e) => console.error("[productStore] persist error:", e));
   return merged;
