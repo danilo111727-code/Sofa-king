@@ -70,6 +70,10 @@ export interface Product {
   priceAdjustmentPercent?: number;
   /** Label da metragem exibida nos cards do catálogo. Vazio = menor preço. */
   displaySizeLabel?: string;
+  /** Nome do modelo de origem quando metragens/acréscimos foram copiados. */
+  copiedFromName?: string;
+  /** ISO date string de quando foi feita a cópia. */
+  copiedFromDate?: string;
 }
 
 const TEST_IDS = new Set([
