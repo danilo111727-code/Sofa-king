@@ -14,7 +14,7 @@ Deno.serve(async req => {
   const bytes = Uint8Array.from(atob(signature), c=>c.charCodeAt(0));
   if (!await crypto.subtle.verify("RSASSA-PKCS1-v1_5",key,bytes,new TextEncoder().encode(time+"\n"+body))) return Response.json({error:"Unauthorized"},{status:401});
   const {op,collection,id,data} = JSON.parse(body);
-  if (!["products","albums","materials","settings","events","images"].includes(collection)) throw new Error("Invalid collection");
+  if (!["products","albums","materials","settings","events","images","variation_albums"].includes(collection)) throw new Error("Invalid collection");
   let result;
   if(op==="list") result = await sql`select data from preview_private.documents where collection=${collection} order by created_at,id`;
   else if(op==="get") result = await sql`select data from preview_private.documents where collection=${collection} and id=${id}`;

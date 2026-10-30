@@ -14,3 +14,15 @@ import {isAuthorizedAdminResponse} from './authz.mjs';
 test('existing admin response authorizes verified bearer without userId field',()=>assert.equal(isAuthorizedAdminResponse({signedIn:true,isAdmin:true,email:'admin@example.test'}),true));
 test('signed-in customer remains unauthorized',()=>assert.equal(isAuthorizedAdminResponse({signedIn:true,isAdmin:false}),false));
 test('unsigned or malformed identity cannot authorize',()=>{for(const a of [null,{}, {isAdmin:true}, {signedIn:false,isAdmin:true}, {signedIn:'true',isAdmin:'true'}])assert.equal(isAuthorizedAdminResponse(a),false);});
+
+import {validateVariationAlbum,resolveCatalogVariations} from './catalogVariations.mjs';
+const shared=[{id:'arms',name:'Braços',active:true,mode:'single',options:[{id:'thin',name:'Fino',imageUrl:'https://example.test/thin.png',priceAdjustment:0},{id:'wide',name:'Largo',imageUrl:'https://example.test/wide.png',priceAdjustment:120}]},{id:'finish',name:'Acabamento livre',active:true,mode:'single',options:[{id:'gold',name:'Dourado',imageUrl:'https://example.test/gold.png',priceAdjustment:80}]}];
+const sharedProduct={sizes:[{label:'2 m',basePrice:1000}],configuration:{catalogVariations:{arms:{enabled:true,optionIds:['wide']},finish:{enabled:true,optionIds:['gold']}}}};
+test('free-named shared variations add their global prices to base',()=>assert.equal(quote(sharedProduct,[],[],{sizeLabel:'2 m',selections:[{groupId:'catalog:arms',optionId:'wide',quantity:1},{groupId:'catalog:finish',optionId:'gold',quantity:1}]},shared).total,1200));
+test('model association excludes unselected global options',()=>assert.throws(()=>quote(sharedProduct,[],[],{sizeLabel:'2 m',selections:[{groupId:'catalog:arms',optionId:'thin',quantity:1}]},shared)));
+test('model with no shared associations has no shared choices or surcharge',()=>assert.equal(quote({sizes:sharedProduct.sizes,configuration:{catalogVariations:{}}},[],[],{sizeLabel:'2 m'},shared).total,1000));
+test('inactive shared groups and options do not appear',()=>assert.equal(resolveCatalogVariations(sharedProduct.configuration,shared.map(a=>({...a,active:false}))).length,0));
+test('changing global price applies to every associated model',()=>{const changed=shared.map(a=>({...a,options:a.options.map(o=>({...o,priceAdjustment:o.priceAdjustment+10}))}));assert.equal(quote(sharedProduct,[],[],{sizeLabel:'2 m',selections:[{groupId:'catalog:arms',optionId:'wide',quantity:1},{groupId:'catalog:finish',optionId:'gold',quantity:1}]},changed).total,1220);});
+test('global variation requires photos, names, finite nonnegative prices',()=>{validateVariationAlbum(shared[0]);for(const bad of [{...shared[0],name:''},{...shared[0],options:[{id:'x',name:'x',priceAdjustment:0}]},{...shared[0],options:[{id:'x',name:'x',imageUrl:'https://example.test/x.png',priceAdjustment:-1}]}])assert.throws(()=>validateVariationAlbum(bad));});
+test('enabled association cannot silently save with zero options',()=>assert.throws(()=>validateConfiguration({catalogVariations:{arms:{enabled:true,optionIds:[]}}})));
+test('required shared variation must be chosen',()=>assert.throws(()=>quote(sharedProduct,[],[],{sizeLabel:'2 m'},shared)));

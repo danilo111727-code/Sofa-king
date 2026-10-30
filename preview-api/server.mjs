@@ -3,6 +3,7 @@ import {sign, createPublicKey, verify, randomUUID, timingSafeEqual} from 'node:c
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {validateConfiguration, quote} from './validation.mjs';
+import {validateVariationAlbum} from './catalogVariations.mjs';
 import {isAuthorizedAdminResponse} from './authz.mjs';
 const PROJECT='lcmtaxesbctibpyggbuj';
 const GATEWAY=`https://${PROJECT}.supabase.co/functions/v1/preview-storage`;
@@ -88,14 +89,15 @@ const server=createServer(async(req,res)=>{
  if(quoteMatch&&method==='POST'){
   const p=await get('products',quoteMatch[1]);if(!p)fail('Modelo não encontrado',404);
   const input=JSON.parse((await body(req)).toString());
-  return send(quote(p,await all('albums'),await all('materials'),input));
+  const [albums,foams,variationAlbums]=await Promise.all([all('albums'),all('materials'),all('variation_albums')]);
+  return send(quote(p,albums,foams,input,variationAlbums));
  }
  path=path.replace('/api/admin/','/api/');
- const match=path.match(/^\/api\/(products|albums|materials|settings)(?:\/([^/]+))?$/);if(!match)fail('Rota não encontrada',404);
+ const match=path.match(/^\/api\/(products|albums|materials|settings|variation_albums)(?:\/([^/]+))?$/);if(!match)fail('Rota não encontrada',404);
  const [,collection,rawId]=match;const id=collection==='settings'?'main':rawId;
  if(method==='GET'){
   if(id){const d=await get(collection,id);if(!d)fail('Registro não encontrado',404);return send(d);}
-  const data=await all(collection);return send(!adminPath&&['albums','materials'].includes(collection)?data.filter(d=>d.active):data);
+  const data=await all(collection);return send(!adminPath&&['albums','materials','variation_albums'].includes(collection)?data.filter(d=>d.active):data);
  }
  if(method==='DELETE'){if(!id)fail('ID obrigatório');await storage('delete',collection,id);return send({success:true});}
  if(!['POST','PUT'].includes(method))fail('Método inválido',405);
@@ -103,6 +105,7 @@ const server=createServer(async(req,res)=>{
  if(method==='PUT'){const current=await get(collection,newId);if(!current)fail('Registro não encontrado',404);data={...current,...data};}
  if(collection!=='settings')data.id=newId;
  if(collection==='products')data=validateProduct(data);
+ if(collection==='variation_albums')data=validateVariationAlbum(data);
  if(['albums','materials'].includes(collection)&&!data.name?.trim())fail('Informe o nome.');
  return send(await put(collection,newId,data),method==='POST'?201:200);
  }catch(e){console.error(req.method,req.url,e.message);send({error:e.status?e.message:'Erro no serviço de testes.'},e.status||500);}
