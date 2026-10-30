@@ -40,7 +40,8 @@ export function quote(p,albums,foams,input,variationAlbums=[]){
   const g=groups.find(g=>g.id===s.groupId),o=g?.options.find(o=>o.id===s.optionId);
   if(!g||!o||seen.has(g.id+':'+o.id))invalid('Variação inválida');seen.add(g.id+':'+o.id);
   if(g.mode==='single'){if(singles.has(g.id)||s.quantity!==1)invalid('Escolha uma opção por grupo');singles.add(g.id);}
-  if(!Number.isInteger(s.quantity)||s.quantity<(o.minQuantity??0)||s.quantity>(o.maxQuantity??99))invalid('Quantidade inválida');
+  const minQuantity=g.mode==='single'?1:(o.minQuantity??0),maxQuantity=g.mode==='single'?1:(o.maxQuantity??99);
+  if(!Number.isInteger(s.quantity)||s.quantity<minQuantity||s.quantity>maxQuantity)invalid('Quantidade inválida');
   variations+=o.priceAdjustment*s.quantity;
  }
  for(const g of groups)if(g.required&&!selection.some(s=>s.groupId===g.id&&s.quantity>0))invalid(`Selecione ${g.name}`);

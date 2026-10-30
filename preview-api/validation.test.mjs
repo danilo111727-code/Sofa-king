@@ -28,3 +28,5 @@ test('enabled association cannot silently save with zero options',()=>assert.thr
 test('required shared variation must be chosen',()=>assert.throws(()=>quote(sharedProduct,[],[],{sizeLabel:'2 m'},shared)));
 
 test('explicit shared associations replace old per-model groups without deleting stored legacy data',()=>{const old={id:'legacy',name:'Antigo',mode:'quantity',required:true,options:[{id:'old',name:'Antigo',priceAdjustment:500}]};const c={catalogVariations:{},variationGroups:[old]};assert.equal(resolveCatalogVariations(c,shared).length,0);assert.equal(c.variationGroups.length,1);assert.equal(quote({sizes:sharedProduct.sizes,configuration:c},[],[],{sizeLabel:'2 m'},shared).total,1000);});
+
+test('single-choice catalog ignores old quantity limits after changing selection mode',()=>{const changed=shared.map(a=>({...a,options:a.options.map(o=>({...o,minQuantity:2,maxQuantity:5}))}));assert.equal(quote(sharedProduct,[],[],{sizeLabel:'2 m',selections:[{groupId:'catalog:arms',optionId:'wide',quantity:1},{groupId:'catalog:finish',optionId:'gold',quantity:1}]},changed).total,1200);});
