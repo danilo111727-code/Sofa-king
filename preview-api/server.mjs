@@ -3,6 +3,7 @@ import {sign, createPublicKey, verify, randomUUID, timingSafeEqual} from 'node:c
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {validateConfiguration, quote} from './validation.mjs';
+import {isAuthorizedAdminResponse} from './authz.mjs';
 const PROJECT='lcmtaxesbctibpyggbuj';
 const GATEWAY=`https://${PROJECT}.supabase.co/functions/v1/preview-storage`;
 const KEY=process.env.PREVIEW_SIGNING_KEY;
@@ -31,7 +32,7 @@ async function identity(req){
   // Identity-only GET: no catalog, settings or prices are read/written in production.
   // The signed subject must also be an existing Sofa King administrator.
   const r=await fetch('https://sofa-king.onrender.com/api/admin/me',{headers:{authorization:'Bearer '+token},signal:AbortSignal.timeout(15000)});
-  const a=await r.json();if(!r.ok||a.userId!==p.sub||!a.isAdmin) return {signedIn:true,isAdmin:false};
+  const a=await r.json();if(!r.ok||!isAuthorizedAdminResponse(a)) return {signedIn:true,isAdmin:false};
   return {signedIn:true,isAdmin:true,email:a.email};
  }catch{return {signedIn:false,isAdmin:false};}
 }

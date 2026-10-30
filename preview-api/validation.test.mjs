@@ -9,3 +9,8 @@ test('days require positive integer',()=>assert.throws(()=>validateConfiguration
 test('consult and hidden delivery accepted',()=>{validateConfiguration({delivery:{mode:'consult'}});validateConfiguration({delivery:{mode:'hidden'}});});
 test('finite prices and named groups required',()=>assert.throws(()=>validateConfiguration({variationGroups:[{id:'x',name:'',mode:'single',options:[]}]})));
 test('existing product no configuration retains original price',()=>assert.equal(quote({sizes:[{label:'2 m',basePrice:500}]},[],[],{sizeLabel:'2 m'}).total,500));
+
+import {isAuthorizedAdminResponse} from './authz.mjs';
+test('existing admin response authorizes verified bearer without userId field',()=>assert.equal(isAuthorizedAdminResponse({signedIn:true,isAdmin:true,email:'admin@example.test'}),true));
+test('signed-in customer remains unauthorized',()=>assert.equal(isAuthorizedAdminResponse({signedIn:true,isAdmin:false}),false));
+test('unsigned or malformed identity cannot authorize',()=>{for(const a of [null,{}, {isAdmin:true}, {signedIn:false,isAdmin:true}, {signedIn:'true',isAdmin:'true'}])assert.equal(isAuthorizedAdminResponse(a),false);});
