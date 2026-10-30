@@ -17,7 +17,7 @@ export function resolveCatalogVariations(configuration={},albums=[]){
  const associations=configuration.catalogVariations;
  const legacy=configuration.variationGroups||[];
  if(associations===undefined)return legacy;
- const groups=legacy.filter(g=>g.mode==='quantity');
+ const groups=[];
  for(const album of albums){
   const association=associations[album.id];
   if(!album.active||!association?.enabled)continue;
