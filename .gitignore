@@ -47,3 +47,7 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+artifacts/api-server/tests/.integration-*/
+
+release-evidence/

@@ -2,7 +2,7 @@
   set -e
 
   echo "==> Instalando dependências com pnpm..."
-  pnpm install --frozen-lockfile=false
+  pnpm install --frozen-lockfile --prod=false --filter @workspace/api-server...
 
   echo "==> Construindo o servidor API..."
   pnpm --filter @workspace/api-server build

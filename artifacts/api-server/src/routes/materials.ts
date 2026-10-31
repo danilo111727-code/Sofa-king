@@ -40,7 +40,7 @@ router.post("/admin/materials", requireAdmin, (req, res) => {
 
 router.put("/admin/materials/:id", requireAdmin, (req, res) => {
   const { type, name, description, priceAdjustment, priceAdjustmentBySize, weightSupport, comfortLevel, useIndication, longTermBehavior, imageUrl, active } = req.body || {};
-  const updated = store.update(req.params.id, {
+  const updated = store.update(String(req.params.id), {
     ...(type !== undefined && { type }),
     ...(name !== undefined && { name }),
     ...(description !== undefined && { description }),
@@ -61,7 +61,7 @@ router.put("/admin/materials/:id", requireAdmin, (req, res) => {
 });
 
 router.delete("/admin/materials/:id", requireAdmin, (req, res) => {
-  const ok = store.remove(req.params.id);
+  const ok = store.remove(String(req.params.id));
   if (!ok) {
     res.status(404).json({ error: "Material não encontrado" });
     return;

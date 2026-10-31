@@ -1,40 +1,30 @@
 import { Router } from "express";
-  import { clerkClient, getAuth } from "@clerk/express";
+  import { requireAdmin } from "../lib/adminAuth.js";
+import { validateConfiguration } from "../lib/configurator/validation.mjs";
+import { listVariations } from "../lib/variationStore.js";
   import * as store from "../lib/productStore.js";
 
   const router = Router();
 
-  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-
-  async function requireAdmin(req: any, res: any, next: any) {
-    try {
-      const { userId } = getAuth(req);
-      if (!userId) {
-        res.status(401).json({ error: "Não autenticado" });
-        return;
+  async function validateConfig(configuration: any) {
+    if (configuration === undefined) return;
+    validateConfiguration(configuration);
+    const albums = await listVariations();
+    for (const [id, association] of Object.entries(configuration.catalogVariations ?? {}) as [string, any][]) {
+      if (!association.enabled) continue;
+      const album = albums.find((a: any) => a.id === id && a.active);
+      if (!album || association.optionIds.some((optionId: string) => !album.options.some((o: any) => o.id === optionId && o.active !== false))) {
+        throw Object.assign(new Error('Atualize as opções associadas ao modelo.'), {status:400});
       }
-      const user = await clerkClient.users.getUser(userId);
-      const emails = user.emailAddresses.map((e) => e.emailAddress.toLowerCase());
-      if (!emails.some((e) => ADMIN_EMAILS.includes(e))) {
-        res.status(403).json({ error: "Acesso restrito ao administrador" });
-        return;
-      }
-      next();
-    } catch (err) {
-      res.status(401).json({ error: "Não autorizado" });
     }
   }
 
-  
-router.get("/products", (_req, res) => {
+  router.get("/products", (_req, res) => {
     res.json(store.getAll());
   });
 
   router.get("/products/:id", (req, res) => {
-    const product = store.getById(req.params.id);
+    const product = store.getById(String(req.params.id));
     if (!product) {
       res.status(404).json({ error: "Produto não encontrado" });
       return;
@@ -42,13 +32,15 @@ router.get("/products", (_req, res) => {
     res.json(product);
   });
 
-  router.post("/products", requireAdmin, (req, res) => {
+  router.post("/products", requireAdmin, async (req, res) => {
     const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, sizes, bestseller, diagramaUrl, diagramaAnotacoes, priceAdjustmentPercent, displaySizeLabel, designAutoral } = req.body;
     if (!name) {
       res.status(400).json({ error: "Nome é obrigatório" });
       return;
     }
-    const product = store.create({
+    await validateConfig(req.body.configuration);
+    const product = await store.create({
+      ...(req.body.configuration !== undefined && { configuration: req.body.configuration }),
       name,
       price: Number(price) || 0,
       description: description ?? "",
@@ -72,9 +64,11 @@ router.get("/products", (_req, res) => {
     res.status(201).json(product);
   });
 
-  router.put("/products/:id", requireAdmin, (req, res) => {
+  router.put("/products/:id", requireAdmin, async (req, res) => {
     const { name, price, description, longDescription, image, images, category, dimensions, colors, fabrics, disponibilidade, prazoEntrega, bestseller, sizes, diagramaUrl, diagramaAnotacoes, priceAdjustmentPercent, displaySizeLabel, designAutoral } = req.body;
-    const updated = store.update(req.params.id, {
+    await validateConfig(req.body.configuration);
+    const updated = await store.update(String(req.params.id), {
+      ...(req.body.configuration !== undefined && { configuration: req.body.configuration }),
       ...(name !== undefined && { name }),
       ...(price !== undefined && { price: Number(price) }),
       ...(description !== undefined && { description }),
@@ -102,8 +96,8 @@ router.get("/products", (_req, res) => {
     res.json(updated);
   });
 
-  router.delete("/products/:id", requireAdmin, (req, res) => {
-    const ok = store.remove(req.params.id);
+  router.delete("/products/:id", requireAdmin, async (req, res) => {
+    const ok = await store.remove(String(req.params.id));
     if (!ok) {
       res.status(404).json({ error: "Produto não encontrado" });
       return;

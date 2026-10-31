@@ -44,6 +44,11 @@ if (process.env.CLERK_SECRET_KEY) {
 }
 
 app.use("/api", router);
+app.use("/api", (error: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const status = error.status === 400 || error.status === 404 ? error.status : 503;
+  if (status === 503) logger.error({err:error}, "API operation failed");
+  res.status(status).json({error:status === 503 ? "Não foi possível concluir. Tente novamente; nenhuma gravação foi confirmada." : error.message});
+});
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = dirname(fileURLToPath(import.meta.url));

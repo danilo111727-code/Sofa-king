@@ -12,22 +12,10 @@ import { ObjectStorageService } from "../lib/objectStorage.js";
 import { objectStorageClient } from "../lib/objectStorage.js";
 
 const router = Router();
-router.get("/admin/debug", async (req: any, res) => {
-    try {
-      const auth = getAuth(req);
-      const hasAuthHeader = !!req.headers["authorization"];
-      const authHeaderPrefix = req.headers["authorization"]?.substring(0, 20) ?? null;
-      res.json({
-        userId: auth.userId ?? null,
-        sessionId: auth.sessionId ?? null,
-        hasAuthHeader,
-        authHeaderPrefix,
-        clerkMiddlewareActive: true,
-      });
-    } catch (e: any) {
-      res.json({ error: e.message, clerkMiddlewareActive: false });
-    }
-  });
+// Diagnostics retain their route, but require admin and never return tokens/session IDs.
+router.get("/admin/debug", requireAdmin, (_req, res) => {
+  res.json({clerkMiddlewareActive:true});
+});
 
   router.get("/admin/me", async (req: any, res) => {
       try {

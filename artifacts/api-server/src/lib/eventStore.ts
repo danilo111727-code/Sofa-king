@@ -9,6 +9,8 @@ export interface OrderItem {
   fabricName?: string | null;
   foamName?: string | null;
   qty: number;
+  variations?: {groupName:string;optionName:string;quantity:number;priceAdjustment:number}[];
+  delivery?: string | null;
   unitPrice: number;
 }
 

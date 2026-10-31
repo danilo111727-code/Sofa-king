@@ -31,7 +31,7 @@ router.post("/admin/albums", requireAdmin, (req, res) => {
 
 router.put("/admin/albums/:id", requireAdmin, (req, res) => {
   const { name, description, surcharge, surchargeBySize, fabrics, active } = req.body;
-  const updated = store.update(req.params.id, {
+  const updated = store.update(String(req.params.id), {
     ...(name !== undefined && { name }),
     ...(description !== undefined && { description }),
     ...(surcharge !== undefined && { surcharge: Number(surcharge) }),
@@ -47,7 +47,7 @@ router.put("/admin/albums/:id", requireAdmin, (req, res) => {
 });
 
 router.delete("/admin/albums/:id", requireAdmin, (req, res) => {
-  const ok = store.remove(req.params.id);
+  const ok = store.remove(String(req.params.id));
   if (!ok) {
     res.status(404).json({ error: "Álbum não encontrado" });
     return;

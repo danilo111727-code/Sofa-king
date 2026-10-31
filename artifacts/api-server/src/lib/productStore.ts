@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { dbQuery } from "./db.js";
+import { getPool, dbQuery } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = join(__dirname, "../data/products.json");
@@ -46,6 +46,7 @@ export interface DiagramaAnotacao {
 
 export interface Product {
   id: string;
+  configuration?: Record<string, any>;
   name: string;
   price: number;
   description: string;
@@ -170,18 +171,31 @@ async function persistAll(products: Product[]): Promise<void> {
   }
 }
 
-async function persistOne(p: Product): Promise<void> {
-  const result = await dbQuery(
-    `INSERT INTO products (id, data) VALUES ($1, $2)
-     ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW()`,
-    [p.id, JSON.stringify(p)]
-  );
-  if (result === null) saveToJson(getCache());
+// Writes are serialized so a slow durable save cannot restore an older cache entry.
+let writes: Promise<unknown> = Promise.resolve();
+function serial<T>(operation: () => Promise<T>): Promise<T> {
+  const result = writes.then(operation);
+  writes = result.catch(() => undefined);
+  return result;
 }
-
-async function deleteOne(id: string): Promise<void> {
-  const result = await dbQuery("DELETE FROM products WHERE id = $1", [id]);
-  if (result === null) saveToJson(getCache());
+async function persistOne(p: Product, next: Product[]): Promise<void> {
+  const pool = getPool();
+  if (pool) {
+    await pool.query(`INSERT INTO products (id, data) VALUES ($1, $2)
+      ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW()`,
+      [p.id, JSON.stringify(p)]);
+  } else {
+    if (process.env.NODE_ENV === "production") throw new Error("Banco indisponível. Nada foi salvo.");
+    writeFileSync(DATA_FILE, JSON.stringify(next, null, 2), "utf8");
+  }
+}
+async function deleteOne(id: string, next: Product[]): Promise<void> {
+  const pool = getPool();
+  if (pool) await pool.query("DELETE FROM products WHERE id = $1", [id]);
+  else {
+    if (process.env.NODE_ENV === "production") throw new Error("Banco indisponível. Nada foi excluído.");
+    writeFileSync(DATA_FILE, JSON.stringify(next, null, 2), "utf8");
+  }
 }
 
 export async function initProductStore(): Promise<void> {
@@ -224,7 +238,8 @@ function slugify(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-export function create(data: Omit<Product, "id">): Product {
+export function create(data: Omit<Product, "id">): Promise<Product> {
+ return serial(async () => {
   const products = getCache();
   const base = slugify(data.name);
   const id = products.some((p) => p.id === base) ? `${base}-${Date.now()}` : base;
@@ -237,12 +252,15 @@ export function create(data: Omit<Product, "id">): Product {
     bestseller: Boolean(data.bestseller),
     price: derivedPrice(sizes, Number(data.price) || 0, data.displaySizeLabel),
   };
-  products.push(product);
-  persistOne(product).catch((e) => console.error("[productStore] persist error:", e));
+  const next = [...products, product];
+  await persistOne(product, next);
+  _cache = next;
   return product;
+ });
 }
 
-export function update(id: string, data: Partial<Omit<Product, "id">>): Product | null {
+export function update(id: string, data: Partial<Omit<Product, "id">>): Promise<Product | null> {
+ return serial(async () => {
   const products = getCache();
   const idx = products.findIndex((p) => p.id === id);
   if (idx === -1) return null;
@@ -261,16 +279,21 @@ export function update(id: string, data: Partial<Omit<Product, "id">>): Product 
   if (data.category !== undefined) merged.category = normalizeCategory(data.category);
   if (data.bestseller !== undefined) merged.bestseller = Boolean(data.bestseller);
   merged.price = derivedPrice(merged.sizes, Number(merged.price) || 0, merged.displaySizeLabel);
-  products[idx] = merged;
-  persistOne(merged).catch((e) => console.error("[productStore] persist error:", e));
+  const next = products.map((product, i) => i === idx ? merged : product);
+  await persistOne(merged, next);
+  _cache = next;
   return merged;
+ });
 }
 
-export function remove(id: string): boolean {
+export function remove(id: string): Promise<boolean> {
+ return serial(async () => {
   const products = getCache();
   const idx = products.findIndex((p) => p.id === id);
   if (idx === -1) return false;
-  products.splice(idx, 1);
-  deleteOne(id).catch((e) => console.error("[productStore] delete error:", e));
+  const next = products.filter(p => p.id !== id);
+  await deleteOne(id, next);
+  _cache = next;
   return true;
+ });
 }

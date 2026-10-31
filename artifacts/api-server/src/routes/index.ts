@@ -8,9 +8,12 @@ import adminRouter from "./admin.js";
 import storageRouter from "./storage.js";
 import settingsRouter from "./settings.js";
 
+import configuratorRouter from "./configurator.js";
+
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(configuratorRouter);
 router.use(productsRouter);
 router.use(eventsRouter);
 router.use(materialsRouter);
