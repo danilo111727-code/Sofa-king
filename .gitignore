@@ -51,3 +51,5 @@ Thumbs.db
 artifacts/api-server/tests/.integration-*/
 
 release-evidence/
+
+artifacts/api-server/release-backups/

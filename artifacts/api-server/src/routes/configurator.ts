@@ -1,11 +1,21 @@
 import {Router} from 'express';
 import {requireAdmin} from '../lib/adminAuth.js';
-import {listVariations,saveVariation,deleteVariation} from '../lib/variationStore.js';
+import {listVariations,saveVariation,deleteVariation,database} from '../lib/variationStore.js';
 import {catalogSnapshot} from '../lib/configuratorSnapshot.js';
 import {quote} from '../lib/configurator/validation.mjs';
 import {quoteCart} from '../lib/configurator/cartQuote.mjs';
 
+import {encodeBackup} from '../lib/configurator/releaseBackup.mjs';
+
 const router = Router();
+router.get('/admin/configurator-backup/latest',requireAdmin,async (_req,res) => {
+  const result=await database().query('SELECT id,payload,checksum FROM sofa_king_private.release_backups ORDER BY created_at DESC LIMIT 1');
+  const row=result.rows[0];
+  if(!row){res.status(404).json({error:'Backup não encontrado.'});return;}
+  const encoded=encodeBackup(row.payload);
+  if(encoded.checksum!==row.checksum)throw new Error('Falha na verificação do backup.');
+  res.set('Cache-Control','no-store').set('Content-Type','application/gzip').set('Content-Disposition',`attachment; filename="sofa-king-before-configurador-${row.id}.json.gz"`).send(encoded.buffer);
+});
 router.get('/variation_albums',async (_req,res) => {
   const albums = await listVariations();
   res.json(albums.filter(a => a.active).map(a => ({...a,options:a.options.filter((o: any) => o.active !== false)})));

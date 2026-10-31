@@ -8,6 +8,8 @@ import {PGlite} from '@electric-sql/pglite';
 import pg from 'pg';
 import express from 'express';
 import {clerkClient} from '@clerk/express';
+import {gunzipSync} from 'node:zlib';
+import {prepareRelease} from '../src/lib/configurator/releaseBackup.mjs';
 
 // Entirely local Postgres/WASM database. No external database or credentials.
 process.env.NODE_ENV='production';
@@ -18,7 +20,8 @@ delete process.env.CLERK_SECRET_KEY;
 const db=new PGlite();
 await db.exec(`CREATE TABLE products(id text PRIMARY KEY,data jsonb,created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
 CREATE TABLE materials(id text PRIMARY KEY,data jsonb,created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
-CREATE TABLE site_settings(key text PRIMARY KEY,value jsonb,updated_at timestamptz DEFAULT now());`);
+CREATE TABLE site_settings(key text PRIMARY KEY,value jsonb,updated_at timestamptz DEFAULT now());
+CREATE TABLE events(id text PRIMARY KEY,data jsonb,created_at timestamptz DEFAULT now());`);
 const migration=readFileSync(new URL('../scripts/configurator-schema.sql',import.meta.url),'utf8');
 await db.exec(migration);
 await db.exec(migration); // repeat is safe
@@ -57,7 +60,7 @@ const request=async(path,method='GET',body,user='admin')=>fetch(base+path,{metho
 let albumId;
 test('real public/admin routes reject unauthenticated and forged Bearer requests',async()=>{
   const forged='eyJhbGciOiJub25lIn0.'+Buffer.from(JSON.stringify({sub:'admin'})).toString('base64url')+'.';
-  for(const path of ['/admin/variation_albums','/admin/debug']) {
+  for(const path of ['/admin/variation_albums','/admin/debug','/admin/configurator-backup/latest']) {
     const response=await fetch(`http://127.0.0.1:${official.address().port}/api${path}`,{headers:{authorization:`Bearer ${forged}`}});
     assert.equal(response.status,401);
   }
@@ -119,6 +122,13 @@ test('delete variation is durable and blocks its required stale association',asy
 test('migration is private and does not touch official product prices',async()=>{
   const result=await db.query("SELECT relrowsecurity FROM pg_class WHERE oid='sofa_king_private.variation_albums'::regclass");assert.equal(result.rows[0].relrowsecurity,true);
   assert.equal((await db.query("SELECT data->'sizes'->0->>'basePrice' AS price FROM products WHERE id='fixture'")).rows[0].price,'1000');
+});
+test('verified administrator can download the private pre-release logical backup',async()=>{
+  await prepareRelease({query:(sql,params)=>db.query(sql,params)},migration);
+  const response=await request('/admin/configurator-backup/latest');assert.equal(response.status,200);
+  assert.equal(response.headers.get('cache-control'),'no-store');
+  const payload=JSON.parse(gunzipSync(Buffer.from(await response.arrayBuffer())));
+  assert.equal(payload.tables.products[0].data.sizes[0].basePrice,1000);
 });
 after(async()=>{
   failWrites=false;clerkClient.users.getUser=originalUser;pg.Pool.prototype.query=originalQuery;pg.Pool.prototype.connect=originalConnect;
